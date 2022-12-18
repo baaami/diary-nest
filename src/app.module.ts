@@ -9,6 +9,7 @@ import { PostService } from './post/post.service';
 import { PostController } from './post/post.controller';
 import { Posts } from './post/entities/post.entity';
 import { Users } from './user/entities/user.entity';
+import { AuthService } from './auth/auth.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { Users } from './user/entities/user.entity';
     ),
     TypeOrmModule.forRoot(ormconfig)
   ],
-  controllers: [PostController, UserController],
-  providers: [PostService, UserService],
+  controllers: [PostController, UserController, AuthController],
+  providers: [PostService, UserService, AuthService],
 })
 export class AppModule {}
