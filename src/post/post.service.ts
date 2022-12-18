@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Posts } from 'src/post/entities/post.entity';
-import { InsertResult, Repository } from 'typeorm';
+import { InsertResult, UpdateResult, Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Posts) private ContentRepository: Repository<Posts>
   ) {}
-  private posts: Posts[] = [];
 
   async findOne(postId: number): Promise<Posts> {
     console.log("hello")
@@ -23,22 +23,13 @@ export class PostService {
     return post
   }
 
-  getAll(): Posts[] {
-    // select Post list
-    return this.posts;
-  }
-
-  getOne(id: number): Posts {
-    // select Post one
-    const post = this.posts.find(post => post.id === id);
+  async UpdateOne(updatePostDto: UpdatePostDto, postId: number): Promise<UpdateResult> {
+    const post = await this.ContentRepository.update({"id": postId}, updatePostDto);
     return post
   }
 
-  updateOne(id: number) {
-    // update Post one
-  }
-
-  deleteOne(id: number) {
-    // delete Post one
+  async DeleteOne(postId: number) {
+    const post = await this.ContentRepository.delete({"id": postId})
+    return post
   }
 }
