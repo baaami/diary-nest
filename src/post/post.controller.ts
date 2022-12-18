@@ -1,16 +1,23 @@
-import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { PostService } from './post.service';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Controller('post')
 export class PostController {
-    constructor() {}
-    @Get()
-    read(): string {
-        return "hello";
+    constructor(
+        private readonly postService: PostService
+    ) {}
+
+    @Get(':id')
+    read(@Param('id') postId: number) {
+        return this.postService.findOne(postId);
     }
+
     @Post()
-    write(): string {
-        return "hello";
+    write(@Body() createPostDto: CreatePostDto) {
+        return this.postService.PostOne(createPostDto);
     }
+    
     @Patch()
     update(): string {
         return "hello";
