@@ -8,15 +8,15 @@ import { Column,
   UpdateDateColumn 
 } from "typeorm";
 
-@Entity({ schema: 'example1', name: 'posts' })
-export class Posts{
+@Entity({ schema: 'diary', name: 'contents' })
+export class Contents{
   @PrimaryGeneratedColumn({type:'int',name:'id'})
   id:number;
 
   @Column('varchar', {name:'title', length:30})
   title:string;  
 
-  @Column('varchar', {name:'contents', length:100})
+  @Column('varchar', {name:'body', length:100})
   contents:string;  
 
   @CreateDateColumn()
@@ -28,7 +28,7 @@ export class Posts{
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @Column('int', { name: 'UserId', nullable: false })
+  @Column('int', { name: 'userId' })
   UserId: number | null;
 
   // @ManyToOne(()=>User,(users)=>users.id,{

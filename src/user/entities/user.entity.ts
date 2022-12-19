@@ -8,7 +8,7 @@ import { Column,
 } from "typeorm";
 
 
-@Entity({ schema: 'example1', name: 'users' })
+@Entity({ schema: 'diary', name: 'user' })
 export class Users{
   @PrimaryGeneratedColumn({type:'int',name:'id'})
   id:number;

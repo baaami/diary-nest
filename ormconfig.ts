@@ -1,5 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Posts } from 'src/post/entities/post.entity';
+import { Contents } from 'src/content/entities/content.entity';
 import { Users } from 'src/user/entities/user.entity';
 import * as dotenv from 'dotenv';
 
@@ -13,7 +13,7 @@ const config:TypeOrmModuleOptions = {
     password:process.env.DB_PASSWORD,
     database:process.env.DB_DATABASE,
     entities:[
-        Posts,
+        Contents,
         Users
     ],
     synchronize : true, // 한번 true한 뒤로는 무조건 false

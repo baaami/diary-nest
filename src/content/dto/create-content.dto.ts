@@ -1,6 +1,6 @@
 import { IsString, IsNumber, IsOptional } from 'class-validator';
 
-export class CreatePostDto {
+export class CreateContentDto {
   @IsString()
   readonly title: string;
 
