@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
@@ -25,6 +25,7 @@ export class ContentController {
     }
 
     @Delete(':id')
+    @HttpCode(204)
     delete(@Param('id') contentId: number) {
         return this.contentService.DeleteOne(contentId);
     }    

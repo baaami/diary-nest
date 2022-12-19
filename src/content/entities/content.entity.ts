@@ -17,7 +17,7 @@ export class Contents{
   title:string;  
 
   @Column('varchar', {name:'body', length:100})
-  contents:string;  
+  body:string;  
 
   @CreateDateColumn()
   createdAt: Date;
@@ -29,7 +29,7 @@ export class Contents{
   deletedAt: Date | null;
 
   @Column('int', { name: 'userId' })
-  UserId: number | null;
+  userId: number | null;
 
   // @ManyToOne(()=>User,(users)=>users.id,{
   //     onDelete: 'SET NULL',
