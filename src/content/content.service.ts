@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Contents } from 'src/content/entities/content.entity';
-import { InsertResult, UpdateResult, Repository } from 'typeorm';
+import { InsertResult, UpdateResult, Repository, EntityManager } from 'typeorm';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
 
 @Injectable()
 export class ContentService {
   constructor(
-    @InjectRepository(Contents) private ContentRepository: Repository<Contents>
+    @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
+    @InjectEntityManager() private ContentManager: EntityManager
   ) {}
 
   async findOne(contentId: number): Promise<Contents> {
@@ -16,6 +17,15 @@ export class ContentService {
     const content = await this.ContentRepository.findOneBy({ "id": contentId });
 
     return content
+  }
+
+  async findList(userId: number) {
+    const content = await this.ContentRepository
+    .createQueryBuilder('contents')
+    .leftJoinAndSelect('contents.userId', 'user.id')
+    .getMany();
+
+    return content 
   }
 
   async writeOne(createContentDto: CreateContentDto): Promise<InsertResult> {

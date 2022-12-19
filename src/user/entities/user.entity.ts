@@ -2,10 +2,12 @@ import { Column,
   CreateDateColumn, 
   DeleteDateColumn, 
   Entity, 
+  JoinColumn, 
   OneToMany, 
   PrimaryGeneratedColumn, 
   UpdateDateColumn 
 } from "typeorm";
+import { Contents } from "src/content/entities/content.entity";
 
 
 @Entity({ schema: 'diary', name: 'user' })
@@ -31,8 +33,10 @@ export class Users{
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  // @OneToMany(
-  //     () => Post, (posts)=>posts.id
-  // )
-  // OwnedUserPosts:Post[]
+  @OneToMany(type  => Contents, content => content.id)
+  contents:Contents[]
 }
+
+
+// @OneToMany(type => Photo, photo => photo.user)
+// photos: Photo[]

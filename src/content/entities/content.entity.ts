@@ -7,6 +7,7 @@ import { Column,
   PrimaryGeneratedColumn, 
   UpdateDateColumn 
 } from "typeorm";
+import { Users } from "src/user/entities/user.entity";
 
 @Entity({ schema: 'diary', name: 'contents' })
 export class Contents{
@@ -28,13 +29,7 @@ export class Contents{
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @Column('int', { name: 'userId' })
+  @ManyToOne(() => Users)
+  @JoinColumn([{ name: 'userId'}])
   userId: number | null;
-
-  // @ManyToOne(()=>User,(users)=>users.id,{
-  //     onDelete: 'SET NULL',
-  //     onUpdate: 'CASCADE',
-  // })
-  // @JoinColumn([{ name: 'postUserId', referencedColumnName: 'id' }])
-  // PostUserId: User;
 }

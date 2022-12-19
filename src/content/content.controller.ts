@@ -14,6 +14,11 @@ export class ContentController {
         return this.contentService.findOne(contentId);
     }
 
+    @Get('/list/:id')
+    list(@Param('id') userId: number) {
+        return this.contentService.findList(userId);
+    }
+
     @Post()
     write(@Body() createContentDto: CreateContentDto) {
         return this.contentService.writeOne(createContentDto);
