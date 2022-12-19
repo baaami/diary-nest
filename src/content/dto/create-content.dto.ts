@@ -6,7 +6,4 @@ export class CreateContentDto {
 
   @IsString()
   readonly contents: string;
-
-  @IsNumber()
-  readonly UserId: number;
 }

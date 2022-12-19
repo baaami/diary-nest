@@ -29,7 +29,6 @@ export class ContentService {
   }
 
   async writeOne(createContentDto: CreateContentDto): Promise<InsertResult> {
-    console.log(createContentDto)
     const content = await this.ContentRepository.insert(createContentDto);
     return content
   }
