@@ -10,7 +10,7 @@ import { Column,
 import { Contents } from "src/content/entities/content.entity";
 
 
-@Entity({ schema: 'diary', name: 'user' })
+@Entity({ schema: 'diary', name: 'users' })
 export class Users{
   @PrimaryGeneratedColumn({type:'int',name:'id'})
   id:number;
