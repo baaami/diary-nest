@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
 import { UserService } from './user/user.service';
@@ -11,6 +11,7 @@ import { Users } from './user/entities/user.entity';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { JwtMiddleWare } from './middleware/jwt.middleware';
 
 @Module({
   imports: [
@@ -19,10 +20,18 @@ import { UserModule } from './user/user.module';
     ),
     TypeOrmModule.forRoot(ormconfig),
     AuthModule,
-    UserModule
+    UserModule,
+    AuthModule,
   ],
   controllers: [ContentController, UserController, AuthController],
   providers: [ContentService, UserService, AuthService],
 })
-export class AppModule {}
- 
+
+export class AppModule implements NestModule {
+  // TODO : include or exclude 확인
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+    .apply(JwtMiddleWare)
+    .exclude({ path: 'login', method: RequestMethod.ALL})
+  }
+}
