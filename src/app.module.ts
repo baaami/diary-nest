@@ -32,6 +32,6 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
     .apply(JwtMiddleWare)
-    .exclude({ path: 'login', method: RequestMethod.ALL})
+    .exclude({ path: 'auth', method: RequestMethod.ALL})
   }
 }

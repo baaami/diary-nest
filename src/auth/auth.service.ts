@@ -4,6 +4,31 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/user/entities/user.entity';
 import { UserController } from 'src/user/user.controller';
 import { Repository } from 'typeorm';
+import qs from 'querystring'
+import axios, { AxiosResponse } from 'axios';
+import { KakaoServerResponse } from 'src/common/entities/common.entity';
+
+function GetAccessToken(permissionCode: string): [boolean, string] {
+  const bRtn: boolean = false
+
+  const oTokenFromkakao: Promise<AxiosResponse<KakaoServerResponse, string>> = axios({
+    method: 'POST',
+    url: 'https://kauth.kakao.com/oauth/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    data: qs.stringify({
+      grant_type: 'authorization_code',
+      client_id: process.env.KAKAO_ID,
+      redirect_uri: process.env.KAKAO_CALLBACK_URL,
+      code: permissionCode,
+    }),
+  })
+
+  const {access_token} = oTokenFromkakao.data;
+
+  return [bRtn, access_token]
+}
 
 @Injectable()
 export class AuthService {
@@ -24,8 +49,12 @@ export class AuthService {
     }
   }
 
-  async kakaologin(access_token: string) {
+  async kakaologin(permissionCode: string) {
     const email = "lgh121546@naver.com"
+
+    // 0. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
+    const [ok, token] = GetAccessToken(permissionCode)
+
     // 1. access_token 유효성 검사
 
     // 2. access_token 유저 확인
@@ -36,7 +65,6 @@ export class AuthService {
 
     let user :Users
     user.email = email
-
 
     const payload = { email: user.email };
     return {
