@@ -2,16 +2,14 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/user/entities/user.entity';
-import { UserController } from 'src/user/user.controller';
 import { Repository } from 'typeorm';
 import qs from 'querystring'
 import axios, { AxiosResponse } from 'axios';
-import { KakaoServerResponse } from 'src/common/entities/common.entity';
+import { KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
 
-function GetAccessToken(permissionCode: string): [boolean, string] {
+async function GetAccessToken(permissionCode: string): Promise<[boolean, string]>{
   const bRtn: boolean = false
-
-  const oTokenFromkakao: Promise<AxiosResponse<KakaoServerResponse, string>> = axios({
+  const ResKakako: AxiosResponse<any, any>  = await axios({
     method: 'POST',
     url: 'https://kauth.kakao.com/oauth/token',
     headers: {
@@ -25,10 +23,28 @@ function GetAccessToken(permissionCode: string): [boolean, string] {
     }),
   })
 
-  const {access_token} = oTokenFromkakao.data;
+  const ResData: KakaoServerResponse = ResKakako.data;
+  const access_token: string = ResData.data.access_token
 
   return [bRtn, access_token]
 }
+
+async function GetUserData(access_token :string): Promise<[boolean, string]> {
+  const bRtn: boolean = false
+  const ResKakako: AxiosResponse<any, any>  = await axios({
+    method: 'post',
+    url: 'https://kapi.kakao.com/v2/user/me',
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  })
+
+  const ResData: KakaoServerUserData = ResKakako.data;
+
+  return [bRtn, ResData.email]
+}
+
+
 
 @Injectable()
 export class AuthService {
@@ -51,13 +67,18 @@ export class AuthService {
 
   async kakaologin(permissionCode: string) {
     const email = "lgh121546@naver.com"
-
+    let user_email: string;
     // 0. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
-    const [ok, token] = GetAccessToken(permissionCode)
-
-    // 1. access_token 유효성 검사
+    let [ok, token] = await GetAccessToken(permissionCode)
+    if(!ok) {
+      throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED)
+    }
 
     // 2. access_token 유저 확인
+    [ok, user_email] = await GetUserData(token)
+    if(!ok) {
+      throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED)
+    }
 
     // 3. 회원/비회원에 따른 처리 로직
 

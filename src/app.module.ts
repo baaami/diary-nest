@@ -18,6 +18,7 @@ import { ContentModule } from './content/content.module';
   imports: [
     AuthModule,
     ContentModule,
+    UserModule,
     TypeOrmModule.forFeature(
       [Contents, Users]
     ),
