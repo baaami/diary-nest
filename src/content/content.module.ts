@@ -7,4 +7,4 @@ import { ContentService } from './content.service';
   providers: [ContentService],
 })
 
-export class PostModule {}
+export class ContentModule {}

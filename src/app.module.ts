@@ -12,19 +12,19 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
+    AuthModule,
+    ContentModule,
     TypeOrmModule.forFeature(
       [Contents, Users]
     ),
     TypeOrmModule.forRoot(ormconfig),
-    AuthModule,
-    UserModule,
-    AuthModule,
   ],
-  controllers: [ContentController, UserController, AuthController],
-  providers: [ContentService, UserService, AuthService],
+  controllers: [],
+  providers: [],
 })
 
 export class AppModule implements NestModule {
