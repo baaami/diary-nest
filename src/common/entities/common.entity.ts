@@ -5,3 +5,7 @@ export interface KakaoServerResponse {
 export interface KakaoServerData {
     access_token: string
 }
+
+export interface KakaoServerUserData {
+    email: string
+}
