@@ -9,23 +9,18 @@ import { ContentController } from './content/content.controller';
 import { Contents } from './content/entities/content.entity';
 import { Users } from './user/entities/user.entity';
 import { AuthService } from './auth/auth.service';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
-import { ContentModule } from './content/content.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    AuthModule,
-    ContentModule,
-    UserModule,
     TypeOrmModule.forFeature(
       [Contents, Users]
     ),
     TypeOrmModule.forRoot(ormconfig),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AuthController, UserController, ContentController],
+  providers: [AuthService, UserService, ContentService, JwtService],
 })
 
 export class AppModule implements NestModule {

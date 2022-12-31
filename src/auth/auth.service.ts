@@ -3,12 +3,13 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
-import qs from 'querystring'
+import * as qs from 'qs'
 import axios, { AxiosResponse } from 'axios';
-import { KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
+import { KakaoServerData, KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
 
 async function GetAccessToken(permissionCode: string): Promise<[boolean, string]>{
-  const bRtn: boolean = false
+  let bRtn: boolean = true
+  let ResData: KakaoServerData
   const ResKakako: AxiosResponse<any, any>  = await axios({
     method: 'POST',
     url: 'https://kauth.kakao.com/oauth/token',
@@ -23,25 +24,34 @@ async function GetAccessToken(permissionCode: string): Promise<[boolean, string]
     }),
   })
 
-  const ResData: KakaoServerResponse = ResKakako.data;
-  const access_token: string = ResData.data.access_token
+  if(!ResKakako.data) bRtn = false
+  else ResData = ResKakako.data;
+
+  const access_token: string = ResData.access_token
 
   return [bRtn, access_token]
 }
 
 async function GetUserData(access_token :string): Promise<[boolean, string]> {
-  const bRtn: boolean = false
+  let bRtn: boolean = true
+  let ResData: KakaoServerUserData
   const ResKakako: AxiosResponse<any, any>  = await axios({
-    method: 'post',
+    method: 'get',
     url: 'https://kapi.kakao.com/v2/user/me',
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
+    params: {
+      property_keys: ["kakao_account.profile"],
+    },
   })
 
-  const ResData: KakaoServerUserData = ResKakako.data;
+  if(!ResKakako.data) bRtn = false
+  else ResData = ResKakako.data;
 
-  return [bRtn, ResData.email]
+  console.log("ResData: ", ResData)
+
+  return [bRtn, ResData.kakao_account.email]
 }
 
 
@@ -84,12 +94,10 @@ export class AuthService {
 
     // 4. user email을 기반으로 토큰 생성
 
-    let user :Users
-    user.email = email
-
-    const payload = { email: user.email };
+    const payload = { email: user_email };
+    console.log("payload: ", payload)
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY }),
     };
   }
 }
