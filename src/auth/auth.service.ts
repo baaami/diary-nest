@@ -94,10 +94,11 @@ export class AuthService {
 
     // 4. user email을 기반으로 토큰 생성
 
-    const payload = { email: user_email };
-    console.log("payload: ", payload)
+    const user = { email: user_email, nickname: "test" };
+    console.log("user: ", user)
     return {
-      access_token: this.jwtService.sign(payload, { secret: process.env.JWT_SECRET_KEY }),
+      token: this.jwtService.sign(user, { secret: process.env.JWT_SECRET_KEY }),
+      user: user,
     };
   }
 }
