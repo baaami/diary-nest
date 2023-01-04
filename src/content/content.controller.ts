@@ -14,9 +14,14 @@ export class ContentController {
         return this.contentService.findOne(contentId);
     }
 
+    @Get('/list')
+    list() {
+        return this.contentService.findList();
+    }
+
     @Get('/list/:id')
-    list(@Param('id') userId: number) {
-        return this.contentService.findList(userId);
+    listUser(@Param('id') userId: number) {
+        return this.contentService.findUserList(userId);
     }
 
     @Post()

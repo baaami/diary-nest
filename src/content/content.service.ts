@@ -13,16 +13,28 @@ export class ContentService {
   ) {}
 
   async findOne(contentId: number): Promise<Contents> {
-    console.log("hello")
-    const content = await this.ContentRepository.findOneBy({ "id": contentId });
-
+    const content = await this.ContentRepository
+      .createQueryBuilder('contents')
+      .leftJoinAndSelect('contents.userId', 'user.id')
+      .where({"id": contentId})
+      .getOne();
     return content
   }
 
-  async findList(userId: number) {
+  async findList() {
     const content = await this.ContentRepository
     .createQueryBuilder('contents')
     .leftJoinAndSelect('contents.userId', 'user.id')
+    .getMany();
+
+    return content 
+  }
+
+  async findUserList(userId: number) {
+    const content = await this.ContentRepository
+    .createQueryBuilder('contents')
+    .leftJoinAndSelect('contents.userId', 'user.id')
+    .where({'userId': userId})
     .getMany();
 
     return content 
