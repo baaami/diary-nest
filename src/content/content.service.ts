@@ -45,18 +45,8 @@ export class ContentService {
     return content
   }
 
-  async uploadFiles(files: Array<Express.Multer.File>) {
-    const result = [];
-
-    files.forEach((file) => {
-      const res = {
-        originalname: file.originalname,
-        filename: file.filename
-      };
-      result.push(res);
-    });
-
-    return result;
+  async uploadFiles(files: {images?: Express.Multer.File[]}) {
+    console.log("files: ", files )
   }
 
   async writeWithUploadFiles(createContentDto: CreateContentDto, files: Array<Express.Multer.File>) {
