@@ -45,6 +45,29 @@ export class ContentService {
     return content
   }
 
+  async uploadFiles(files: {images?: Express.Multer.File[]}) {
+    console.log("files: ", files )
+  }
+
+  async writeWithUploadFiles(createContentDto: CreateContentDto, files: Array<Express.Multer.File>) {
+    const result = [];
+
+    files.forEach((file) => {
+      console.log("file: ", file)
+      const res = {
+        originalname: file.originalname,
+        filename: file.filename
+      };
+      result.push(res);
+    });
+    
+    // TODO : image path 받아오기
+    const content = await this.ContentRepository.insert(createContentDto);
+    return content
+
+    return result;
+  }
+
   async UpdateOne(updateContentDto: UpdateContentDto, contentId: number): Promise<UpdateResult> {
     const content = await this.ContentRepository.update({"id": contentId}, updateContentDto);
     return content
