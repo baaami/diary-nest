@@ -30,6 +30,6 @@ export class Contents{
   deletedAt: Date | null;
 
   @ManyToOne(() => Users)
-  @JoinColumn([{ name: 'userId'}])
+  @JoinColumn([{ name: 'user'}])
   userId: number | null;
 }

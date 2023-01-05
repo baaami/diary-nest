@@ -23,10 +23,7 @@ export class Images{
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date | null;
-
   @ManyToOne(() => Contents)
-  @JoinColumn([{ name: 'contentId'}])
-  contentId: number;
+  @JoinColumn([{ name: 'content_id'}])
+  contentId: number | null;
 }
