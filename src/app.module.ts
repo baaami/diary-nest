@@ -1,4 +1,5 @@
 import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
 import { UserService } from './user/user.service';
@@ -11,6 +12,7 @@ import { Users } from './user/entities/user.entity';
 import { AuthService } from './auth/auth.service';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -18,6 +20,9 @@ import { JwtService } from '@nestjs/jwt';
       [Contents, Users]
     ),
     TypeOrmModule.forRoot(ormconfig),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'upload'),
+    }),
   ],
   controllers: [AuthController, UserController, ContentController],
   providers: [AuthService, UserService, ContentService, JwtService],

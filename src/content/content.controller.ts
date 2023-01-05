@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/lib/multerOption';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
@@ -27,6 +30,23 @@ export class ContentController {
     @Post()
     write(@Body() createContentDto: CreateContentDto) {
         return this.contentService.writeOne(createContentDto);
+    }
+
+    @UseInterceptors(FileInterceptor('images', {
+        storage: diskStorage({
+          destination: './upload',
+          filename: editFileName
+        }),
+        fileFilter: imageFileFilter
+    }))
+    @Post('/image')
+    image(@UploadedFiles() files: Array<Express.Multer.File>) {
+        return this.contentService.uploadFiles(files);
+    }
+
+    @Post('/imageWithContent')
+    writewithImage(@Body() createContentDto: CreateContentDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+        return this.contentService.writeWithUploadFiles( createContentDto, files);
     }
     
     @Patch(':id')
