@@ -14,8 +14,29 @@ export class Images{
   @PrimaryGeneratedColumn({type:'int',name:'id'})
   id:number;
 
-  @Column('varchar', {name:'imagePath', length:100})
-  imagePath:string;  
+  @Column('varchar', {name:'filename', length:100})
+  filename:string;
+
+  @Column('varchar', {name:'path', length:100})
+  path:string;
+
+  @Column('varchar', {name:'fieldname', length:100})
+  fieldname:string;
+
+  @Column('varchar', {name:'originalname', length:100})
+  originalname:string;
+
+  @Column('varchar', {name:'encoding', length:100})
+  encoding:string;
+
+  @Column('varchar', {name:'mimetype', length:100})
+  mimetype:string;
+
+  @Column('varchar', {name:'destination', length:100})
+  destination:string;
+
+  @Column('int',{name:'size'})
+  size:number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -13,16 +13,20 @@ import { AuthService } from './auth/auth.service';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
 import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
-
+import { MulterModule } from '@nestjs/platform-express';
+import { Images } from './common/entities/image.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature(
-      [Contents, Users]
+      [Contents, Users, Images]
     ),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'upload'),
+      rootPath: join(__dirname, '../../', 'upload')
     }),
+    MulterModule.register({
+      dest: "./upload"
+    })
   ],
   controllers: [AuthController, UserController, ContentController],
   providers: [AuthService, UserService, ContentService, JwtService],

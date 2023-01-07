@@ -34,22 +34,17 @@ export class ContentController {
 
     @Post('/image')
     @UseInterceptors(FileFieldsInterceptor([
-        { name: 'images', maxCount: 2 }
+        { name: 'images', maxCount: 5 }
     ]))
     image(@UploadedFiles() files: {images?: Express.Multer.File[]}) {
-        console.log("files??: ", files)
         return this.contentService.uploadFiles(files);
     }
 
     @Post('/imageWithContent')
-    @UseInterceptors(FileInterceptor('files', {
-        storage: diskStorage({
-          destination: './upload',
-          filename: editFileName
-        }),
-        fileFilter: imageFileFilter
-    }))    
-    writewithImage(@Body() createContentDto: CreateContentDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'images', maxCount: 2 }
+    ]))    
+    writewithImage(@Body() createContentDto: CreateContentDto, @UploadedFiles() files: {images?: Express.Multer.File[]}) {
         return this.contentService.writeWithUploadFiles( createContentDto, files);
     }
     
