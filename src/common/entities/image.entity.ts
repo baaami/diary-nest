@@ -44,7 +44,6 @@ export class Images{
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Contents)
-  @JoinColumn([{ name: 'content_id'}])
+  @ManyToOne(type => Contents, Contents => Contents.imagesId)
   contentId: number | null;
 }

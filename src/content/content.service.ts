@@ -21,6 +21,13 @@ export class ContentService {
       .leftJoinAndSelect('contents.userId', 'user.id')
       .where({"id": contentId})
       .getOne();
+
+      // TODO : 아래 로직 사용
+      // const contenttest = await this.ContentRepository
+      // .createQueryBuilder('contents')
+      // .leftJoinAndSelect('contents.imagesId', 'contentId')
+      // .getMany();
+
     return content
   }
 

@@ -4,10 +4,12 @@ import { Column,
   Entity, 
   JoinColumn, 
   ManyToOne, 
+  OneToMany, 
   PrimaryGeneratedColumn, 
   UpdateDateColumn 
 } from "typeorm";
 import { Users } from "src/user/entities/user.entity";
+import { Images } from "src/common/entities/image.entity";
 
 @Entity({ schema: 'diary', name: 'contents' })
 export class Contents{
@@ -32,4 +34,7 @@ export class Contents{
   @ManyToOne(() => Users)
   @JoinColumn([{ name: 'user'}])
   userId: number | null;
+
+  @OneToMany(type => Images, Images => Images.contentId)
+  imagesId: string;
 }
