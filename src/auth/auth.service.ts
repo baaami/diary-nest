@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import * as qs from 'qs'
 import axios, { AxiosResponse } from 'axios';
 import { KakaoServerData, KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 
 async function GetAccessToken(permissionCode: string): Promise<[boolean, string]>{
   let bRtn: boolean = true
@@ -76,7 +77,6 @@ export class AuthService {
   }
 
   async kakaologin(permissionCode: string) {
-    const email = "lgh121546@naver.com"
     let user_email: string;
     // 0. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     let [ok, token] = await GetAccessToken(permissionCode)
@@ -89,13 +89,23 @@ export class AuthService {
     if(!ok) {
       throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED)
     }
-
-    // 3. 회원/비회원에 따른 처리 로직
-
+    
+    const user: CreateUserDto = { email: user_email};
+    
+    // 3.1 회원, 비회원 확인
+    // email이 db에 존재하는지 확인
+    const UserWithRepository = await this.UserRepository.findOneBy({"email" : user_email});
+    if(UserWithRepository) {
+      console.log("UserWithRepository: ", UserWithRepository)
+    }
+    else {
+      // c_user : create_user
+      // u_user : update_user
+      // d_user : delete_user
+      const c_user = await this.UserRepository.save(user);      
+    }
+    
     // 4. user email을 기반으로 토큰 생성
-
-    const user = { email: user_email, nickname: "test" };
-    console.log("user: ", user)
     return {
       token: this.jwtService.sign(user, { secret: process.env.JWT_SECRET_KEY }),
       user: user,

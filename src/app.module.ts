@@ -29,7 +29,7 @@ import { Images } from './common/entities/image.entity';
     })
   ],
   controllers: [AuthController, UserController, ContentController],
-  providers: [AuthService, UserService, ContentService, JwtService],
+  providers: [AuthService, UserService, ContentService, JwtMiddleWare,JwtService],
 })
 
 export class AppModule implements NestModule {
@@ -38,5 +38,9 @@ export class AppModule implements NestModule {
     consumer
     .apply(JwtMiddleWare)
     .exclude({ path: 'auth', method: RequestMethod.ALL})
+    .forRoutes({
+      path: '*', // 특정 path 혹은 method에 대해서만 적용 시킬수도 있다.
+      method: RequestMethod.ALL,           
+    })
   }
 }

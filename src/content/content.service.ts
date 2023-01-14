@@ -19,14 +19,9 @@ export class ContentService {
     const content = await this.ContentRepository
       .createQueryBuilder('contents')
       .leftJoinAndSelect('contents.userId', 'user.id')
+      .leftJoinAndSelect('contents.image', 'content')
       .where({"id": contentId})
       .getOne();
-
-      // TODO : 아래 로직 사용
-      // const contenttest = await this.ContentRepository
-      // .createQueryBuilder('contents')
-      // .leftJoinAndSelect('contents.imagesId', 'contentId')
-      // .getMany();
 
     return content
   }
@@ -35,6 +30,7 @@ export class ContentService {
     const content = await this.ContentRepository
     .createQueryBuilder('contents')
     .leftJoinAndSelect('contents.userId', 'user.id')
+    .leftJoinAndSelect('contents.image', 'content')
     .getMany();
 
     return content 

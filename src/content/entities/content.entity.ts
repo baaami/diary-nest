@@ -35,6 +35,6 @@ export class Contents{
   @JoinColumn([{ name: 'user'}])
   userId: number | null;
 
-  @OneToMany(type => Images, Images => Images.contentId)
-  imagesId: string;
+  @OneToMany(type => Images, images => images.content)
+  image: Images;
 }

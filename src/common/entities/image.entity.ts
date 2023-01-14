@@ -44,6 +44,6 @@ export class Images{
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(type => Contents, contents => contents.imagesId)
-  contentId: number | null;
+  @ManyToOne(type => Contents, contents => contents.image)
+  content: Contents;
 }

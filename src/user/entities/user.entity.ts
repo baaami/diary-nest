@@ -8,6 +8,7 @@ import { Column,
   UpdateDateColumn 
 } from "typeorm";
 import { Contents } from "src/content/entities/content.entity";
+import { IsOptional } from "class-validator";
 
 
 @Entity({ schema: 'diary', name: 'users' })
@@ -18,10 +19,10 @@ export class Users{
   @Column('varchar', {name:'email', unique:true ,length:30})
   email:string;  
 
-  @Column('varchar',{name:'name', length:20})
+  @Column('varchar',{name:'name', length:20, nullable: true})
   name:string;
 
-  @Column('int',{name:'age'})
+  @Column('int',{name:'age', nullable: true})
   age:number;
 
   @CreateDateColumn()
