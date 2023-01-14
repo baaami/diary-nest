@@ -18,7 +18,7 @@ export class JwtMiddleWare implements NestMiddleware<Request, Response> {
       try {
         // 토큰을 object로 변경한다.
         const decoded = this.jwtService.verify(token.toString());
-        // email_id 가 들어있는지 확인 
+        // email_id 가 들어있는지 확인
         if (typeof decoded === 'object' && decoded.hasOwnProperty('email')) {
 
         const member = await this.userRepository.findOneBy({'email': decoded.email});

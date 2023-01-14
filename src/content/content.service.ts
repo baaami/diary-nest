@@ -12,12 +12,11 @@ export class ContentService {
   constructor(
     @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
     @InjectRepository(Images) private ImageRepository: Repository<Images>,
-    @InjectEntityManager() private ContentManager: EntityManager
+    @InjectEntityManager() private ContentManager: EntityManager,
   ) {}
 
   async findOne(contentId: number): Promise<Contents> {
-    const content = await this.ContentRepository
-      .createQueryBuilder('contents')
+    const content = await this.ContentRepository.createQueryBuilder('contents')
       .leftJoinAndSelect('contents.userId', 'user.id')
       .leftJoinAndSelect('contents.image', 'content')
       .where({"id": contentId})
@@ -33,65 +32,75 @@ export class ContentService {
     .leftJoinAndSelect('contents.image', 'content')
     .getMany();
 
-    return content 
+    return content;
   }
 
   async findUserList(userId: number) {
-    const content = await this.ContentRepository
-    .createQueryBuilder('contents')
-    .leftJoinAndSelect('contents.userId', 'user.id')
-    .where({'userId': userId})
-    .getMany();
+    const content = await this.ContentRepository.createQueryBuilder('contents')
+      .leftJoinAndSelect('contents.userId', 'user.id')
+      .where({ userId: userId })
+      .getMany();
 
-    return content 
+    return content;
   }
 
-  async writeOne(createContentDto: CreateContentDto): Promise<(CreateContentDto & Contents)> {
+  async writeOne(
+    createContentDto: CreateContentDto,
+  ): Promise<CreateContentDto & Contents> {
     const content = await this.ContentRepository.save(createContentDto);
-    return content
+    return content;
   }
 
-  async uploadFiles(files: {images?: Express.Multer.File[]}) {
-    const result = []
-    const {images} = files;
+  async uploadFiles(files: { images?: Express.Multer.File[] }) {
+    const result = [];
+    const { images } = files;
 
     images.forEach((image: CreateImageDto) => {
-      console.log("image: ", image)
+      console.log('image: ', image);
       // 이미지 db에 저장
-      this.ImageRepository.insert(image)
+      this.ImageRepository.insert(image);
       result.push(image);
     });
 
     // content id 추가
 
-    return result
+    return result;
   }
 
-  async writeWithUploadFiles(createContentDto: CreateContentDto, files: {images?: Express.Multer.File[]}) {
-    const result = []
-    const {images} = files;
-    
+  async writeWithUploadFiles(
+    createContentDto: CreateContentDto,
+    files: { images?: Express.Multer.File[] },
+  ) {
+    const result = [];
+    const { images } = files;
+
     const content = await this.ContentRepository.save(createContentDto);
 
-    console.log(content)
+    console.log(content);
 
     images.forEach((image: Partial<CreateImageDto>) => {
       image['contentId'] = content.id;
       // 이미지 db에 저장
-      this.ImageRepository.insert(image)
+      this.ImageRepository.insert(image);
       result.push(image);
     });
 
-    return result
+    return result;
   }
 
-  async UpdateOne(updateContentDto: UpdateContentDto, contentId: number): Promise<UpdateResult> {
-    const content = await this.ContentRepository.update({"id": contentId}, updateContentDto);
-    return content
+  async UpdateOne(
+    updateContentDto: UpdateContentDto,
+    contentId: number,
+  ): Promise<UpdateResult> {
+    const content = await this.ContentRepository.update(
+      { id: contentId },
+      updateContentDto,
+    );
+    return content;
   }
 
   async DeleteOne(contentId: number) {
-    const content = await this.ContentRepository.delete({"id": contentId})
-    return content
+    const content = await this.ContentRepository.delete({ id: contentId });
+    return content;
   }
 }
