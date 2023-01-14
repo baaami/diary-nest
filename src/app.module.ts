@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UserController } from './user/user.controller';
 import { AuthController } from './auth/auth.controller';
@@ -17,26 +22,23 @@ import { MulterModule } from '@nestjs/platform-express';
 import { Images } from './common/entities/image.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature(
-      [Contents, Users, Images]
-    ),
+    TypeOrmModule.forFeature([Contents, Users, Images]),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../', 'upload')
+      rootPath: join(__dirname, '../../', 'upload'),
     }),
     MulterModule.register({
-      dest: "./upload"
-    })
+      dest: './upload',
+    }),
   ],
   controllers: [AuthController, UserController, ContentController],
   providers: [AuthService, UserService, ContentService, JwtService],
 })
-
 export class AppModule implements NestModule {
   // TODO : include or exclude 확인
   configure(consumer: MiddlewareConsumer) {
     consumer
-    .apply(JwtMiddleWare)
-    .exclude({ path: 'auth', method: RequestMethod.ALL})
+      .apply(JwtMiddleWare)
+      .exclude({ path: 'auth', method: RequestMethod.ALL });
   }
 }

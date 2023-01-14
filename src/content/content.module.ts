@@ -10,5 +10,4 @@ import { join } from 'path';
   controllers: [ContentController],
   providers: [ContentService],
 })
-
 export class ContentModule {}
