@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UploadedFiles,
@@ -26,7 +27,7 @@ export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   @Get(':id')
-  read(@Param('id') contentId: number) {
+  read(@Param('id', ParseIntPipe) contentId: number) {
     return this.contentService.findOne(contentId);
   }
 
@@ -34,9 +35,9 @@ export class ContentController {
   list() {
     return this.contentService.findList();
   }
-
+  
   @Get('/list/:id')
-  listUser(@Param('id') userId: number) {
+  listUser(@Param('id', ParseIntPipe) userId: number) {
     return this.contentService.findUserList(userId);
   }
 
@@ -63,14 +64,14 @@ export class ContentController {
   @Patch(':id')
   update(
     @Body() updateContentDto: UpdateContentDto,
-    @Param('id') contentId: number,
+    @Param('id', ParseIntPipe) contentId: number,
   ) {
     return this.contentService.UpdateOne(updateContentDto, contentId);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  delete(@Param('id') contentId: number) {
+  delete(@Param('id', ParseIntPipe) contentId: number) {
     return this.contentService.DeleteOne(contentId);
   }
 }
