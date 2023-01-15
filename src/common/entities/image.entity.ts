@@ -15,10 +15,10 @@ export class Images {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('varchar', { name: 'filename', length: 100 })
+  @Column('varchar', { name: 'filename', length: 100, nullable: true })
   filename: string;
 
-  @Column('varchar', { name: 'path', length: 100 })
+  @Column('varchar', { name: 'path', length: 100, nullable: true })
   path: string;
 
   @Column('varchar', { name: 'fieldname', length: 100 })
@@ -33,7 +33,7 @@ export class Images {
   @Column('varchar', { name: 'mimetype', length: 100 })
   mimetype: string;
 
-  @Column('varchar', { name: 'destination', length: 100 })
+  @Column('varchar', { name: 'destination', length: 100, nullable: true })
   destination: string;
 
   @Column('int', { name: 'size' })
