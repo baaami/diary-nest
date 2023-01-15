@@ -7,13 +7,14 @@ import * as qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
 import { KakaoServerData, KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 
 async function GetAccessToken(
   permissionCode: string,
 ): Promise<[boolean, string]> {
   let bRtn: boolean = true;
-  let ResData: KakaoServerData;
-  const ResKakako: AxiosResponse<any, any> = await axios({
+  let kakaoServerData: KakaoServerData;
+  const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
     method: 'POST',
     url: 'https://kauth.kakao.com/oauth/token',
     headers: {
@@ -27,18 +28,18 @@ async function GetAccessToken(
     }),
   });
 
-  if (!ResKakako.data) bRtn = false;
-  else ResData = ResKakako.data;
+  if (!kakaoServerTotalData.data) bRtn = false;
+  else kakaoServerData = kakaoServerTotalData.data;
 
-  const access_token: string = ResData.access_token;
+  const access_token: string = kakaoServerData.access_token;
 
   return [bRtn, access_token];
 }
 
 async function GetUserData(access_token: string): Promise<[boolean, string]> {
   let bRtn: boolean = true;
-  let ResData: KakaoServerUserData;
-  const ResKakako: AxiosResponse<any, any> = await axios({
+  let kakaoServerData: KakaoServerUserData;
+  const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
     method: 'get',
     url: 'https://kapi.kakao.com/v2/user/me',
     headers: {
@@ -49,12 +50,10 @@ async function GetUserData(access_token: string): Promise<[boolean, string]> {
     },
   });
 
-  if (!ResKakako.data) bRtn = false;
-  else ResData = ResKakako.data;
+  if (!kakaoServerTotalData.data) bRtn = false;
+  else kakaoServerData = kakaoServerTotalData.data;
 
-  console.log('ResData: ', ResData);
-
-  return [bRtn, ResData.kakao_account.email];
+  return [bRtn, kakaoServerData.kakao_account.email];
 }
 
 @Injectable()
@@ -92,13 +91,16 @@ export class AuthService {
       throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED);
     }
     
-    const user: CreateUserDto = { email: user_email};
+    let user: CreateUserDto | UpdateUserDto = { email: user_email};
     
     // 3.1 회원, 비회원 확인
     // email이 db에 존재하는지 확인
     const UserWithRepository = await this.UserRepository.findOneBy({"email" : user_email});
     if(UserWithRepository) {
+      // 존재할 경우, 존재하는 user data로 전송
       console.log("UserWithRepository: ", UserWithRepository)
+      user = UserWithRepository
+
     }
     else {
       // c_user : create_user
@@ -109,7 +111,7 @@ export class AuthService {
     
     // 4. user email을 기반으로 토큰 생성
     return {
-      token: this.jwtService.sign(user, { secret: process.env.JWT_SECRET_KEY }),
+      token: this.jwtService.sign({user}, { secret: process.env.JWT_SECRET_KEY }),
       user: user,
     };
   }
