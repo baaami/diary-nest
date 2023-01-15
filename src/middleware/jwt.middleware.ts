@@ -17,20 +17,21 @@ export class JwtMiddleWare implements NestMiddleware<Request, Response> {
       try {
         // 토큰을 object로 변경한다.
         const decoded = this.jwtService.verify(token.toString());
-        // email_id 가 들어있는지 확인
-        if (typeof decoded === 'object' && decoded.hasOwnProperty('email')) {
 
-        const member = await this.userRepository.findOneBy({'email': decoded.email});
-        //   const { ok, memberInfo } = await this.userService.findOne();  
-        if (member) req.body['member'] = member;
+        // email_id 가 들어있는지 확인
+        if (typeof decoded === 'object' && decoded.hasOwnProperty('user')) {
+          const member = await this.userRepository.findOneBy({'email': decoded.user.email});
+          //   const { ok, memberInfo } = await this.userService.findOne();  
+          if (member) {
+            req.body['userId'] = member.id;
+            next();
+          }
         }
       } catch (error) {
         console.log(error);
       }
-    }
-    else {
+    } else {
       res.send(401)
     }
-    next();
   }
 }

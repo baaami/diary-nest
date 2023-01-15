@@ -5,8 +5,9 @@ export class CreateContentDto {
   readonly title: string;
 
   @IsString()
-  readonly contents: string;
+  readonly content: string;
 
+  @IsOptional()
   @IsNumber()
   readonly userId: number;
 }

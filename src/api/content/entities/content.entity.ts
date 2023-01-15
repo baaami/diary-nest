@@ -20,8 +20,8 @@ export class Contents {
   @Column('varchar', { name: 'title', length: 30 })
   title: string;
 
-  @Column('varchar', { name: 'body', length: 100 })
-  body: string;
+  @Column('varchar', { name: 'content', length: 100 })
+  content: string;
 
   @CreateDateColumn()
   createdAt: Date;

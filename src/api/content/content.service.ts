@@ -56,7 +56,6 @@ export class ContentService {
     const { images } = files;
 
     images.forEach((image: CreateImageDto) => {
-      console.log('image: ', image);
       // 이미지 db에 저장
       this.ImageRepository.insert(image);
       result.push(image);
