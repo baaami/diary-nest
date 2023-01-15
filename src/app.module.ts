@@ -9,7 +9,7 @@ import * as ormconfig from '../ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
 import { join } from 'path';
-import { MulterModule } from '@nestjs/platform-express';
+
 import { ContentModule } from './api/content/content.module';
 import { AuthModule } from './api/auth/auth.module';
 import { UserModule } from './api/user/user.module';
@@ -23,9 +23,6 @@ import { Users } from './api/user/entities/user.entity';
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../', 'upload'),
-    }),
-    MulterModule.register({
-      dest: './upload',
     }),
   ],
   controllers: [],
