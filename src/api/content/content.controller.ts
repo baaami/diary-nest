@@ -61,7 +61,7 @@ export class ContentController {
   }
 
   @Post('/imageWithContent')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 2 }], {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
     storage: diskStorage({
       destination: './upload',
       filename: editFileName,
