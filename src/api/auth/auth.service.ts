@@ -1,13 +1,13 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/user/entities/user.entity';
+import { Users } from 'src/api/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
 import { KakaoServerData, KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { CreateUserDto } from 'src/api/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 
 async function GetAccessToken(
   permissionCode: string,

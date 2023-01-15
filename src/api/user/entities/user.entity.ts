@@ -7,7 +7,7 @@ import { Column,
   PrimaryGeneratedColumn, 
   UpdateDateColumn 
 } from "typeorm";
-import { Contents } from "src/content/entities/content.entity";
+import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
 
 

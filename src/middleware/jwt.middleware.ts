@@ -2,7 +2,7 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/user/entities/user.entity';
+import { Users } from 'src/api/user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

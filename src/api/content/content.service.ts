@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { CreateImageDto } from 'src/common/dto/create-image.dto';
 import { Images } from 'src/common/entities/image.entity';
-import { Contents } from 'src/content/entities/content.entity';
+import { Contents } from 'src/api/content/entities/content.entity';
 import { InsertResult, UpdateResult, Repository, EntityManager } from 'typeorm';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';

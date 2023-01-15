@@ -10,6 +10,7 @@ import {
   Patch,
   Post,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -17,7 +18,8 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { editFileName, imageFileFilter } from 'src/lib/multerOption';
+import { AuthGuard } from 'src/lib/auth/jwt.guard';
+import { editFileName, imageFileFilter } from 'src/lib/multer/multerOption';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
@@ -26,6 +28,7 @@ import { UpdateContentDto } from './dto/update-content.dto';
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   read(@Param('id', ParseIntPipe) contentId: number) {
     return this.contentService.findOne(contentId);

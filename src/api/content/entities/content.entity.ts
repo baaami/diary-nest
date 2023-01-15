@@ -9,7 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Users } from 'src/user/entities/user.entity';
+import { Users } from 'src/api/user/entities/user.entity';
 import { Images } from 'src/common/entities/image.entity';
 
 @Entity({ schema: 'diary', name: 'contents' })

@@ -10,14 +10,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express';
-import { ContentModule } from './content/content.module';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { TestModule } from './test/test.module';
-import { Users } from './user/entities/user.entity';
+import { ContentModule } from './api/content/content.module';
+import { AuthModule } from './api/auth/auth.module';
+import { UserModule } from './api/user/user.module';
+import { Users } from './api/user/entities/user.entity';
 @Module({
   imports: [
-    TestModule,
     ContentModule,
     UserModule,
     AuthModule,
