@@ -5,24 +5,23 @@ import {
   RequestMethod,
 } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { UserController } from './user/user.controller';
-import { AuthController } from './auth/auth.controller';
-import { UserService } from './user/user.service';
 import * as ormconfig from '../ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ContentService } from './content/content.service';
-import { ContentController } from './content/content.controller';
-import { Contents } from './content/entities/content.entity';
-import { Users } from './user/entities/user.entity';
-import { AuthService } from './auth/auth.service';
 import { JwtMiddleWare } from './middleware/jwt.middleware';
-import { JwtService } from '@nestjs/jwt';
 import { join } from 'path';
 import { MulterModule } from '@nestjs/platform-express';
-import { Images } from './common/entities/image.entity';
+import { ContentModule } from './content/content.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
+import { TestModule } from './test/test.module';
+import { Users } from './user/entities/user.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Contents, Users, Images]),
+    TestModule,
+    ContentModule,
+    UserModule,
+    AuthModule,
+    TypeOrmModule.forFeature([Users]),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../', 'upload'),
@@ -31,8 +30,8 @@ import { Images } from './common/entities/image.entity';
       dest: './upload',
     }),
   ],
-  controllers: [AuthController, UserController, ContentController],
-  providers: [AuthService, UserService, ContentService, JwtMiddleWare,JwtService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule implements NestModule {
   // TODO : include or exclude 확인

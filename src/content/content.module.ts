@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { MulterModule } from '@nestjs/platform-express';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Images } from 'src/common/entities/image.entity';
 import { ContentController } from './content.controller';
 import { ContentService } from './content.service';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
-
+import { Contents } from './entities/content.entity';
 @Module({
-  imports: [],
+  imports: [
+    TypeOrmModule.forFeature([Contents, Images]),
+  ],
   controllers: [ContentController],
   providers: [ContentService],
 })
