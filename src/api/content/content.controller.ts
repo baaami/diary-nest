@@ -18,7 +18,7 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { AuthGuard } from 'src/lib/auth/jwt.guard';
+import { AuthGuard } from 'src/common/guard/auth.guard';
 import { editFileName, imageFileFilter } from 'src/lib/multer/multerOption';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
@@ -30,7 +30,8 @@ export class ContentController {
 
   @UseGuards(AuthGuard)
   @Get(':id')
-  read(@Param('id', ParseIntPipe) contentId: number) {
+  read(@Param('id', ParseIntPipe) contentId: number, @Body('user') testuser: any) {
+    console.log(testuser)
     return this.contentService.findOne(contentId);
   }
 
