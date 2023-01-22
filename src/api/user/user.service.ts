@@ -8,8 +8,8 @@ export class UserService {
   constructor(
     @InjectRepository(Users) private UserRepository: Repository<Users>,
   ) {}
-  async findOne() {
-    const UserWithRepository = await this.UserRepository.findOneBy({ id: 1 });
+  async findOne(userId: number) {
+    const UserWithRepository = await this.UserRepository.findOneBy({ id: userId });
     return UserWithRepository;
   }
 }
