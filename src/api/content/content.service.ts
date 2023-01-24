@@ -55,9 +55,9 @@ export class ContentService {
     const result = [];
     const { images } = files;
 
-    images.forEach((image: CreateImageDto) => {
+    images.forEach((image: Partial<CreateImageDto>) => {
       // 이미지 db에 저장
-      this.ImageRepository.insert(image);
+      this.ImageRepository.save(image);
       result.push(image);
     });
 
@@ -75,12 +75,10 @@ export class ContentService {
 
     const content = await this.ContentRepository.save(createContentDto);
 
-    console.log(content);
-
     images.forEach((image: Partial<CreateImageDto>) => {
       image['contentId'] = content.id;
       // 이미지 db에 저장
-      this.ImageRepository.insert(image);
+      this.ImageRepository.save(image);
       result.push(image);
     });
 
@@ -90,6 +88,7 @@ export class ContentService {
   async UpdateOne(
     updateContentDto: UpdateContentDto,
     contentId: number,
+    files: { images?: Express.Multer.File[] },
   ): Promise<UpdateResult> {
     const content = await this.ContentRepository.update(
       { id: contentId },

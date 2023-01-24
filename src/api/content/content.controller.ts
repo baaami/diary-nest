@@ -28,10 +28,9 @@ import { UpdateContentDto } from './dto/update-content.dto';
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get(':id')
-  read(@Param('id', ParseIntPipe) contentId: number, @Body('user') testuser: any) {
-    console.log(testuser)
+  read(@Param('id', ParseIntPipe) contentId: number) {
     return this.contentService.findOne(contentId);
   }
 
@@ -55,7 +54,7 @@ export class ContentController {
     storage: diskStorage({
       destination: './upload',
       filename: editFileName,
-    })
+    })    
   }))
   image(@UploadedFiles() files: { images?: Express.Multer.File[] }) {
     return this.contentService.uploadFiles(files);
@@ -76,11 +75,18 @@ export class ContentController {
   }
 
   @Patch(':id')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
+    storage: diskStorage({
+      destination: './upload',
+      filename: editFileName,
+    })
+  }))  
   update(
     @Body() updateContentDto: UpdateContentDto,
+    @UploadedFiles() files: { images?: Express.Multer.File[] },
     @Param('id', ParseIntPipe) contentId: number,
   ) {
-    return this.contentService.UpdateOne(updateContentDto, contentId);
+    return this.contentService.UpdateOne(updateContentDto, contentId, files);
   }
 
   @Delete(':id')

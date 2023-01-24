@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Contents } from 'src/api/content/entities/content.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity({ schema: 'diary', name: 'images' })
 export class Images {
@@ -44,6 +45,9 @@ export class Images {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column('int', { name: 'contentId' })
+  contentId: number;
 
   @ManyToOne(type => Contents, contents => contents.image)
   content: Contents;

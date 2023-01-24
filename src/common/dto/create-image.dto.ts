@@ -23,8 +23,9 @@ export class CreateImageDto {
   @IsString()
   readonly path: string;
 
-  // @IsNumber()
-  // readonly contentId: number;
+  @IsOptional()
+  @IsNumber()
+  contentId: number;
 
   @IsNumber()
   readonly size: number;

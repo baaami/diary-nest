@@ -37,6 +37,3 @@ export class Users {
   @OneToMany((type) => Contents, (content) => content.id)
   contents: Contents[];
 }
-
-// @OneToMany(type => Photo, photo => photo.user)
-// photos: Photo[]
