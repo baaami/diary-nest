@@ -1,3 +1,5 @@
+import { Users } from "src/api/user/entities/user.entity";
+
 export interface KakaoServerResponse {
   data: KakaoServerData;
 }
@@ -36,4 +38,8 @@ export interface KakaoServerUserData {
     has_gender: boolean;
     gender_needs_agreement: boolean;
   };
+}
+
+export interface JwtdecodedUser {
+  user: Users
 }

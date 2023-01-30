@@ -9,5 +9,5 @@ export class CreateContentDto {
 
   @IsOptional()
   @IsNumber()
-  readonly userId: number;
+  userId: number;
 }

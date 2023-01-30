@@ -6,6 +6,7 @@ import { Contents } from 'src/api/content/entities/content.entity';
 import { InsertResult, UpdateResult, Repository, EntityManager } from 'typeorm';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
+import { Users } from '../user/entities/user.entity';
 
 @Injectable()
 export class ContentService {
@@ -46,7 +47,10 @@ export class ContentService {
 
   async writeOne(
     createContentDto: CreateContentDto,
+    user: Users,
   ): Promise<CreateContentDto & Contents> {
+    createContentDto.userId = user.id
+
     const content = await this.ContentRepository.save(createContentDto);
     return content;
   }
@@ -61,31 +65,34 @@ export class ContentService {
       result.push(image);
     });
 
-    // content id 추가
-
     return result;
   }
 
-  async writeWithUploadFiles(
+  async Create(
     createContentDto: CreateContentDto,
     files: { images?: Express.Multer.File[] },
+    user: Users,
   ) {
     const result = [];
     const { images } = files;
 
+    createContentDto.userId = user.id
+
     const content = await this.ContentRepository.save(createContentDto);
 
-    images.forEach((image: Partial<CreateImageDto>) => {
-      image['contentId'] = content.id;
-      // 이미지 db에 저장
-      this.ImageRepository.save(image);
-      result.push(image);
-    });
+    if (images.length == 0) {
+      images.forEach((image: Partial<CreateImageDto>) => {
+        image.contentId = content.id;
+        // 이미지 db에 저장
+        this.ImageRepository.save(image);
+        result.push(image);
+      });
+    }
 
     return result;
   }
 
-  async UpdateOne(
+  async Update(
     updateContentDto: UpdateContentDto,
     contentId: number,
     files: { images?: Express.Multer.File[] },

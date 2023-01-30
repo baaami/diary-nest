@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Req,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -23,14 +24,16 @@ import { editFileName, imageFileFilter } from 'src/lib/multer/multerOption';
 import { ContentService } from './content.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
+import { Request } from 'express';
 
 @Controller('content')
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get(':id')
-  read(@Param('id', ParseIntPipe) contentId: number) {
+  read(@Param('id', ParseIntPipe) contentId: number, @Req() req: Request) {
+    console.log(req.body)
     return this.contentService.findOne(contentId);
   }
 
@@ -44,11 +47,16 @@ export class ContentController {
     return this.contentService.findUserList(userId);
   }
 
+  @UseGuards(AuthGuard)
   @Post()
-  write(@Body() createContentDto: CreateContentDto) {
-    return this.contentService.writeOne(createContentDto);
+  write(
+    @Body() createContentDto: CreateContentDto,
+    @Req() req: any
+  ) {
+    return this.contentService.writeOne(createContentDto, req.user);
   }
 
+  @UseGuards(AuthGuard)
   @Post('/image')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
     storage: diskStorage({
@@ -56,22 +64,28 @@ export class ContentController {
       filename: editFileName,
     })    
   }))
-  image(@UploadedFiles() files: { images?: Express.Multer.File[] }) {
+  uploadFiles(
+    @UploadedFiles() files: { images?: Express.Multer.File[] }, 
+    @Req() req: Request,
+  ) {
     return this.contentService.uploadFiles(files);
   }
 
-  @Post('/imageWithContent')
+  @Post('/create')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
     storage: diskStorage({
       destination: './upload',
       filename: editFileName,
     })    
   }))
-  writewithImage(
+  @UseGuards(AuthGuard)
+  create(
     @Body() createContentDto: CreateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
+    @Req() req: any,
   ) {
-    return this.contentService.writeWithUploadFiles(createContentDto, files);
+    console.log(req.user)
+    return this.contentService.Create(createContentDto, files, req.user);
   }
 
   @Patch(':id')
@@ -86,7 +100,7 @@ export class ContentController {
     @UploadedFiles() files: { images?: Express.Multer.File[] },
     @Param('id', ParseIntPipe) contentId: number,
   ) {
-    return this.contentService.UpdateOne(updateContentDto, contentId, files);
+    return this.contentService.Update(updateContentDto, contentId, files);
   }
 
   @Delete(':id')
