@@ -84,7 +84,6 @@ export class ContentController {
     @UploadedFiles() files: { images?: Express.Multer.File[] },
     @Req() req: any,
   ) {
-    console.log(req.user)
     return this.contentService.Create(createContentDto, files, req.user);
   }
 

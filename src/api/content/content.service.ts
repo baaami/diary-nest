@@ -80,13 +80,15 @@ export class ContentService {
 
     const content = await this.ContentRepository.save(createContentDto);
 
-    if (images.length == 0) {
+    if (images.length != 0) {
       images.forEach((image: Partial<CreateImageDto>) => {
         image.contentId = content.id;
         // 이미지 db에 저장
         this.ImageRepository.save(image);
         result.push(image);
       });
+    } else {
+      console.log("image not found")
     }
 
     return result;
