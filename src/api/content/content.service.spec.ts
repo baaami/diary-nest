@@ -1,22 +1,22 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { Users } from '../user/entities/user.entity';
-import { Products } from '../content/entities/content.entity';
+import { Contents } from '../content/entities/content.entity';
 import { Images } from 'src/common/entities/image.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductService } from "./content.service";
+import { ContentService } from "./content.service";
 import * as ormconfig from '../../../ormconfig'
 
-describe('ProductService', () => {
-    let service: ProductService;
+describe('ContentService', () => {
+    let service: ContentService;
     beforeEach(async () => {
       const module: TestingModule = await Test.createTestingModule({
         imports: [
-          TypeOrmModule.forFeature([Users, Products, Images]),
+          TypeOrmModule.forFeature([Users, Contents, Images]),
           TypeOrmModule.forRoot(ormconfig),
         ],
-        providers: [ProductService],
+        providers: [ContentService],
       }).compile();
-      service = module.get<ProductService>(ProductService);
+      service = module.get<ContentService>(ContentService);
     });
   
     it('should be defined', () => {
@@ -26,12 +26,12 @@ describe('ProductService', () => {
     describe('get Content', () => {
         it('should return a content', async () => {
             const result = await service.findOne(6)
-            expect(result).toBeInstanceOf(Products)
+            expect(result).toBeInstanceOf(Contents)
         })
     })
 
     describe('get Content List', () => {
-        it('should return a products', async () => {
+        it('should return a contents', async () => {
             const result = await service.findList()
             expect(result).toBeInstanceOf(Array)
         })

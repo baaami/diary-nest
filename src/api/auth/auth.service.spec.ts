@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 
 import { UserModule } from '../user/user.module';
 import { Users } from '../user/entities/user.entity';
-import { Products } from '../content/entities/content.entity';
+import { Contents } from '../content/entities/content.entity';
 import { Images } from 'src/common/entities/image.entity';
 
 describe('AuthService', () => {
@@ -17,7 +17,7 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forFeature([Users, Products, Images]),
+        TypeOrmModule.forFeature([Users, Contents, Images]),
         TypeOrmModule.forRoot(ormconfig),
         JwtModule.register({
           secret: jwtConstants.secret,
