@@ -22,8 +22,23 @@ export class Users {
   @Column('varchar',{name:'name', length:20, nullable: true})
   name:string;
 
+  @Column('varchar',{name:'nickname', length:20, nullable: true})
+  nickname:string;
+
   @Column('int',{name:'age', nullable: true})
   age:number;
+  
+  @Column('int',{name:'gender', nullable: true})
+  gender:number;
+
+  @Column('varchar',{name:'school', length:20, nullable: true})
+  school:string;
+
+  @Column('varchar',{name:'major', length:50, nullable: true})
+  major:string;
+
+  @Column('int',{name:'studentId', nullable: true})
+  studentId:number;
 
   @CreateDateColumn()
   createdAt: Date;
