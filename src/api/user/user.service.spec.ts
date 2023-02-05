@@ -9,6 +9,8 @@ import { UserController } from './user.controller';
 import * as ormconfig from '../../../ormconfig'
 import { AuthService } from '../auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
+import { Repository, UpdateResult } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 describe('AuthService', () => {
   let service: UserService;
@@ -30,16 +32,31 @@ describe('AuthService', () => {
   describe('Upload User form', () => {
     it('upload user', async () => {
       // given : 테스트를 하기 위한 환경 구성
-      let user: Users;
-      
-      // 1. db 내 가장 이전에 가입한 사용자 획득
-      
+      let user: Users = await service.findlatest();
+      expect(user).toBeDefined();
+
+      let userUpdateInfo :UpdateUserDto = {
+        name: "yoni",
+        nickname: "yonyoni",
+        age: 28,
+        gender: 0,
+        school: "백석대학교",
+        major: "청소년학과",
+        studentId: 201501149
+      }
 
       // when : 테스트 함수 실행
+      await service.update(userUpdateInfo, user);
 
       // then : 테스트 함수 결과
-        // const result = await service.update()
-        // expect(result).toBeInstanceOf(Array)
+      let resultUser: Users = await service.findOne(user.id)
+      expect(resultUser.major).toEqual(userUpdateInfo.major)
+      expect(resultUser.nickname).toEqual(userUpdateInfo.nickname)
+      expect(resultUser.age).toEqual(userUpdateInfo.age)
+      expect(resultUser.gender).toEqual(userUpdateInfo.gender)
+      expect(resultUser.school).toEqual(userUpdateInfo.school)
+      expect(resultUser.major).toEqual(userUpdateInfo.major)
+      expect(resultUser.studentId).toEqual(userUpdateInfo.studentId)
     })
-})
+  })
 });
