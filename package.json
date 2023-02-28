@@ -25,7 +25,9 @@
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-ws": "^9.3.9",
     "@nestjs/typeorm": "^9.0.1",
+    "@nestjs/websockets": "^9.3.9",
     "axios": "^1.2.1",
     "class-transformer": "^0.5.1",
     "mysql2": "^2.3.3",
@@ -74,7 +76,9 @@
       "json",
       "ts"
     ],
-    "roots": ["src"],
+    "roots": [
+      "src"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"

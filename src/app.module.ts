@@ -14,6 +14,7 @@ import { ContentModule } from './api/content/content.module';
 import { AuthModule } from './api/auth/auth.module';
 import { UserModule } from './api/user/user.module';
 import { Users } from './api/user/entities/user.entity';
+import { EventsModule } from './events/events.module';
 @Module({
   imports: [
     ContentModule,
@@ -24,6 +25,7 @@ import { Users } from './api/user/entities/user.entity';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../../', 'upload'),
     }),
+    EventsModule,
   ],
   controllers: [],
   providers: [],

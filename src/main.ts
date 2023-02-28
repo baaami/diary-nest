@@ -1,6 +1,7 @@
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, WebSocketAdapter } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { WsAdapter } from '@nestjs/platform-ws';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -17,6 +18,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  app.useWebSocketAdapter(new WsAdapter(app))
+  
   await app.listen(4000);
 }
 bootstrap();
