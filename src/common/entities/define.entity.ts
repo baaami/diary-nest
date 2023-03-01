@@ -1,4 +1,4 @@
 export class commontype {
-    MALE: number = 0
-    FEMALE: number = 1
+  MALE = 0;
+  FEMALE = 1;
 }

@@ -20,18 +20,17 @@ export class ContentService {
     const content = await this.ContentRepository.createQueryBuilder('contents')
       .leftJoinAndSelect('contents.userId', 'user.id')
       .leftJoinAndSelect('contents.image', 'content')
-      .where({"id": contentId})
+      .where({ id: contentId })
       .getOne();
 
-    return content
+    return content;
   }
 
   async findList() {
-    const content = await this.ContentRepository
-    .createQueryBuilder('contents')
-    .leftJoinAndSelect('contents.userId', 'user.id')
-    .leftJoinAndSelect('contents.image', 'content')
-    .getMany();
+    const content = await this.ContentRepository.createQueryBuilder('contents')
+      .leftJoinAndSelect('contents.userId', 'user.id')
+      .leftJoinAndSelect('contents.image', 'content')
+      .getMany();
 
     return content;
   }
@@ -49,7 +48,7 @@ export class ContentService {
     createContentDto: CreateContentDto,
     user: Users,
   ): Promise<CreateContentDto & Contents> {
-    createContentDto.userId = user.id
+    createContentDto.userId = user.id;
 
     const content = await this.ContentRepository.save(createContentDto);
     return content;
@@ -73,25 +72,25 @@ export class ContentService {
     files: { images?: Express.Multer.File[] },
     user: Users,
   ) {
-    const result = [];
     const { images } = files;
 
-    createContentDto.userId = user.id
+    createContentDto.userId = user.id;
 
-    const content = await this.ContentRepository.save(createContentDto);
+    const content: Contents = await this.ContentRepository.save(
+      createContentDto,
+    );
 
-    if (images.length != 0) {
+    if (images) {
       images.forEach((image: Partial<CreateImageDto>) => {
         image.contentId = content.id;
         // 이미지 db에 저장
         this.ImageRepository.save(image);
-        result.push(image);
       });
     } else {
-      console.log("image not found")
+      console.log('image not found');
     }
 
-    return result;
+    return content;
   }
 
   async Update(

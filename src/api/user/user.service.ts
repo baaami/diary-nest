@@ -15,16 +15,19 @@ export class UserService {
   }
 
   async findlatest(): Promise<Users> {
-    const rep = await this.UserRepository.find()
-    return rep[0]
+    const rep = await this.UserRepository.find();
+    return rep[0];
   }
-  
-  async update(updateUserDto: UpdateUserDto, user: Users): Promise<UpdateResult> {
-    const rep = await this.UserRepository.update(
-      {id: user.id},
-      updateUserDto
-    )
 
-    return rep
+  async update(
+    updateUserDto: UpdateUserDto,
+    user: Users,
+  ): Promise<UpdateResult> {
+    const rep = await this.UserRepository.update(
+      { id: user.id },
+      updateUserDto,
+    );
+
+    return rep;
   }
 }

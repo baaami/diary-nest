@@ -49,6 +49,6 @@ export class Images {
   @Column('int', { name: 'contentId' })
   contentId: number;
 
-  @ManyToOne(type => Contents, contents => contents.image)
+  @ManyToOne((type) => Contents, (contents) => contents.image)
   content: Contents;
 }

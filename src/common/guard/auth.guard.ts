@@ -24,21 +24,23 @@ export class AuthGuard implements CanActivate {
 
   private validateUser(request: any) {
     if (request.headers.hasOwnProperty('authorization') == false) {
-      return false
+      return false;
     }
     // 검증할 access token 획득
     const accessToken = request.headers.authorization.split('Bearer ')[1];
 
-
     // 검증
-    const decoded: JwtdecodedUser = this.jwtService.verify(accessToken.toString(),
-    { secret: process.env.JWT_SECRET_KEY });
+    const decoded: JwtdecodedUser = this.jwtService.verify(
+      accessToken.toString(),
+      { secret: process.env.JWT_SECRET_KEY },
+    );
 
     // 검증 실패 혹은 decoding 실패
-    if (typeof decoded !== 'object' || decoded.hasOwnProperty('user') === false) return false
+    if (typeof decoded !== 'object' || decoded.hasOwnProperty('user') === false)
+      return false;
 
     // 검증 성공
-    request.user = decoded.user
+    request.user = decoded.user;
     return true;
   }
 }

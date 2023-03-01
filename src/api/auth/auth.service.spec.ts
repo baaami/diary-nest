@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { jwtConstants } from './constant';
-import * as ormconfig from '../../../ormconfig'
+import * as ormconfig from '../../../ormconfig';
 import { Repository } from 'typeorm';
 
 import { UserModule } from '../user/user.module';

@@ -5,14 +5,18 @@ import { Users } from 'src/api/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as qs from 'qs';
 import axios, { AxiosResponse } from 'axios';
-import { KakaoServerData, KakaoServerResponse, KakaoServerUserData } from 'src/common/entities/common.entity';
+import {
+  KakaoServerData,
+  KakaoServerResponse,
+  KakaoServerUserData,
+} from 'src/common/entities/common.entity';
 import { CreateUserDto } from 'src/api/user/dto/create-user.dto';
 import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
 
 async function GetAccessToken(
   permissionCode: string,
 ): Promise<[boolean, string]> {
-  let bRtn: boolean = true;
+  let bRtn = true;
   let kakaoServerData: KakaoServerData;
   const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
     method: 'POST',
@@ -37,7 +41,7 @@ async function GetAccessToken(
 }
 
 async function GetUserData(access_token: string): Promise<[boolean, string]> {
-  let bRtn: boolean = true;
+  let bRtn = true;
   let kakaoServerData: KakaoServerUserData;
   const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
     method: 'get',
@@ -90,28 +94,31 @@ export class AuthService {
     if (!ok) {
       throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED);
     }
-    
-    let user: CreateUserDto | UpdateUserDto = { email: user_email};
-    
+
+    let user: CreateUserDto | UpdateUserDto = { email: user_email };
+
     // 3.1 회원, 비회원 확인
     // email이 db에 존재하는지 확인
-    const UserWithRepository = await this.UserRepository.findOneBy({"email" : user_email});
-    if(UserWithRepository) {
+    const UserWithRepository = await this.UserRepository.findOneBy({
+      email: user_email,
+    });
+    if (UserWithRepository) {
       // 존재할 경우, 존재하는 user data로 전송
-      console.log("UserWithRepository: ", UserWithRepository)
-      user = UserWithRepository
-
-    }
-    else {
+      console.log('UserWithRepository: ', UserWithRepository);
+      user = UserWithRepository;
+    } else {
       // c_user : create_user
       // u_user : update_user
       // d_user : delete_user
-      const c_user = await this.UserRepository.save(user);      
+      const c_user = await this.UserRepository.save(user);
     }
-    
+
     // 4. user email을 기반으로 토큰 생성
     return {
-      token: this.jwtService.sign({user}, { secret: process.env.JWT_SECRET_KEY }),
+      token: this.jwtService.sign(
+        { user },
+        { secret: process.env.JWT_SECRET_KEY },
+      ),
       user: user,
     };
   }

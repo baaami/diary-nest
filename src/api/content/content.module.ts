@@ -7,13 +7,14 @@ import { Contents } from './entities/content.entity';
 import { MulterModule } from '@nestjs/platform-express';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from '../user/entities/user.entity';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Contents, Images, Users]),
     MulterModule.register({
       dest: './upload',
-    }),    
-  ],  
+    }),
+  ],
   controllers: [ContentController],
   providers: [ContentService, JwtService],
 })

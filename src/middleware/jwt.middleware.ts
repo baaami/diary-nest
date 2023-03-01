@@ -8,9 +8,9 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class JwtMiddleWare implements NestMiddleware<Request, Response> {
   constructor(
-    private readonly jwtService: JwtService,    // 토큰을 object로 해독하기 위함
+    private readonly jwtService: JwtService, // 토큰을 object로 해독하기 위함
     @InjectRepository(Users) private userRepository: Repository<Users>,
-  ) { }
+  ) {}
   async use(req: Request, res: Response, next: NextFunction) {
     if ('authorization' in req.headers) {
       const token = req.headers['authorization'];
@@ -20,8 +20,10 @@ export class JwtMiddleWare implements NestMiddleware<Request, Response> {
 
         // email_id 가 들어있는지 확인
         if (typeof decoded === 'object' && decoded.hasOwnProperty('user')) {
-          const member = await this.userRepository.findOneBy({'email': decoded.user.email});
-          //   const { ok, memberInfo } = await this.userService.findOne();  
+          const member = await this.userRepository.findOneBy({
+            email: decoded.user.email,
+          });
+          //   const { ok, memberInfo } = await this.userService.findOne();
           if (member) {
             req.body['userId'] = member.id;
             next();
@@ -31,7 +33,7 @@ export class JwtMiddleWare implements NestMiddleware<Request, Response> {
         console.log(error);
       }
     } else {
-      res.send(401)
+      res.send(401);
     }
   }
 }
