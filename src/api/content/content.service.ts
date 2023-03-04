@@ -54,6 +54,11 @@ export class ContentService {
     return content;
   }
 
+  async insertFakerData(testcontent: Contents): Promise<Contents> {
+    const res = await this.ContentRepository.save(testcontent);
+    return res
+  }
+
   async uploadFiles(files: { images?: Express.Multer.File[] }) {
     const result = [];
     const { images } = files;

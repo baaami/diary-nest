@@ -22,7 +22,7 @@ export class Contents {
   @Column("varchar", { name: "title", length: 30 })
   title: string;
 
-  @Column("varchar", { name: "body", length: 100 })
+  @Column("varchar", { name: "body", length: 2000 })
   body: string;
   
   @Column("varchar", { name: "category", length: 100 })
@@ -60,7 +60,7 @@ export class Contents {
   @JoinColumn([{ name: "user" }])
   userId: number | null;
 
-  @OneToMany(() => Reviews, (favorite) => favorite.id)
+  @OneToMany(() => Reviews, (review) => review.id)
   favorites: Reviews[];
 
   @OneToMany((type) => Images, (images) => images.content)

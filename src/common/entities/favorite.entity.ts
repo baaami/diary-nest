@@ -18,20 +18,3 @@ export class Favorites {
   @JoinColumn({ name: "content_id" })
   content: Contents;
 }
-
-/** sample code
- * const result = await reviewsRepository
-  .createQueryBuilder('reviews')
-  .leftJoinAndSelect('reviews.buyer', 'buyer')
-  .leftJoinAndSelect('reviews.seller', 'seller')
-  .select([
-    'reviews.id',
-    'reviews.review',
-    'buyer.id',
-    'buyer.name',
-    'seller.id',
-    'seller.name',
-  ])
-  .getMany();
-
- */

@@ -19,6 +19,11 @@ export class UserService {
     return rep[0];
   }
 
+  async insertFakerData(testuser: Users): Promise<Users> {
+    const res = await this.UserRepository.save(testuser);
+    return res
+  }
+
   async update(
     updateUserDto: UpdateUserDto,
     user: Users

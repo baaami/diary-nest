@@ -55,7 +55,7 @@ describe("ContentService", () => {
 
       // then : 테스트 함수 결과
       expect(content.title).toEqual(createContentDto.title);
-      expect(content.content).toEqual(createContentDto.content);
+      expect(content.body).toEqual(createContentDto.content);
     });
   });
 

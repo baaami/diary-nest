@@ -32,7 +32,7 @@ export class Users {
   @Column("boolean", { name: "is_sns" })
   is_sns: boolean;
 
-  @Column("varchar", { name: "university", length: 20 })
+  @Column("varchar", { name: "university", length: 50 })
   university: string;
 
   @Column("int", { name: "gender" })
