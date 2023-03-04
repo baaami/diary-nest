@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -21,8 +22,30 @@ export class Contents {
   @Column("varchar", { name: "title", length: 30 })
   title: string;
 
-  @Column("varchar", { name: "content", length: 100 })
-  content: string;
+  @Column("varchar", { name: "body", length: 100 })
+  body: string;
+  
+  @Column("varchar", { name: "category", length: 100 })
+  category: string;
+
+  @Column("boolean", { name: "completed" })
+  completed: boolean;
+
+  @Column("int", { name: "price" })
+  price: number;
+
+  @Column("int", { name: "like_cnt" })
+  like_cnt: number;
+
+  @Column("int", { name: "chat_cnt" })
+  chat_cnt: number;
+
+  @UpdateDateColumn()
+  completed_date: Date;
+
+  @OneToOne(() => Users, buyer => buyer.id)
+  @JoinColumn({ name: "buyer_id" })
+  buyer: Users;
 
   @CreateDateColumn()
   createdAt: Date;

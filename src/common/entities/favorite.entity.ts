@@ -14,9 +14,9 @@ export class Favorites {
   @JoinColumn({ name: "user_id" })
   user: Users;
 
-  @ManyToOne(() => Contents, seller => seller.favorites)
-  @JoinColumn({ name: "product_id" })
-  seller: Contents;
+  @ManyToOne(() => Contents, content => content.favorites)
+  @JoinColumn({ name: "content_id" })
+  content: Contents;
 }
 
 /** sample code
