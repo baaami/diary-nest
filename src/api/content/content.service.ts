@@ -1,25 +1,25 @@
-import { Injectable, UseGuards } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { CreateImageDto } from 'src/common/dto/create-image.dto';
-import { Images } from 'src/common/entities/image.entity';
-import { Contents } from 'src/api/content/entities/content.entity';
-import { InsertResult, UpdateResult, Repository, EntityManager } from 'typeorm';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateContentDto } from './dto/update-content.dto';
-import { Users } from '../user/entities/user.entity';
+import { Injectable, UseGuards } from "@nestjs/common";
+import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
+import { CreateImageDto } from "src/common/dto/create-image.dto";
+import { Images } from "src/common/entities/image.entity";
+import { Contents } from "src/api/content/entities/content.entity";
+import { InsertResult, UpdateResult, Repository, EntityManager } from "typeorm";
+import { CreateContentDto } from "./dto/create-content.dto";
+import { UpdateContentDto } from "./dto/update-content.dto";
+import { Users } from "../user/entities/user.entity";
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
     @InjectRepository(Images) private ImageRepository: Repository<Images>,
-    @InjectEntityManager() private ContentManager: EntityManager,
+    @InjectEntityManager() private ContentManager: EntityManager
   ) {}
 
   async findOne(contentId: number): Promise<Contents> {
-    const content = await this.ContentRepository.createQueryBuilder('contents')
-      .leftJoinAndSelect('contents.userId', 'user.id')
-      .leftJoinAndSelect('contents.image', 'content')
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .leftJoinAndSelect("contents.userId", "user.id")
+      .leftJoinAndSelect("contents.image", "content")
       .where({ id: contentId })
       .getOne();
 
@@ -27,17 +27,17 @@ export class ContentService {
   }
 
   async findList() {
-    const content = await this.ContentRepository.createQueryBuilder('contents')
-      .leftJoinAndSelect('contents.userId', 'user.id')
-      .leftJoinAndSelect('contents.image', 'content')
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .leftJoinAndSelect("contents.userId", "user.id")
+      .leftJoinAndSelect("contents.image", "content")
       .getMany();
 
     return content;
   }
 
   async findUserList(userId: number) {
-    const content = await this.ContentRepository.createQueryBuilder('contents')
-      .leftJoinAndSelect('contents.userId', 'user.id')
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .leftJoinAndSelect("contents.userId", "user.id")
       .where({ userId: userId })
       .getMany();
 
@@ -46,7 +46,7 @@ export class ContentService {
 
   async writeOne(
     createContentDto: CreateContentDto,
-    user: Users,
+    user: Users
   ): Promise<CreateContentDto & Contents> {
     createContentDto.userId = user.id;
 
@@ -70,14 +70,14 @@ export class ContentService {
   async Create(
     createContentDto: CreateContentDto,
     files: { images?: Express.Multer.File[] },
-    user: Users,
+    user: Users
   ) {
     const { images } = files;
 
     createContentDto.userId = user.id;
 
     const content: Contents = await this.ContentRepository.save(
-      createContentDto,
+      createContentDto
     );
 
     if (images) {
@@ -87,7 +87,7 @@ export class ContentService {
         this.ImageRepository.save(image);
       });
     } else {
-      console.log('image not found');
+      console.log("image not found");
     }
 
     return content;
@@ -96,11 +96,11 @@ export class ContentService {
   async Update(
     updateContentDto: UpdateContentDto,
     contentId: number,
-    files: { images?: Express.Multer.File[] },
+    files: { images?: Express.Multer.File[] }
   ): Promise<UpdateResult> {
     const content = await this.ContentRepository.update(
       { id: contentId },
-      updateContentDto,
+      updateContentDto
     );
     return content;
   }

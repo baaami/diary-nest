@@ -1,5 +1,5 @@
-import { IsString, IsNumber } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateContentDto } from './create-content.dto';
+import { IsString, IsNumber } from "class-validator";
+import { PartialType } from "@nestjs/mapped-types";
+import { CreateContentDto } from "./create-content.dto";
 
 export class UpdateContentDto extends PartialType(CreateContentDto) {}

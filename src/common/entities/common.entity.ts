@@ -1,4 +1,4 @@
-import { Users } from 'src/api/user/entities/user.entity';
+import { Users } from "src/api/user/entities/user.entity";
 
 export interface KakaoServerResponse {
   data: KakaoServerData;

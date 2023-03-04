@@ -13,37 +13,37 @@ import {
   UploadedFiles,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common';
+} from "@nestjs/common";
 import {
   FileFieldsInterceptor,
   FileInterceptor,
-} from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { AuthGuard } from 'src/common/guard/auth.guard';
-import { editFileName, imageFileFilter } from 'src/lib/multer/multerOption';
-import { ContentService } from './content.service';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateContentDto } from './dto/update-content.dto';
-import { Request } from 'express';
+} from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { AuthGuard } from "src/common/guard/auth.guard";
+import { editFileName, imageFileFilter } from "src/lib/multer/multerOption";
+import { ContentService } from "./content.service";
+import { CreateContentDto } from "./dto/create-content.dto";
+import { UpdateContentDto } from "./dto/update-content.dto";
+import { Request } from "express";
 
-@Controller('content')
+@Controller("content")
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   @UseGuards(AuthGuard)
-  @Get(':id')
-  read(@Param('id', ParseIntPipe) contentId: number, @Req() req: Request) {
+  @Get(":id")
+  read(@Param("id", ParseIntPipe) contentId: number, @Req() req: Request) {
     console.log(req.body);
     return this.contentService.findOne(contentId);
   }
 
-  @Get('/list')
+  @Get("/list")
   list() {
     return this.contentService.findList();
   }
 
-  @Get('/list/:id')
-  listUser(@Param('id', ParseIntPipe) userId: number) {
+  @Get("/list/:id")
+  listUser(@Param("id", ParseIntPipe) userId: number) {
     return this.contentService.findUserList(userId);
   }
 
@@ -54,60 +54,60 @@ export class ContentController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/image')
+  @Post("/image")
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
+    FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
       storage: diskStorage({
-        destination: './upload',
+        destination: "./upload",
         filename: editFileName,
       }),
-    }),
+    })
   )
   uploadFiles(
     @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     return this.contentService.uploadFiles(files);
   }
 
-  @Post('/create')
+  @Post("/create")
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
+    FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
       storage: diskStorage({
-        destination: './upload',
+        destination: "./upload",
         filename: editFileName,
       }),
-    }),
+    })
   )
   @UseGuards(AuthGuard)
   create(
     @Body() createContentDto: CreateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Req() req: any,
+    @Req() req: any
   ) {
     return this.contentService.Create(createContentDto, files, req.user);
   }
 
-  @Patch(':id')
+  @Patch(":id")
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'images', maxCount: 5 }], {
+    FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
       storage: diskStorage({
-        destination: './upload',
+        destination: "./upload",
         filename: editFileName,
       }),
-    }),
+    })
   )
   update(
     @Body() updateContentDto: UpdateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Param('id', ParseIntPipe) contentId: number,
+    @Param("id", ParseIntPipe) contentId: number
   ) {
     return this.contentService.Update(updateContentDto, contentId, files);
   }
 
-  @Delete(':id')
+  @Delete(":id")
   @HttpCode(204)
-  delete(@Param('id', ParseIntPipe) contentId: number) {
+  delete(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.DeleteOne(contentId);
   }
 }

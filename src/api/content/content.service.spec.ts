@@ -1,16 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Users } from '../user/entities/user.entity';
-import { Contents } from '../content/entities/content.entity';
-import { Images } from 'src/common/entities/image.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ContentService } from './content.service';
-import { UserService } from 'src/api/user/user.service';
-import * as ormconfig from '../../../ormconfig';
-import { CreateContentDto } from './dto/create-content.dto';
-import { UpdateResult } from 'typeorm';
-import { UpdateContentDto } from './dto/update-content.dto';
+import { Test, TestingModule } from "@nestjs/testing";
+import { Users } from "../user/entities/user.entity";
+import { Contents } from "../content/entities/content.entity";
+import { Images } from "src/common/entities/image.entity";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { ContentService } from "./content.service";
+import { UserService } from "src/api/user/user.service";
+import * as ormconfig from "../../../ormconfig";
+import { CreateContentDto } from "./dto/create-content.dto";
+import { UpdateResult } from "typeorm";
+import { UpdateContentDto } from "./dto/update-content.dto";
 
-describe('ContentService', () => {
+describe("ContentService", () => {
   let service: ContentService;
   let userService: UserService;
   beforeEach(async () => {
@@ -25,12 +25,12 @@ describe('ContentService', () => {
     userService = module.get<UserService>(UserService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('Create Content', () => {
-    it('create a content', async () => {
+  describe("Create Content", () => {
+    it("create a content", async () => {
       // given : 테스트를 하기 위한 환경 구성
 
       // 1. image 데이터 생성
@@ -41,8 +41,8 @@ describe('ContentService', () => {
       };
 
       const createContentDto: CreateContentDto = {
-        title: 'jest title',
-        content: 'jest content',
+        title: "jest title",
+        content: "jest content",
         userId: user.id,
       };
 
@@ -50,7 +50,7 @@ describe('ContentService', () => {
       const content: Contents = await service.Create(
         createContentDto,
         files,
-        user,
+        user
       );
 
       // then : 테스트 함수 결과
@@ -59,8 +59,8 @@ describe('ContentService', () => {
     });
   });
 
-  describe('Update Content', () => {
-    it('update a content', async () => {
+  describe("Update Content", () => {
+    it("update a content", async () => {
       // given : 테스트를 하기 위한 환경 구성
 
       // 1. image 데이터 생성
@@ -71,8 +71,8 @@ describe('ContentService', () => {
       };
 
       const updateContentDto: UpdateContentDto = {
-        title: 'jest update title',
-        content: 'jest update content',
+        title: "jest update title",
+        content: "jest update content",
         userId: user.id,
       };
 
@@ -80,20 +80,20 @@ describe('ContentService', () => {
       const updateContent: UpdateResult = await service.Update(
         updateContentDto,
         user.id,
-        files,
+        files
       );
     });
   });
 
-  describe('get Content', () => {
-    it('should return a content', async () => {
+  describe("get Content", () => {
+    it("should return a content", async () => {
       const result = await service.findOne(6);
       expect(result).toBeInstanceOf(Contents);
     });
   });
 
-  describe('get Content List', () => {
-    it('should return a contents', async () => {
+  describe("get Content List", () => {
+    it("should return a contents", async () => {
       const result = await service.findList();
       expect(result).toBeInstanceOf(Array);
     });

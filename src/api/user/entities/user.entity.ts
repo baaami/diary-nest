@@ -7,38 +7,48 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-} from 'typeorm';
-import { Contents } from 'src/api/content/entities/content.entity';
-import { IsOptional } from 'class-validator';
+} from "typeorm";
+import { Contents } from "src/api/content/entities/content.entity";
+import { IsOptional } from "class-validator";
+import { Reviews } from "src/common/entities/review.entity";
 
-@Entity({ schema: 'diary', name: 'users' })
+@Entity({ schema: "school", name: "users" })
 export class Users {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column('varchar', { name: 'email', unique: true, length: 30 })
-  email: string;
-
-  @Column('varchar', { name: 'name', length: 20, nullable: true })
+  @Column("varchar", { name: "name", length: 20 })
   name: string;
+  
+  @UpdateDateColumn()
+  birth: Date;
 
-  @Column('varchar', { name: 'nickname', length: 20, nullable: true })
+  @Column("varchar", { name: "nickname", length: 20 })
   nickname: string;
 
-  @Column('int', { name: 'age', nullable: true })
-  age: number;
+  @Column("varchar", { name: "email", unique: true, length: 30 })
+  email: string;
 
-  @Column('int', { name: 'gender', nullable: true })
+  @Column("boolean", { name: "is_sns" })
+  is_sns: boolean;
+
+  @Column("varchar", { name: "university", length: 20 })
+  university: string;
+
+  @Column("int", { name: "gender" })
   gender: number;
 
-  @Column('varchar', { name: 'school', length: 20, nullable: true })
-  school: string;
+  @Column("varchar", { name: "latitude", length: 50 })
+  latitude: string;
 
-  @Column('varchar', { name: 'major', length: 50, nullable: true })
-  major: string;
+  @Column("varchar", { name: "longitude", length: 50 })
+  longitude: string;
 
-  @Column('int', { name: 'studentId', nullable: true })
-  studentId: number;
+  @Column("varchar", { name: "location", length: 100 })
+  location: string;
+
+  @Column("int", { name: "grade" })
+  grade: number;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -49,6 +59,9 @@ export class Users {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @OneToMany((type) => Contents, (content) => content.id)
+  @OneToMany(() => Reviews, (review) => review.id)
+  reviews: Reviews[];
+
+  @OneToMany(() => Contents, (content) => content.id)
   contents: Contents[];
 }

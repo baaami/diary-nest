@@ -3,27 +3,28 @@ import {
   Module,
   NestModule,
   RequestMethod,
-} from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import * as ormconfig from '../ormconfig';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { JwtMiddleWare } from './middleware/jwt.middleware';
-import { join } from 'path';
+} from "@nestjs/common";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import * as ormconfig from "../ormconfig";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { JwtMiddleWare } from "./middleware/jwt.middleware";
+import { join } from "path";
 
-import { ContentModule } from './api/content/content.module';
-import { AuthModule } from './api/auth/auth.module';
-import { UserModule } from './api/user/user.module';
-import { Users } from './api/user/entities/user.entity';
-import { EventsModule } from './events/events.module';
+import { ContentModule } from "./api/content/content.module";
+import { AuthModule } from "./api/auth/auth.module";
+import { UserModule } from "./api/user/user.module";
+import { Users } from "./api/user/entities/user.entity";
+import { EventsModule } from "./events/events.module";
+import { Reviews } from "./common/entities/review.entity";
 @Module({
   imports: [
     ContentModule,
     UserModule,
     AuthModule,
-    TypeOrmModule.forFeature([Users]),
+    TypeOrmModule.forFeature([Users, Reviews]),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../', 'upload'),
+      rootPath: join(__dirname, "../../", "upload"),
     }),
     EventsModule,
   ],

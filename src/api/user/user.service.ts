@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
-import { Users } from 'src/api/user/entities/user.entity';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository, UpdateResult } from "typeorm";
+import { Users } from "src/api/user/entities/user.entity";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Users) private UserRepository: Repository<Users>,
+    @InjectRepository(Users) private UserRepository: Repository<Users>
   ) {}
   async findOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.findOneBy({ id: userId });
@@ -21,11 +21,11 @@ export class UserService {
 
   async update(
     updateUserDto: UpdateUserDto,
-    user: Users,
+    user: Users
   ): Promise<UpdateResult> {
     const rep = await this.UserRepository.update(
       { id: user.id },
-      updateUserDto,
+      updateUserDto
     );
 
     return rep;

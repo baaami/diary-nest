@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Users } from './entities/user.entity';
-import { Contents } from '../content/entities/content.entity';
-import { Images } from 'src/common/entities/image.entity';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserService } from "./user.service";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Users } from "./entities/user.entity";
+import { Contents } from "../content/entities/content.entity";
+import { Images } from "src/common/entities/image.entity";
 
-import { UserController } from './user.controller';
-import * as ormconfig from '../../../ormconfig';
-import { AuthService } from '../auth/auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { Repository, UpdateResult } from 'typeorm';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserController } from "./user.controller";
+import * as ormconfig from "../../../ormconfig";
+import { AuthService } from "../auth/auth.service";
+import { JwtService } from "@nestjs/jwt";
+import { Repository, UpdateResult } from "typeorm";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
-describe('AuthService', () => {
+describe("AuthService", () => {
   let service: UserService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -25,23 +25,23 @@ describe('AuthService', () => {
     service = module.get<UserService>(UserService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  describe('Upload User form', () => {
-    it('upload user', async () => {
+  describe("Upload User form", () => {
+    it("upload user", async () => {
       // given : 테스트를 하기 위한 환경 구성
       const user: Users = await service.findlatest();
       expect(user).toBeDefined();
 
       const userUpdateInfo: UpdateUserDto = {
-        name: 'yoni',
-        nickname: 'yonyoni',
+        name: "yoni",
+        nickname: "yonyoni",
         age: 28,
         gender: 0,
-        school: '백석대학교',
-        major: '청소년학과',
+        school: "백석대학교",
+        major: "청소년학과",
         studentId: 201501149,
       };
 

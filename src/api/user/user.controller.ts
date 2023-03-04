@@ -7,21 +7,21 @@ import {
   Post,
   Req,
   UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from 'src/common/guard/auth.guard';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserService } from './user.service';
+} from "@nestjs/common";
+import { AuthGuard } from "src/common/guard/auth.guard";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { UserService } from "./user.service";
 
-@Controller('user')
+@Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Get(':id')
-  getOne(@Param('id', ParseIntPipe) userId: number) {
+  @Get(":id")
+  getOne(@Param("id", ParseIntPipe) userId: number) {
     return this.userService.findOne(userId);
   }
 
   @UseGuards(AuthGuard)
-  @Post(':id')
+  @Post(":id")
   update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     return this.userService.update(updateUserDto, req.user);
   }

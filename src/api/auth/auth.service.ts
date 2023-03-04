@@ -1,31 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Users } from 'src/api/user/entities/user.entity';
-import { Repository } from 'typeorm';
-import * as qs from 'qs';
-import axios, { AxiosResponse } from 'axios';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Users } from "src/api/user/entities/user.entity";
+import { Repository } from "typeorm";
+import * as qs from "qs";
+import axios, { AxiosResponse } from "axios";
 import {
   KakaoServerData,
   KakaoServerResponse,
   KakaoServerUserData,
-} from 'src/common/entities/common.entity';
-import { CreateUserDto } from 'src/api/user/dto/create-user.dto';
-import { UpdateUserDto } from 'src/api/user/dto/update-user.dto';
+} from "src/common/entities/common.entity";
+import { CreateUserDto } from "src/api/user/dto/create-user.dto";
+import { UpdateUserDto } from "src/api/user/dto/update-user.dto";
 
 async function GetAccessToken(
-  permissionCode: string,
+  permissionCode: string
 ): Promise<[boolean, string]> {
   let bRtn = true;
   let kakaoServerData: KakaoServerData;
   const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
-    method: 'POST',
-    url: 'https://kauth.kakao.com/oauth/token',
+    method: "POST",
+    url: "https://kauth.kakao.com/oauth/token",
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     data: qs.stringify({
-      grant_type: 'authorization_code',
+      grant_type: "authorization_code",
       client_id: process.env.KAKAO_ID,
       redirect_uri: process.env.KAKAO_CALLBACK_URL,
       code: permissionCode,
@@ -44,13 +44,13 @@ async function GetUserData(access_token: string): Promise<[boolean, string]> {
   let bRtn = true;
   let kakaoServerData: KakaoServerUserData;
   const kakaoServerTotalData: AxiosResponse<any, any> = await axios({
-    method: 'get',
-    url: 'https://kapi.kakao.com/v2/user/me',
+    method: "get",
+    url: "https://kapi.kakao.com/v2/user/me",
     headers: {
       Authorization: `Bearer ${access_token}`,
     },
     params: {
-      property_keys: ['kakao_account.profile'],
+      property_keys: ["kakao_account.profile"],
     },
   });
 
@@ -64,7 +64,7 @@ async function GetUserData(access_token: string): Promise<[boolean, string]> {
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(Users) private UserRepository: Repository<Users>,
+    @InjectRepository(Users) private UserRepository: Repository<Users>
   ) {}
 
   async validateToken(access_token: string) {
@@ -75,9 +75,9 @@ export class AuthService {
       email: email,
     });
     if (UserWithRepository) {
-      return 'Login Success';
+      return "Login Success";
     } else {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      throw new HttpException("Forbidden", HttpStatus.FORBIDDEN);
     }
   }
 
@@ -86,13 +86,13 @@ export class AuthService {
     // 0. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     let [ok, token] = await GetAccessToken(permissionCode);
     if (!ok) {
-      throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
     }
 
     // 2. access_token 유저 확인
     [ok, user_email] = await GetUserData(token);
     if (!ok) {
-      throw new HttpException('Server Error', HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
     }
 
     let user: CreateUserDto | UpdateUserDto = { email: user_email };
@@ -104,7 +104,7 @@ export class AuthService {
     });
     if (UserWithRepository) {
       // 존재할 경우, 존재하는 user data로 전송
-      console.log('UserWithRepository: ', UserWithRepository);
+      console.log("UserWithRepository: ", UserWithRepository);
       user = UserWithRepository;
     } else {
       // c_user : create_user
@@ -117,7 +117,7 @@ export class AuthService {
     return {
       token: this.jwtService.sign(
         { user },
-        { secret: process.env.JWT_SECRET_KEY },
+        { secret: process.env.JWT_SECRET_KEY }
       ),
       user: user,
     };
