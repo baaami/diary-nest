@@ -16,12 +16,13 @@ import { UserModule } from "./api/user/user.module";
 import { Users } from "./api/user/entities/user.entity";
 import { EventsModule } from "./events/events.module";
 import { Reviews } from "./common/entities/review.entity";
+import { Favorites } from "./common/entities/favorite.entity";
 @Module({
   imports: [
     ContentModule,
     UserModule,
     AuthModule,
-    TypeOrmModule.forFeature([Users, Reviews]),
+    TypeOrmModule.forFeature([Users, Reviews, Favorites]),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "../../", "upload"),

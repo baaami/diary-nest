@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { Images } from "src/common/entities/image.entity";
+import { Reviews } from "src/common/entities/review.entity";
 
 @Entity({ schema: "school", name: "contents" })
 export class Contents {
@@ -35,6 +36,9 @@ export class Contents {
   @ManyToOne(() => Users)
   @JoinColumn([{ name: "user" }])
   userId: number | null;
+
+  @OneToMany(() => Reviews, (favorite) => favorite.id)
+  favorites: Reviews[];
 
   @OneToMany((type) => Images, (images) => images.content)
   image: Images;

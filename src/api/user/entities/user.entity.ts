@@ -62,6 +62,9 @@ export class Users {
   @OneToMany(() => Reviews, (review) => review.id)
   reviews: Reviews[];
 
+  @OneToMany(() => Reviews, (favorite) => favorite.id)
+  favorites: Reviews[];
+
   @OneToMany(() => Contents, (content) => content.id)
   contents: Contents[];
 }
