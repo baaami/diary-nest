@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, UpdateResult } from "typeorm";
+import { Not, Repository, UpdateResult } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
@@ -17,6 +17,22 @@ export class UserService {
   async findlatest(): Promise<Users> {
     const rep = await this.UserRepository.find();
     return rep[0];
+  }
+
+  async findRandomOne(): Promise<Users> {
+    const users = await this.UserRepository.find({});
+    const randomIndex = Math.floor(Math.random() * users.length);
+    return users[randomIndex];
+  }
+
+  async findExcludeRandomOne(user_exclude_Id: number): Promise<Users> {
+    const users = await this.UserRepository.find({
+      where: {
+        id: Not(user_exclude_Id)
+      }
+    });
+    const randomIndex = Math.floor(Math.random() * users.length);
+    return users[randomIndex];
   }
 
   async insertFakerData(testuser: Users): Promise<Users> {

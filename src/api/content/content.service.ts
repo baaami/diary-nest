@@ -54,8 +54,8 @@ export class ContentService {
     return content;
   }
 
-  async insertFakerData(testcontent: Contents): Promise<Contents> {
-    const res = await this.ContentRepository.save(testcontent);
+  async insertFakerData(fakerdata: Contents): Promise<Contents> {
+    const res = await this.ContentRepository.save(fakerdata);
     return res
   }
 

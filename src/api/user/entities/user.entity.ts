@@ -17,7 +17,7 @@ export class Users {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("varchar", { name: "name", length: 20 })
+  @Column("varchar", { name: "name", length: 20  })
   name: string;
   
   @UpdateDateColumn()
@@ -26,7 +26,7 @@ export class Users {
   @Column("varchar", { name: "nickname", length: 20 })
   nickname: string;
 
-  @Column("varchar", { name: "email", unique: true, length: 30 })
+  @Column("varchar", { name: "email", length: 100 })
   email: string;
 
   @Column("boolean", { name: "is_sns" })

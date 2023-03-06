@@ -6,7 +6,7 @@ export class Reviews {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("varchar", { name: "review", length: 100 })
+  @Column("varchar", { name: "review", length: 2000 })
   review: string;
 
   @ManyToOne(() => Users, buyer => buyer.reviews)

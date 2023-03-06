@@ -19,7 +19,7 @@ export class Contents {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("varchar", { name: "title", length: 30 })
+  @Column("varchar", { name: "title", length: 100 })
   title: string;
 
   @Column("varchar", { name: "body", length: 2000 })
@@ -43,7 +43,7 @@ export class Contents {
   @UpdateDateColumn()
   completed_date: Date;
 
-  @OneToOne(() => Users, buyer => buyer.id)
+  @ManyToOne(() => Users, buyer => buyer.id)
   @JoinColumn({ name: "buyer_id" })
   buyer: Users;
 
@@ -56,9 +56,9 @@ export class Contents {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => Users)
-  @JoinColumn([{ name: "user" }])
-  userId: number | null;
+  @ManyToOne(() => Users, user => user.id)
+  @JoinColumn([{ name: "owner_id" }])
+  owner: Users;
 
   @OneToMany(() => Reviews, (review) => review.id)
   favorites: Reviews[];
