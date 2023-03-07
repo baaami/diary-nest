@@ -52,6 +52,9 @@ describe("Insert User", () => {
         content.completed_date = faker.date.future();
         const user = await user_service.findRandomOne()
         content.buyer = user;
+
+        const owner = await user_service.findExcludeRandomOne(user.id)
+        content.owner = owner;
   
         // 2. 글 생성
         const savedContent: Contents = await service.insertFakerData(content);
@@ -67,6 +70,7 @@ describe("Insert User", () => {
         expect(savedContent.chat_cnt).toEqual(content.chat_cnt);
         expect(savedContent.completed_date).toEqual(content.completed_date);
         expect(savedContent.buyer).toEqual(content.buyer);
+        expect(savedContent.owner).toEqual(content.owner);
       });
     }
   }) 
