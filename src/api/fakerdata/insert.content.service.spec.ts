@@ -42,7 +42,7 @@ describe("Insert User", () => {
   
         // 데이터 생성
         const content = new Contents();
-        content.title = faker.lorem.words(5);
+        content.title = faker.lorem.words(3);
         content.body = faker.lorem.sentences(3, { words: 50 });
         content.category = faker.lorem.word();
         content.completed = faker.random.boolean();

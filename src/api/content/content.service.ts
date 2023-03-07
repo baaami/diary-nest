@@ -26,11 +26,17 @@ export class ContentService {
     return content;
   }
 
+  async findRandomOne(): Promise<Contents> {
+    const contents = await this.ContentRepository.find({});
+    const randomIndex = Math.floor(Math.random() * contents.length);
+    return contents[randomIndex];
+  }
+
   async findList() {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.userId", "user.id")
-      .leftJoinAndSelect("contents.image", "content")
-      .getMany();
+    .leftJoinAndSelect("contents.image", "image")
+    .leftJoinAndSelect("contents.owner", "user")
+    .getMany();
 
     return content;
   }
@@ -58,6 +64,13 @@ export class ContentService {
     const res = await this.ContentRepository.save(fakerdata);
     return res
   }
+
+  
+  async insertFakerImageData(fakerdata: Images): Promise<Images> {
+    const res = await this.ContentRepository.save(fakerdata);
+    return res
+  }
+
 
   async uploadFiles(files: { images?: Express.Multer.File[] }) {
     const result = [];

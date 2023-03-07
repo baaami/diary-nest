@@ -7,9 +7,6 @@ import { ReviewService } from './review.service';
 @Module({
     imports: [
         TypeOrmModule.forFeature([Reviews]),
-        MulterModule.register({
-          dest: "./upload",
-        }),
       ],
       controllers: [],
       providers: [ReviewService],

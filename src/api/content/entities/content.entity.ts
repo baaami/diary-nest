@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -13,6 +14,7 @@ import {
 import { Users } from "src/api/user/entities/user.entity";
 import { Images } from "src/common/entities/image.entity";
 import { Reviews } from "src/common/entities/review.entity";
+import { Favorites } from "src/common/entities/favorite.entity";
 
 @Entity({ schema: "school", name: "contents" })
 export class Contents {
@@ -60,9 +62,9 @@ export class Contents {
   @JoinColumn([{ name: "owner_id" }])
   owner: Users;
 
-  @OneToMany(() => Reviews, (review) => review.id)
-  favorites: Reviews[];
+  @ManyToMany(() => Favorites, (favorite) => favorite.id)
+  favorites: Favorites[];
 
-  @OneToMany((type) => Images, (images) => images.content)
+  @OneToMany(() => Images, (images) => images.id)
   image: Images;
 }

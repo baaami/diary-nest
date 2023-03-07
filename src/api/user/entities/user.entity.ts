@@ -4,6 +4,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import {
 import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
 import { Reviews } from "src/common/entities/review.entity";
+import { Favorites } from "src/common/entities/favorite.entity";
 
 @Entity({ schema: "school", name: "users" })
 export class Users {
@@ -62,8 +64,8 @@ export class Users {
   @OneToMany(() => Reviews, (review) => review.id)
   reviews: Reviews[];
 
-  @OneToMany(() => Reviews, (favorite) => favorite.id)
-  favorites: Reviews[];
+  @ManyToMany(() => Favorites, (favorite) => favorite.id)
+  favorites: Favorites[];
 
   @OneToMany(() => Contents, (content) => content.id)
   contents: Contents[];

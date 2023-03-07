@@ -9,11 +9,11 @@ export class Reviews {
   @Column("varchar", { name: "review", length: 2000 })
   review: string;
 
-  @ManyToOne(() => Users, buyer => buyer.reviews)
+  @ManyToOne(() => Users, buyer => buyer.id)
   @JoinColumn({ name: "buyer_id" })
   buyer: Users;
 
-  @ManyToOne(() => Users, seller => seller.reviews)
+  @ManyToOne(() => Users, seller => seller.id)
   @JoinColumn({ name: "seller_id" })
   seller: Users;
 }
