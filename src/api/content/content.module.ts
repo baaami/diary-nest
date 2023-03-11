@@ -8,10 +8,11 @@ import { MulterModule } from "@nestjs/platform-express";
 import { JwtService } from "@nestjs/jwt";
 import { Users } from "../user/entities/user.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
+import { Reviews } from "src/common/entities/review.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Contents, Images, Users, Favorites]),
+    TypeOrmModule.forFeature([Contents, Images, Users, Favorites, Reviews]),
     MulterModule.register({
       dest: "./upload",
     }),

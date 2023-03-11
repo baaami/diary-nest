@@ -10,6 +10,7 @@ import { Images } from "src/common/entities/image.entity";
 import { Contents } from "../content/entities/content.entity";
 import { ContentService } from "../content/content.service";
 import { Favorites } from "src/common/entities/favorite.entity";
+import { favorite_cnt } from "./insert.common.types";
 
 describe("Insert Review", () => {
   let service: FavoriteService
@@ -41,9 +42,7 @@ describe("Insert Review", () => {
   });
 
   describe("Insert Faker favorites", () => {
-    const faker_content_cnt = 20;
-
-    for(let i = 0; i < faker_content_cnt; i++) {
+    for(let i = 0; i < favorite_cnt; i++) {
       it("create a favorite " + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
   

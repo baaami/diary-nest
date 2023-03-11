@@ -10,6 +10,7 @@ import { Images } from "src/common/entities/image.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Reviews } from "src/common/entities/review.entity";
 import { time } from "console";
+import { content_cnt } from "./insert.common.types";
 
 describe("Insert User", () => {
   let service: ContentService
@@ -35,8 +36,7 @@ describe("Insert User", () => {
   });
 
   describe("Insert Faker Content", () => {
-    const faker_content_cnt = 30;
-    for(let i = 0; i < faker_content_cnt; i++) {
+    for(let i = 0; i < content_cnt; i++) {
       it("create a Content "  + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
   

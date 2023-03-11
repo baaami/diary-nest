@@ -9,9 +9,9 @@ import { ContentService } from "../content/content.service";
 import { Images } from "src/common/entities/image.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Reviews } from "src/common/entities/review.entity";
+import { user_cnt } from "./insert.common.types";
 
 describe("Insert User", () => {
-  const faker_user_cnt = 20;
   let service: UserService
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +29,7 @@ describe("Insert User", () => {
   });
 
   describe("Insert Faker User", () => {
-    for(let i = 0; i < faker_user_cnt; i++) {
+    for(let i = 0; i < user_cnt; i++) {
       it("create a User " + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
   
