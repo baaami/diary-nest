@@ -33,6 +33,15 @@ export class Contents {
   @Column("boolean", { name: "completed" })
   completed: boolean;
 
+  @Column("varchar", { name: "latitude", length: 50 })
+  latitude: string;
+
+  @Column("varchar", { name: "longitude", length: 50 })
+  longitude: string;
+
+  @Column("varchar", { name: "location", length: 100 })
+  location: string;
+  
   @Column("int", { name: "price" })
   price: number;
 

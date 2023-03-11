@@ -122,4 +122,46 @@ export class AuthService {
       user: user,
     };
   }
+
+  async locallogin(permissionCode: string) {
+    let user_email: string;
+    // 0. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
+    let [ok, token] = await GetAccessToken(permissionCode);
+    if (!ok) {
+      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
+    }
+
+    // 2. access_token 유저 확인
+    [ok, user_email] = await GetUserData(token);
+    if (!ok) {
+      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
+    }
+
+    let user: CreateUserDto | UpdateUserDto = { email: user_email };
+
+    // 3.1 회원, 비회원 확인
+    // email이 db에 존재하는지 확인
+    const UserWithRepository = await this.UserRepository.findOneBy({
+      email: user_email,
+    });
+    if (UserWithRepository) {
+      // 존재할 경우, 존재하는 user data로 전송
+      console.log("UserWithRepository: ", UserWithRepository);
+      user = UserWithRepository;
+    } else {
+      // c_user : create_user
+      // u_user : update_user
+      // d_user : delete_user
+      const c_user = await this.UserRepository.save(user);
+    }
+
+    // 4. user email을 기반으로 토큰 생성
+    return {
+      token: this.jwtService.sign(
+        { user },
+        { secret: process.env.JWT_SECRET_KEY }
+      ),
+      user: user,
+    };
+  }
 }

@@ -1,13 +1,18 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateAuthDto } from "./dto/create-auth.dto";
+import { CreateAuthKakaoDto, CreateAuthLocalDto } from "./dto/create-auth.dto";
 
-@Controller("/api/auth")
+@Controller("/auth")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post("/callback/kakao")
-  read(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.kakaologin(createAuthDto.code);
+  @Post("/kakao")
+  kakao(@Body() createAuthKakaoDto: CreateAuthKakaoDto) {
+    return this.authService.kakaologin(createAuthKakaoDto.code);
+  }
+
+  @Post("/local")
+  local(@Body() createAuthLocalDto: CreateAuthLocalDto) {
+    return this.authService.locallogin(createAuthLocalDto.code);
   }
 }
