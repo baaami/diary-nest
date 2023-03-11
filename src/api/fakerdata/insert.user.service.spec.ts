@@ -39,13 +39,13 @@ describe("Insert User", () => {
         fakeUser.birth = faker.date.past();
         fakeUser.nickname = faker.internet.userName();
         fakeUser.email = faker.internet.email();
-        fakeUser.is_sns = faker.random.boolean();
+        fakeUser.is_sns = faker.datatype.boolean();
         fakeUser.university = faker.company.companyName();
-        fakeUser.gender = faker.random.number(1);
+        fakeUser.gender = faker.datatype.number(1);
         fakeUser.latitude = faker.address.latitude();
         fakeUser.longitude = faker.address.longitude();
         fakeUser.location = faker.address.city();
-        fakeUser.grade = faker.random.number(4);
+        fakeUser.grade = faker.datatype.number(4);
   
         // 2. 글 생성
         const user: Users = await service.insertFakerData(fakeUser);
