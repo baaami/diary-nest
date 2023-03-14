@@ -1,7 +1,13 @@
 import { Users } from "src/api/user/entities/user.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
-@Entity({ schema: "school", name: "reviews"})
+@Entity({ schema: "school", name: "reviews" })
 export class Reviews {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
@@ -9,11 +15,11 @@ export class Reviews {
   @Column("varchar", { name: "review", length: 2000 })
   review: string;
 
-  @ManyToOne(() => Users, buyer => buyer.id)
+  @ManyToOne(() => Users, (buyer) => buyer.id)
   @JoinColumn({ name: "buyer_id" })
   buyer: Users;
 
-  @ManyToOne(() => Users, seller => seller.id)
+  @ManyToOne(() => Users, (seller) => seller.id)
   @JoinColumn({ name: "seller_id" })
   seller: Users;
 }

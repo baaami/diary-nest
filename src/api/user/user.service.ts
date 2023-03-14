@@ -28,8 +28,8 @@ export class UserService {
   async findExcludeRandomOne(user_exclude_Id: number): Promise<Users> {
     const users = await this.UserRepository.find({
       where: {
-        id: Not(user_exclude_Id)
-      }
+        id: Not(user_exclude_Id),
+      },
     });
     const randomIndex = Math.floor(Math.random() * users.length);
     return users[randomIndex];
@@ -37,7 +37,7 @@ export class UserService {
 
   async insertFakerData(testuser: Users): Promise<Users> {
     const res = await this.UserRepository.save(testuser);
-    return res
+    return res;
   }
 
   async update(

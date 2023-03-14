@@ -13,7 +13,7 @@ import { from, map, Observable } from "rxjs";
 @WebSocketGateway(8080)
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: "*",
   },
 })
 export class EventGateway {
@@ -29,17 +29,17 @@ export class EventGateway {
   }
 
   // 동기식 응답
-  @SubscribeMessage('identity')
+  @SubscribeMessage("identity")
   async identity(@MessageBody() data: number): Promise<number> {
     return data;
   }
 
   handleConnection(client: any) {
-    console.log('Client connected');
+    console.log("Client connected");
   }
 
   handleDisconnect(client: any) {
-    console.log('Client disconnected');
+    console.log("Client disconnected");
   }
 
   @SubscribeMessage("chat")

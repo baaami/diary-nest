@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "../user/user.service"
+import { UserService } from "../user/user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../user/entities/user.entity";
 import * as ormconfig from "../../../ormconfig";
@@ -13,8 +13,8 @@ import { time } from "console";
 import { content_cnt } from "./insert.common.types";
 
 describe("Insert User", () => {
-  let service: ContentService
-  let user_service: UserService
+  let service: ContentService;
+  let user_service: UserService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -36,10 +36,10 @@ describe("Insert User", () => {
   });
 
   describe("Insert Faker Content", () => {
-    for(let i = 0; i < content_cnt; i++) {
-      it("create a Content "  + i.toString(), async () => {
+    for (let i = 0; i < content_cnt; i++) {
+      it("create a Content " + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
-  
+
         // 데이터 생성
         const content = new Contents();
         content.title = faker.lorem.words(3);
@@ -50,15 +50,15 @@ describe("Insert User", () => {
         content.like_cnt = faker.datatype.number({ min: 0, max: 100 });
         content.chat_cnt = faker.datatype.number({ min: 0, max: 10 });
         content.completed_date = faker.date.future();
-        const user = await user_service.findRandomOne()
+        const user = await user_service.findRandomOne();
         content.buyer = user;
 
-        const owner = await user_service.findExcludeRandomOne(user.id)
+        const owner = await user_service.findExcludeRandomOne(user.id);
         content.owner = owner;
-  
+
         // 2. 글 생성
         const savedContent: Contents = await service.insertFakerData(content);
-  
+
         // then : 테스트 함수 결과
         expect(savedContent.id).toBeDefined();
         expect(savedContent.title).toEqual(content.title);
@@ -73,5 +73,5 @@ describe("Insert User", () => {
         expect(savedContent.owner).toEqual(content.owner);
       });
     }
-  }) 
-})
+  });
+});

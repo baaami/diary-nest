@@ -26,7 +26,7 @@ export class Contents {
 
   @Column("varchar", { name: "body", length: 2000 })
   body: string;
-  
+
   @Column("varchar", { name: "category", length: 100 })
   category: string;
 
@@ -41,7 +41,7 @@ export class Contents {
 
   @Column("varchar", { name: "location", length: 100 })
   location: string;
-  
+
   @Column("int", { name: "price" })
   price: number;
 
@@ -54,7 +54,7 @@ export class Contents {
   @UpdateDateColumn()
   completed_date: Date;
 
-  @ManyToOne(() => Users, buyer => buyer.id)
+  @ManyToOne(() => Users, (buyer) => buyer.id)
   @JoinColumn({ name: "buyer_id" })
   buyer: Users;
 
@@ -67,7 +67,7 @@ export class Contents {
   @DeleteDateColumn()
   deletedAt: Date | null;
 
-  @ManyToOne(() => Users, user => user.id)
+  @ManyToOne(() => Users, (user) => user.id)
   @JoinColumn([{ name: "owner_id" }])
   owner: Users;
 

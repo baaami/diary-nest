@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "../user/user.service"
+import { UserService } from "../user/user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../user/entities/user.entity";
 import * as ormconfig from "../../../ormconfig";
@@ -13,9 +13,9 @@ import { Favorites } from "src/common/entities/favorite.entity";
 import { favorite_cnt } from "./insert.common.types";
 
 describe("Insert Review", () => {
-  let service: FavoriteService
-  let user_service: UserService
-  let content_service: ContentService
+  let service: FavoriteService;
+  let user_service: UserService;
+  let content_service: ContentService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -42,26 +42,28 @@ describe("Insert Review", () => {
   });
 
   describe("Insert Faker favorites", () => {
-    for(let i = 0; i < favorite_cnt; i++) {
+    for (let i = 0; i < favorite_cnt; i++) {
       it("create a favorite " + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
-  
+
         // 1. faker 데이터 생성
         const favorite = new Favorites();
-  
-        const user = await user_service.findRandomOne()
+
+        const user = await user_service.findRandomOne();
         favorite.user = user;
-  
-        const content = await content_service.findRandomOne()
+
+        const content = await content_service.findRandomOne();
         favorite.content = content;
-  
+
         // 2. DB 저장
-        const savedFavorite: Favorites = await service.insertFakerData(favorite);
-  
+        const savedFavorite: Favorites = await service.insertFakerData(
+          favorite
+        );
+
         // then : 테스트 함수 결과
         expect(favorite.user).toEqual(savedFavorite.user);
         expect(favorite.content).toEqual(savedFavorite.content);
       });
     }
-  }) 
-})
+  });
+});

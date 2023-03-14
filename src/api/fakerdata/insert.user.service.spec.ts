@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { UserService } from "../user/user.service"
+import { UserService } from "../user/user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../user/entities/user.entity";
 import * as ormconfig from "../../../ormconfig";
@@ -12,7 +12,7 @@ import { Reviews } from "src/common/entities/review.entity";
 import { user_cnt } from "./insert.common.types";
 
 describe("Insert User", () => {
-  let service: UserService
+  let service: UserService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -29,10 +29,10 @@ describe("Insert User", () => {
   });
 
   describe("Insert Faker User", () => {
-    for(let i = 0; i < user_cnt; i++) {
+    for (let i = 0; i < user_cnt; i++) {
       it("create a User " + i.toString(), async () => {
         // given : 테스트를 하기 위한 환경 구성
-  
+
         // 1. image 데이터 생성
         const fakeUser: Users = new Users();
         fakeUser.name = faker.name.firstName();
@@ -46,10 +46,10 @@ describe("Insert User", () => {
         fakeUser.longitude = faker.address.longitude();
         fakeUser.location = faker.address.city();
         fakeUser.grade = faker.datatype.number(4);
-  
+
         // 2. 글 생성
         const user: Users = await service.insertFakerData(fakeUser);
-  
+
         // then : 테스트 함수 결과
         expect(user).toBeDefined();
         expect(user.name).toEqual(fakeUser.name);
@@ -65,5 +65,5 @@ describe("Insert User", () => {
         expect(user.grade).toEqual(fakeUser.grade);
       });
     }
-  }) 
-})
+  });
+});

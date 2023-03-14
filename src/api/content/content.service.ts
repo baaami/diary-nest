@@ -34,9 +34,9 @@ export class ContentService {
 
   async findList() {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-    .leftJoinAndSelect("contents.image", "image")
-    .leftJoinAndSelect("contents.owner", "user")
-    .getMany();
+      .leftJoinAndSelect("contents.image", "image")
+      .leftJoinAndSelect("contents.owner", "user")
+      .getMany();
 
     return content;
   }
@@ -62,15 +62,13 @@ export class ContentService {
 
   async insertFakerData(fakerdata: Contents): Promise<Contents> {
     const res = await this.ContentRepository.save(fakerdata);
-    return res
+    return res;
   }
 
-  
   async insertFakerImageData(fakerdata: Images): Promise<Images> {
     const res = await this.ContentRepository.save(fakerdata);
-    return res
+    return res;
   }
-
 
   async uploadFiles(files: { images?: Express.Multer.File[] }) {
     const result = [];
