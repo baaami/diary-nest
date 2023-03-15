@@ -31,6 +31,10 @@ export class Users {
   @Column("varchar", { name: "email", length: 100 })
   email: string;
 
+  @IsOptional()
+  @Column("varchar", { name: "password", length: 100 })
+  password: string;
+
   @Column("boolean", { name: "is_sns" })
   is_sns: boolean;
 
