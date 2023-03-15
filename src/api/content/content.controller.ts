@@ -29,23 +29,27 @@ import { Request } from "express";
 @Controller("content")
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
-
-  @UseGuards(AuthGuard)
-  @Get(":id")
-  read(@Param("id", ParseIntPipe) contentId: number, @Req() req: Request) {
-    console.log(req.body);
-    return this.contentService.findOne(contentId);
-  }
-
+  
   @Get("/list")
   list() {
     return this.contentService.findList();
   }
 
-  @Get("/list/:id")
-  listUser(@Param("id", ParseIntPipe) userId: number) {
-    return this.contentService.findUserList(userId);
+  @Get("/list/user/selling/:id")
+  sellingList(@Param("id", ParseIntPipe) userId: number) {
+    return this.contentService.getSellingProductsByUser(userId);
   }
+
+  @Get("/list/user/sold/:id")
+  soldList(@Param("id", ParseIntPipe) userId: number) {
+    return this.contentService.getSoldProductsByUser(userId);
+  }
+
+  @Get(":id")
+  read(@Param("id", ParseIntPipe) contentId: number, @Req() req: Request) {
+    return this.contentService.findOne(contentId);
+  }
+
 
   @UseGuards(AuthGuard)
   @Post()

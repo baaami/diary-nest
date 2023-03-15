@@ -34,21 +34,30 @@ export class ContentService {
 
   async findList() {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.image", "image")
-      .leftJoinAndSelect("contents.owner", "user")
-      .getMany();
+    .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+    .getMany();
 
     return content;
   }
-
-  async findUserList(userId: number) {
+  
+  async getSellingProductsByUser(userId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.userId", "user.id")
-      .where({ userId: userId })
+      .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
       .getMany();
 
     return content;
   }
+
+  async getSoldProductsByUser(userId: number) {
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
+      .getMany();
+
+    return content;
+  }
+
 
   async writeOne(
     createContentDto: CreateContentDto,
