@@ -88,13 +88,13 @@ export class AuthService {
     // 1. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     const [ok, token] = await GetAccessToken(permissionCode);
     if (!ok) {
-      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Get Access Token Error", HttpStatus.UNAUTHORIZED);
     }
 
     // 2. access_token 유저 확인
     const [ret, user_email] = await GetUserData(token);
     if (!ret) {
-      throw new HttpException("Server Error", HttpStatus.UNAUTHORIZED);
+      throw new HttpException("Get User Data Error", HttpStatus.UNAUTHORIZED);
     }
 
     let user: CreateUserDto | UpdateUserDto = { email: user_email };
@@ -109,9 +109,7 @@ export class AuthService {
       console.log("UserWithRepository: ", UserWithRepository);
       user = UserWithRepository;
     } else {
-      // c_user : create_user
-      // u_user : update_user
-      // d_user : delete_user
+      // 존재하지 않을 경우, db 저장
       const c_user = await this.UserRepository.save(user);
       console.log(c_user);
     }
