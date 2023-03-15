@@ -8,11 +8,16 @@ export class AuthController {
 
   @Post("/kakao")
   kakao(@Body() createAuthKakaoDto: CreateAuthKakaoDto) {
-    return this.authService.kakaologin(createAuthKakaoDto.code);
+    return this.authService.kakaoLogin(createAuthKakaoDto.code);
   }
 
-  @Post("/local")
-  local(@Body() createAuthLocalDto: CreateAuthLocalDto) {
-    return this.authService.locallogin(createAuthLocalDto.code);
+  @Post("/local/signup")
+  signup(@Body() createAuthLocalDto: CreateAuthLocalDto) {
+    return this.authService.localSignUp(createAuthLocalDto);
+  }
+
+  @Post("/local/signin")
+  signin(@Body() createAuthLocalDto: CreateAuthLocalDto) {
+    return this.authService.localSignIn(createAuthLocalDto);
   }
 }
