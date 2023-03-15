@@ -11,7 +11,10 @@ import {
 } from "src/common/entities/common.entity";
 import { CreateUserDto } from "src/api/user/dto/create-user.dto";
 import { UpdateUserDto } from "src/api/user/dto/update-user.dto";
-import { CreateAuthLocalDto } from "./dto/create-auth.dto";
+import {
+  CreateAuthLocalDto,
+  CreateSignInLocalDto
+} from "./dto/create-auth.dto";
 
 async function GetAccessToken(
   permissionCode: string
@@ -155,22 +158,21 @@ export class AuthService {
     };
   }
 
-  async localSignIn(createAuthLocalDto: CreateAuthLocalDto) {
-    // 1 회원, 비회원 확인
-    // email이 db에 존재하는지 확인
-    const UserWithRepository = await this.UserRepository.findOneBy({
-      email: createAuthLocalDto.email,
+  async localSignIn(createSignInDto: CreateSignInLocalDto) {
+    // email이 db에 존재하는지 확인 
+    const user: Users = await this.UserRepository.findOneBy({
+      email: createSignInDto.email,
     });
-    if (UserWithRepository) {
-      // 존재할 경우, 사용 중인 이메일이라는 response를 줘야함
-      throw new HttpException("Duplicated Email", HttpStatus.CONFLICT);
+
+    // case: 존재하지 않는 아이디
+    if (!user) {
+      throw new HttpException("Not Exist Email", HttpStatus.UNAUTHORIZED);
     }
 
-    // c_user : create_user
-    // u_user : update_user
-    // d_user : delete_user
-    const user: Users = await this.UserRepository.save(createAuthLocalDto);
-    console.log(user);
+    // case: 존재하는 아이디
+    if(createSignInDto.password !== user.password) {
+      throw new HttpException("Invalid Password", HttpStatus.UNAUTHORIZED);
+    }
 
     return {
       token: this.jwtService.sign(

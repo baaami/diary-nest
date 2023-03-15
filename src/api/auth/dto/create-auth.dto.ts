@@ -46,8 +46,8 @@ export class CreateAuthLocalDto {
 
 export class CreateSignInLocalDto {
   @IsString()
-  readonly id: string;
+  readonly email: string;
 
   @IsString()
-  readonly pwd: string;
+  readonly password: string;
 }

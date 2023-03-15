@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
-import { CreateAuthKakaoDto, CreateAuthLocalDto } from "./dto/create-auth.dto";
+import { CreateAuthKakaoDto, CreateAuthLocalDto, CreateSignInLocalDto } from "./dto/create-auth.dto";
 
 @Controller("/auth")
 export class AuthController {
@@ -17,7 +17,7 @@ export class AuthController {
   }
 
   @Post("/local/signin")
-  signin(@Body() createAuthLocalDto: CreateAuthLocalDto) {
-    return this.authService.localSignIn(createAuthLocalDto);
+  signin(@Body() createSignInLocalDto: CreateSignInLocalDto) {
+    return this.authService.localSignIn(createSignInLocalDto);
   }
 }
