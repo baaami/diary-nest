@@ -36,9 +36,6 @@ export class CreateAuthLocalDto {
 
   @IsString()
   readonly location: string;
-
-  @IsNumber()
-  readonly grade: number;
 }
 
 export class CreateSignInLocalDto {

@@ -2,6 +2,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Contents } from 'src/api/content/entities/content.entity';
 import { Users } from 'src/api/user/entities/user.entity';
 import * as dotenv from 'dotenv';
+import { Favorites } from 'src/common/entities/favorite.entity';
+import { Reviews } from 'src/common/entities/review.entity';
+import { Images } from 'src/common/entities/image.entity';
 
 dotenv.config();
 
@@ -14,7 +17,10 @@ const config:TypeOrmModuleOptions = {
     database:process.env.DB_DATABASE,
     entities:[
         Contents,
-        Users
+        Users,
+        Favorites,
+        Reviews,
+        Images,
     ],
     synchronize : true, // 한번 true한 뒤로는 무조건 false
     autoLoadEntities:true,

@@ -34,7 +34,4 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsString()
   readonly location: string;
-
-  @IsNumber()
-  readonly grade: number;
 }
