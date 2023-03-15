@@ -42,11 +42,14 @@ describe("Insert User", () => {
 
         // 데이터 생성
         const content = new Contents();
-        content.title = faker.lorem.words(3);
+        content.title = faker.commerce.productName();
         content.body = faker.lorem.sentences(3, { words: 50 });
         content.category = faker.lorem.word();
         content.completed = faker.datatype.boolean();
         content.price = faker.datatype.number({ min: 1000, max: 100000 });
+        content.latitude = faker.address.latitude(36, 38)
+        content.longitude = faker.address.longitude(127, 128)
+        content.location = faker.address.streetAddress()
         content.like_cnt = faker.datatype.number({ min: 0, max: 100 });
         content.chat_cnt = faker.datatype.number({ min: 0, max: 10 });
         content.completed_date = faker.date.future();
