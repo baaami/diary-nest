@@ -39,7 +39,7 @@ describe("Insert User", () => {
         fakeUser.birth = faker.date.past();
         fakeUser.nickname = faker.internet.userName();
         fakeUser.email = faker.internet.email();
-        fakeUser.is_sns = faker.datatype.boolean();
+        fakeUser.password = faker.internet.password();
         fakeUser.university = faker.company.companyName();
         fakeUser.gender = faker.datatype.number(1);
         fakeUser.latitude = faker.address.latitude();
@@ -56,7 +56,7 @@ describe("Insert User", () => {
         expect(user.birth).toEqual(fakeUser.birth);
         expect(user.nickname).toEqual(fakeUser.nickname);
         expect(user.email).toEqual(fakeUser.email);
-        expect(user.is_sns).toEqual(fakeUser.is_sns);
+        expect(user.password).toEqual(fakeUser.password);
         expect(user.university).toEqual(fakeUser.university);
         expect(user.gender).toEqual(fakeUser.gender);
         expect(user.latitude).toEqual(fakeUser.latitude);

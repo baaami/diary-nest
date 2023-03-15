@@ -35,9 +35,6 @@ export class Users {
   @Column("varchar", { name: "password", length: 100 })
   password: string;
 
-  @Column("boolean", { name: "is_sns" })
-  is_sns: boolean;
-
   @Column("varchar", { name: "university", length: 50 })
   university: string;
 

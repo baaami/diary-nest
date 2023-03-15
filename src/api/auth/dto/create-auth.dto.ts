@@ -22,9 +22,6 @@ export class CreateAuthLocalDto {
   @IsString()
   readonly password: string;
 
-  @IsBoolean()
-  readonly is_sns: boolean;
-
   @IsString()
   readonly university: string;
 

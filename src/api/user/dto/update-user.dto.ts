@@ -15,9 +15,6 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   readonly email: string;
 
-  @IsBoolean()
-  readonly is_sns: boolean;
-
   @IsString()
   readonly university: string;
 
