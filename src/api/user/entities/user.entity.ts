@@ -41,11 +41,11 @@ export class Users {
   @Column("int", { name: "gender", nullable: true })
   gender: number;
 
-  @Column("varchar", { name: "latitude", length: 50, nullable: true })
-  latitude: string;
+  @Column("int", { name: "latitude", nullable: true })
+  latitude: number;
 
-  @Column("varchar", { name: "longitude", length: 50, nullable: true })
-  longitude: string;
+  @Column("int", { name: "longitude", nullable: true })
+  longitude: number;
 
   @Column("varchar", { name: "location", length: 100, nullable: true })
   location: string;

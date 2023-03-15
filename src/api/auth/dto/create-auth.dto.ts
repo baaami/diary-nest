@@ -28,11 +28,11 @@ export class CreateAuthLocalDto {
   @IsNumber()
   readonly gender: number;
 
-  @IsString()
-  readonly latitude: string;
+  @IsNumber()
+  readonly latitude: number;
 
-  @IsString()
-  readonly longitude: string;
+  @IsNumber()
+  readonly longitude: number;
 
   @IsString()
   readonly location: string;
