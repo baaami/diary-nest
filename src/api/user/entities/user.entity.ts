@@ -19,38 +19,38 @@ export class Users {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("varchar", { name: "name", length: 20 })
+  @Column("varchar", { name: "name", length: 20, nullable: true })
   name: string;
 
   @UpdateDateColumn()
   birth: Date;
 
-  @Column("varchar", { name: "nickname", length: 20 })
+  @Column("varchar", { name: "nickname", length: 20, nullable: true })
   nickname: string;
 
   @Column("varchar", { name: "email", length: 100 })
   email: string;
 
   @IsOptional()
-  @Column("varchar", { name: "password", length: 100 })
+  @Column("varchar", { name: "password", length: 100, nullable: true })
   password: string;
 
-  @Column("varchar", { name: "university", length: 50 })
+  @Column("varchar", { name: "university", length: 50, nullable: true })
   university: string;
 
-  @Column("int", { name: "gender" })
+  @Column("int", { name: "gender", nullable: true })
   gender: number;
 
-  @Column("varchar", { name: "latitude", length: 50 })
+  @Column("varchar", { name: "latitude", length: 50, nullable: true })
   latitude: string;
 
-  @Column("varchar", { name: "longitude", length: 50 })
+  @Column("varchar", { name: "longitude", length: 50, nullable: true })
   longitude: string;
 
-  @Column("varchar", { name: "location", length: 100 })
+  @Column("varchar", { name: "location", length: 100, nullable: true })
   location: string;
 
-  @Column("int", { name: "grade" })
+  @Column("int", { name: "grade", nullable: true })
   grade: number;
 
   @CreateDateColumn()

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository, UpdateResult } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
@@ -43,12 +43,12 @@ export class UserService {
   async update(
     updateUserDto: UpdateUserDto,
     user: Users
-  ): Promise<UpdateResult> {
+  ): Promise<void> {
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto
     );
 
-    return rep;
+    throw new HttpException('User updated successfully', HttpStatus.OK);
   }
 }

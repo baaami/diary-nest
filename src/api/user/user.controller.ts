@@ -21,7 +21,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Post(":id")
+  @Post("/info")
   update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     return this.userService.update(updateUserDto, req.user);
   }
