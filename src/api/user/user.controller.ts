@@ -24,23 +24,28 @@ import { editFileName } from "src/lib/multer/multerOption";
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
+  
+  // 특정 유저 조회
   @Get("/find/:id")
   getOne(@Param("id", ParseIntPipe) userId: number) {
     return this.userService.findOne(userId);
   }
 
+  // 로그인 상태 유지
   @UseGuards(AuthGuard)
   @Post("/islogin")
   islogin(@Req() req: any) {
     return this.userService.islogin(req.user);
   }
 
+  // 유저 정보 업데이트
   @UseGuards(AuthGuard)
   @Post("/info")
   update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     return this.userService.update(updateUserDto, req.user);
   }
 
+  // 프로필 이미지 업로드
   @UseGuards(AuthGuard)
   @Post("/profile/image")
   @UseInterceptors(
