@@ -34,7 +34,8 @@ export class ContentService {
 
   async findList() {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-    .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+    .leftJoinAndSelect('contents.owner', 'users') 
+    .leftJoinAndSelect('contents.images', 'images')
     .getMany();
 
     return content;
@@ -42,7 +43,7 @@ export class ContentService {
   
   async getSellingProductsByUser(userId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
       .getMany();
 
@@ -51,7 +52,7 @@ export class ContentService {
 
   async getSoldProductsByUser(userId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
       .getMany();
 
@@ -63,7 +64,7 @@ export class ContentService {
     createContentDto: CreateContentDto,
     user: Users
   ): Promise<CreateContentDto & Contents> {
-    createContentDto.userId = user.id;
+    createContentDto.owner = user;
 
     const content = await this.ContentRepository.save(createContentDto);
     return content;
@@ -99,7 +100,7 @@ export class ContentService {
   ) {
     const { images } = files;
 
-    createContentDto.userId = user.id;
+    createContentDto.owner = user;
 
     const content: Contents = await this.ContentRepository.save(
       createContentDto

@@ -47,16 +47,31 @@ export class UserService {
     return res;
   }
 
+  async islogin(user: Users): Promise<Users> {
+    const res = await this.UserRepository.createQueryBuilder("users")
+    .leftJoinAndSelect('users.contents', 'contents') 
+    .leftJoinAndSelect('users.images', 'images')
+    .where({ id: user.id })
+    .getOne();
+    return res;
+  }
+
   async update(
     updateUserDto: UpdateUserDto,
     user: Users
-  ): Promise<void> {
+  ): Promise<Users> {
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto
     );
 
-    throw new HttpException('User updated successfully', HttpStatus.OK);
+    const res = await this.UserRepository.createQueryBuilder("users")
+    .leftJoinAndSelect('users.contents', 'contents') 
+    .leftJoinAndSelect('users.images', 'images')
+    .where({ id: user.id })
+    .getOne();
+
+    return res;
   }
 
   async uploadProfile(files: { images?: Express.Multer.File[] }, user: Users) {

@@ -30,6 +30,12 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Post("/islogin")
+  islogin(@Req() req: any) {
+    return this.userService.islogin(req.user);
+  }
+
+  @UseGuards(AuthGuard)
   @Post("/info")
   update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
     return this.userService.update(updateUserDto, req.user);

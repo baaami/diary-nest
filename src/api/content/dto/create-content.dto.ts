@@ -1,4 +1,5 @@
-import { IsString, IsNumber, IsOptional } from "class-validator";
+import { IsString, IsNumber, IsOptional, IsObject } from "class-validator";
+import { Users } from "src/api/user/entities/user.entity";
 
 export class CreateContentDto {
   @IsString()
@@ -8,6 +9,6 @@ export class CreateContentDto {
   readonly body: string;
 
   @IsOptional()
-  @IsNumber()
-  userId: number;
+  @IsObject()
+  owner: Users;
 }
