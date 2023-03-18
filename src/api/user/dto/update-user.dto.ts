@@ -26,10 +26,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsNumber()
   readonly gender: number;
 
-  @IsString()
+  @IsNumber()
   readonly latitude: number;
 
-  @IsString()
+  @IsNumber()
   readonly longitude: number;
 
   @IsString()
