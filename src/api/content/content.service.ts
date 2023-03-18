@@ -16,12 +16,12 @@ export class ContentService {
     @InjectEntityManager() private ContentManager: EntityManager
   ) {}
 
-  async findOne(contentId: number): Promise<Contents> {
+  async findOne(contentId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.userId", "user.id")
-      .leftJoinAndSelect("contents.image", "content")
-      .where({ id: contentId })
-      .getOne();
+    .leftJoinAndSelect('contents.owner', 'users') 
+    .leftJoinAndSelect('contents.images', 'images')
+    .where({ id: contentId })
+    .getOne();
 
     return content;
   }
@@ -106,9 +106,11 @@ export class ContentService {
     );
 
     if (images) {
+      // console.log(images)
       images.forEach((image: Partial<CreateImageDto>) => {
-        image.contentId = content.id;
+        image.content = content;
         // 이미지 db에 저장
+        console.log(image)
         this.ImageRepository.save(image);
       });
     } else {

@@ -5,7 +5,7 @@ export class CreateContentDto {
   readonly title: string;
 
   @IsString()
-  readonly content: string;
+  readonly body: string;
 
   @IsOptional()
   @IsNumber()

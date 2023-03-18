@@ -30,6 +30,7 @@ import { FavoriteModule } from "./api/favorite/favorite.module";
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "../../", "upload"),
+      serveRoot: '/upload',
     }),
     EventsModule,
   ],

@@ -53,6 +53,7 @@ describe("Insert User", () => {
         content.like_cnt = faker.datatype.number({ min: 0, max: 100 });
         content.chat_cnt = faker.datatype.number({ min: 0, max: 10 });
         content.completed_date = faker.date.future();
+        console.log(content)
         const user = await user_service.findRandomOne();
         content.buyer = user;
 

@@ -15,9 +15,9 @@ import { UserService } from "./user.service";
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Get(":id")
+  @Get("/find/:id")
   getOne(@Param("id", ParseIntPipe) userId: number) {
-    return this.userService.findOne(userId);
+    return this.userService.findJoinOne(userId);
   }
 
   @UseGuards(AuthGuard)

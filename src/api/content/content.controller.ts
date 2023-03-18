@@ -45,11 +45,10 @@ export class ContentController {
     return this.contentService.getSoldProductsByUser(userId);
   }
 
-  @Get(":id")
+  @Get("/read/:id")
   read(@Param("id", ParseIntPipe) contentId: number, @Req() req: Request) {
     return this.contentService.findOne(contentId);
   }
-
 
   @UseGuards(AuthGuard)
   @Post()
@@ -57,7 +56,7 @@ export class ContentController {
     return this.contentService.writeOne(createContentDto, req.user);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post("/image")
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {

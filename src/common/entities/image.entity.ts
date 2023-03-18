@@ -5,11 +5,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
+import { Users } from "src/api/user/entities/user.entity";
 
 @Entity({ schema: "school", name: "images" })
 export class Images {
@@ -46,7 +48,11 @@ export class Images {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Contents, (contents) => contents.id)
-  @JoinColumn([{ name: "content_id" }])
+  @ManyToOne(() => Contents, (content) => content.images)
+  @JoinColumn({ name: "content_id" })
   content: Contents;
+
+  @ManyToMany(() => Users, (user) => user.images)
+  @JoinColumn({ name: "user_id" })
+  user: Users;
 }

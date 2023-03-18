@@ -13,6 +13,7 @@ import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
 import { Reviews } from "src/common/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
+import { Images } from "src/common/entities/image.entity";
 
 @Entity({ schema: "school", name: "users" })
 export class Users {
@@ -70,4 +71,7 @@ export class Users {
 
   @OneToMany(() => Contents, (content) => content.id)
   contents: Contents[];
+
+  @ManyToMany(() => Images, (image) => image.content)
+  images: Images[];
 }

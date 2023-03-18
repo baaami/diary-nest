@@ -14,6 +14,15 @@ export class UserService {
     return user;
   }
 
+  async findJoinOne(userId: number): Promise<Users> {
+    const user = await this.UserRepository.createQueryBuilder("users")
+    .leftJoinAndSelect('users.contents', 'contents') 
+    .leftJoinAndSelect('users.images', 'images')
+    .where({ id: userId })
+    .getOne();
+    return user;
+  }
+
   async findlatest(): Promise<Users> {
     const rep = await this.UserRepository.find();
     return rep[0];

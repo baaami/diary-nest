@@ -33,13 +33,13 @@ export class Contents {
   @Column("boolean", { name: "completed" })
   completed: boolean;
 
-  @Column("int", { name: "latitude"})
+  @Column("int", { name: "latitude", nullable: true})
   latitude: number;
 
-  @Column("int", { name: "longitude"})
+  @Column("int", { name: "longitude", nullable: true})
   longitude: number;
 
-  @Column("varchar", { name: "location", length: 100 })
+  @Column("varchar", { name: "location", length: 100, nullable: true })
   location: string;
 
   @Column("int", { name: "price" })
@@ -68,12 +68,12 @@ export class Contents {
   deletedAt: Date | null;
 
   @ManyToOne(() => Users, (user) => user.id)
-  @JoinColumn([{ name: "owner_id" }])
+  @JoinColumn({ name: "owner_id" })
   owner: Users;
 
   @ManyToMany(() => Favorites, (favorite) => favorite.id)
   favorites: Favorites[];
 
-  @OneToMany(() => Images, (images) => images.id)
-  image: Images;
+  @OneToMany(() => Images, (image) => image.content)
+  images: Images;
 }
