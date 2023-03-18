@@ -124,6 +124,30 @@ export class AuthService {
     };
   }
 
+  async kakaoSignUp(
+    updateUserDto: UpdateUserDto,
+    user: Users
+  ) {
+    const rep = await this.UserRepository.update(
+      { id: user.id },
+      updateUserDto
+    );
+
+    const updateUser = await this.UserRepository.createQueryBuilder("users")
+    .leftJoinAndSelect('users.contents', 'contents') 
+    .leftJoinAndSelect('users.images', 'images')
+    .where({ id: user.id })
+    .getOne();
+
+    return {
+      token: this.jwtService.sign(
+        { updateUser },
+        { secret: process.env.JWT_SECRET_KEY }
+      ),
+      user: updateUser,
+    };
+  }
+
   /**
    * 회원이 기존에 존재할 경우 : 사용 중인 이메일이라는 response를 줘야함
    * 존재하지 않을 경우 : DB 저장 및 회원가입 완료
