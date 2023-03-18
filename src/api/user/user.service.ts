@@ -3,18 +3,16 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository, UpdateResult } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { CreateImageDto } from "src/common/dto/create-image.dto";
+import { Images } from "src/common/entities/image.entity";
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(Users) private UserRepository: Repository<Users>
+    @InjectRepository(Users) private UserRepository: Repository<Users>,
+    @InjectRepository(Images) private ImageRepository: Repository<Images>,
   ) {}
   async findOne(userId: number): Promise<Users> {
-    const user = await this.UserRepository.findOneBy({ id: userId });
-    return user;
-  }
-
-  async findJoinOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.createQueryBuilder("users")
     .leftJoinAndSelect('users.contents', 'contents') 
     .leftJoinAndSelect('users.images', 'images')
@@ -59,5 +57,21 @@ export class UserService {
     );
 
     throw new HttpException('User updated successfully', HttpStatus.OK);
+  }
+
+  async uploadProfile(files: { images?: Express.Multer.File[] }, user: Users) {
+    const { images } = files;
+
+    if (images) {
+      // console.log(images)
+      images.forEach((image: Partial<CreateImageDto>) => {
+        image.user = user;
+        // 이미지 db에 저장
+        console.log(image)
+        this.ImageRepository.save(image);
+      });
+    } else {
+      console.log("image not found");
+    } 
   }
 }

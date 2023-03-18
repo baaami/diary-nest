@@ -8,6 +8,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  OneToOne,
 } from "typeorm";
 import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
@@ -52,7 +53,7 @@ export class Images {
   @JoinColumn({ name: "content_id" })
   content: Contents;
 
-  @ManyToMany(() => Users, (user) => user.images)
+  @OneToOne(() => Users, (user) => user.images)
   @JoinColumn({ name: "user_id" })
   user: Users;
 }

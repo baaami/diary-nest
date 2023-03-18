@@ -1,5 +1,6 @@
 import { IsString, IsNumber, IsOptional, IsObject } from "class-validator";
 import { Contents } from "src/api/content/entities/content.entity";
+import { Users } from "src/api/user/entities/user.entity";
 
 export class CreateImageDto {
   @IsString()
@@ -27,6 +28,10 @@ export class CreateImageDto {
   @IsOptional()
   @IsObject()
   content: Contents;
+
+  @IsOptional()
+  @IsObject()
+  user: Users;
 
   @IsNumber()
   readonly size: number;

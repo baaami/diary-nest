@@ -6,6 +6,7 @@ import {
   JoinColumn,
   ManyToMany,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -69,9 +70,9 @@ export class Users {
   @ManyToMany(() => Favorites, (favorite) => favorite.id)
   favorites: Favorites[];
 
-  @OneToMany(() => Contents, (content) => content.id)
-  contents: Contents[];
+  @OneToMany(() => Contents, (content) => content.owner)
+  contents: Contents;
 
-  @ManyToMany(() => Images, (image) => image.content)
-  images: Images[];
+  @OneToOne(() => Images, (image) => image.user)
+  images: Images;
 }
