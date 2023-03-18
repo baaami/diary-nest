@@ -45,10 +45,10 @@ export class Contents {
   @Column("int", { name: "price" })
   price: number;
 
-  @Column("int", { name: "like_cnt" })
+  @Column("int", { name: "like_cnt", default: 0 })
   like_cnt: number;
 
-  @Column("int", { name: "chat_cnt" })
+  @Column("int", { name: "chat_cnt", default: 0 })
   chat_cnt: number;
 
   @UpdateDateColumn()
