@@ -19,6 +19,8 @@ export class FavoriteService {
       'contents.chat_cnt',
       'contents.like_cnt',
       'contents.createdAt',
+      'contents.price',
+      'contents.updatedAt'
     ])
     .innerJoin('favorites.content', 'contents')
     .innerJoin('favorites.user', 'users')
