@@ -1,7 +1,7 @@
 import { IsString, IsNumber, IsDate, IsBoolean, IsOptional } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { CreateUserDto } from "./create-user.dto";
-import { Type } from "class-transformer";
+import { Type, Transform } from "class-transformer";
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
@@ -23,12 +23,15 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   readonly university: string;
 
+  @Transform(({value}) => parseInt(value))
   @IsNumber()
   readonly gender: number;
-
+  
+  @Transform(({value}) => parseFloat(value))
   @IsNumber()
   readonly latitude: number;
-
+  
+  @Transform(({value}) => parseFloat(value))
   @IsNumber()
   readonly longitude: number;
 

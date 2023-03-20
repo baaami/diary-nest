@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import { IsString, IsNumber, IsBoolean } from "class-validator";
 
 export class CreateAuthKakaoDto {
@@ -25,12 +25,16 @@ export class CreateAuthLocalDto {
   @IsString()
   readonly university: string;
 
+  @Transform(({value}) => parseInt(value))
   @IsNumber()
   readonly gender: number;
 
+  @Transform(({value}) => parseFloat(value))
   @IsNumber()
   readonly latitude: number;
 
+
+  @Transform(({value}) => parseFloat(value))
   @IsNumber()
   readonly longitude: number;
 

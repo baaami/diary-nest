@@ -107,11 +107,8 @@ export class ContentService {
     );
 
     if (images) {
-      // console.log(images)
       images.forEach((image: Partial<CreateImageDto>) => {
         image.content = content;
-        // 이미지 db에 저장
-        console.log(image)
         this.ImageRepository.save(image);
       });
     } else {
