@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 
 @Controller('favorite')
@@ -7,8 +7,7 @@ export class FavoriteController {
   @Get(":id")
 
   // 관심 목록 리스트
-  getFavoriteList(@Param("id", ParseIntPipe) userId: number) {
-    console.log('hey')
-    return this.favoriteService.getFavoriteList(userId)
+  getFavoriteList(@Param("id", ParseIntPipe) userId: number, @Query() page: number) {
+    return this.favoriteService.getFavoriteList(userId, page)
   }
 }

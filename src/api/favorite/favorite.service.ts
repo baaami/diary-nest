@@ -10,20 +10,10 @@ export class FavoriteService {
     private FavoriteRepository: Repository<Favorites>
   ) {}
 
-  async getFavoriteList(userId: number) {
+  async getFavoriteList(userId: number, page: number) {
     const favorites = this.FavoriteRepository.createQueryBuilder("favorites")
-    .select([
-      'favorites.id',
-      'contents.id',
-      'contents.title',
-      'contents.chat_cnt',
-      'contents.like_cnt',
-      'contents.createdAt',
-      'contents.price',
-      'contents.updatedAt'
-    ])
-    .innerJoin('favorites.content', 'contents')
-    .innerJoin('favorites.user', 'users')
+    .leftJoinAndSelect('favorites.content', 'contents')
+    .leftJoinAndSelect('favorites.user', 'users')
     .where('favorites.user_id = :userId', { userId })
     .getMany();
     return favorites
