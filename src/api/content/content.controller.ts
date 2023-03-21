@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UploadedFiles,
   UseGuards,
@@ -46,6 +47,12 @@ export class ContentController {
   @Get("/list/user/sold/:id")
   soldList(@Param("id", ParseIntPipe) userId: number) {
     return this.contentService.getSoldProductsByUser(userId);
+  }
+
+  // 특정 카테고리 게시물 리스트
+  @Get("/list/category")
+  categoryList(@Query('category') category: string) {
+    return this.contentService.getProductsByCategory(category);
   }
 
   // 상세 게시물 조회

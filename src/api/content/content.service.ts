@@ -59,6 +59,14 @@ export class ContentService {
     return content;
   }
 
+  async getProductsByCategory(category: string) {
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .where('contents.category = :category', { category: category })
+      .getMany();
+
+    return content;
+  }
+
 
   async writeOne(
     createContentDto: CreateContentDto,
