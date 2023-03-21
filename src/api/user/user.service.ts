@@ -87,6 +87,8 @@ export class UserService {
       });
     } else {
       console.log("image not found");
-    } 
+    }
+
+    return images
   }
 }
