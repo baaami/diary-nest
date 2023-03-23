@@ -30,7 +30,7 @@ export class Contents {
   @Column("varchar", { name: "category", length: 100 })
   category: string;
 
-  @Column("boolean", { name: "completed" })
+  @Column("boolean", { name: "completed", nullable: true })
   completed: boolean;
 
   @Column("int", { name: "latitude", nullable: true})
