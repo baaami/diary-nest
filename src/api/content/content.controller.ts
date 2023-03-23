@@ -33,25 +33,29 @@ export class ContentController {
   
   // 게시물 리스트
   @Get("/list")
-  list(@Query('page') page: number) {
+  list(@Query('page') page: number = 0) {
+    if(isNaN(page)) page = 0
     return this.contentService.findList(page);
   }
 
   // 판매 중인 게시물 리스트
   @Get("/list/user/selling/:id")
-  sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number) {
+  sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
+    if(isNaN(page)) page = 0
     return this.contentService.getSellingProductsByUser(userId, page);
   }
 
   // 판매 완료된 게시물 리스트
   @Get("/list/user/sold/:id")
-  soldList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number) {
+  soldList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
+    if(isNaN(page)) page = 0
     return this.contentService.getSoldProductsByUser(userId, page);
   }
 
   // 특정 카테고리 게시물 리스트
   @Get("/list/category")
-  categoryList(@Query('category') category: string, @Query('page') page: number) {
+  categoryList(@Query('category') category: string, @Query('page') page: number = 0) {
+    if(isNaN(page)) page = 0
     return this.contentService.getProductsByCategory(category, page);
   }
 
