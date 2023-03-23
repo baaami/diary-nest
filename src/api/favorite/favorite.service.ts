@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { pagenation_content_size } from "src/common/define";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Repository } from "typeorm";
 
@@ -15,6 +16,8 @@ export class FavoriteService {
     .leftJoinAndSelect('favorites.content', 'contents')
     .leftJoinAndSelect('favorites.user', 'users')
     .where('favorites.user_id = :userId', { userId })
+    .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+    .take(pagenation_content_size)
     .getMany();
     return favorites
   }

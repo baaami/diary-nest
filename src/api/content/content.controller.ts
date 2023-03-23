@@ -33,26 +33,26 @@ export class ContentController {
   
   // 게시물 리스트
   @Get("/list")
-  list() {
-    return this.contentService.findList();
+  list(@Query('page') page: number) {
+    return this.contentService.findList(page);
   }
 
   // 판매 중인 게시물 리스트
   @Get("/list/user/selling/:id")
-  sellingList(@Param("id", ParseIntPipe) userId: number) {
-    return this.contentService.getSellingProductsByUser(userId);
+  sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number) {
+    return this.contentService.getSellingProductsByUser(userId, page);
   }
 
   // 판매 완료된 게시물 리스트
   @Get("/list/user/sold/:id")
-  soldList(@Param("id", ParseIntPipe) userId: number) {
-    return this.contentService.getSoldProductsByUser(userId);
+  soldList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number) {
+    return this.contentService.getSoldProductsByUser(userId, page);
   }
 
   // 특정 카테고리 게시물 리스트
   @Get("/list/category")
-  categoryList(@Query('category') category: string) {
-    return this.contentService.getProductsByCategory(category);
+  categoryList(@Query('category') category: string, @Query('page') page: number) {
+    return this.contentService.getProductsByCategory(category, page);
   }
 
   // 상세 게시물 조회
