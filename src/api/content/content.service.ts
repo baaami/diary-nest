@@ -47,6 +47,8 @@ export class ContentService {
   async getSellingProductsByUser(userId: number, page: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      .leftJoinAndSelect('contents.owner', 'users') 
+      .leftJoinAndSelect('contents.images', 'images')
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
@@ -58,6 +60,8 @@ export class ContentService {
   async getSoldProductsByUser(userId: number, page: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+      .leftJoinAndSelect('contents.owner', 'users') 
+      .leftJoinAndSelect('contents.images', 'images')
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
@@ -68,6 +72,8 @@ export class ContentService {
 
   async getProductsByCategory(category: string, page: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
+      .leftJoinAndSelect('contents.owner', 'users') 
+      .leftJoinAndSelect('contents.images', 'images')
       .where('contents.category = :category', { category: category })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
