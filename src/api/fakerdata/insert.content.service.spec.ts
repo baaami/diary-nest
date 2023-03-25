@@ -47,13 +47,12 @@ describe("Insert User", () => {
         content.category = faker.lorem.word();
         content.completed = faker.datatype.boolean();
         content.price = faker.datatype.number({ min: 1000, max: 100000 });
-        content.latitude = faker.address.latitude(36, 38)
-        content.longitude = faker.address.longitude(127, 128)
+        content.latitude = parseFloat(faker.address.latitude(36, 38))
+        content.longitude = parseFloat(faker.address.longitude(127, 128))
         content.location = faker.address.streetAddress()
         content.like_cnt = faker.datatype.number({ min: 0, max: 100 });
         content.chat_cnt = faker.datatype.number({ min: 0, max: 10 });
         content.completed_date = faker.date.future();
-        console.log(content)
         const user = await user_service.findRandomOne();
         content.buyer = user;
 
