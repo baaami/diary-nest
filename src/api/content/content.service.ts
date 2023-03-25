@@ -43,6 +43,25 @@ export class ContentService {
 
     return content;
   }
+
+  async findListAll() {
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+    .leftJoinAndSelect('contents.owner', 'users') 
+    .leftJoinAndSelect('contents.images', 'images')
+    .getMany();
+
+    return content;
+  }
+
+  async findListImageIsNull() {
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+    .leftJoinAndSelect('contents.owner', 'users') 
+    .leftJoinAndSelect('contents.images', 'images')
+    .where('images.id IS NULL')
+    .getMany();
+
+    return content;
+  }
   
   async getSellingProductsByUser(userId: number, page: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
@@ -99,7 +118,7 @@ export class ContentService {
   }
 
   async insertFakerImageData(fakerdata: Images): Promise<Images> {
-    const res = await this.ContentRepository.save(fakerdata);
+    const res = await this.ImageRepository.save(fakerdata);
     return res;
   }
 

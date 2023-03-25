@@ -75,5 +75,5 @@ export class Contents {
   favorites: Favorites[];
 
   @OneToMany(() => Images, (image) => image.content)
-  images: Images;
+  images: Images[];
 }

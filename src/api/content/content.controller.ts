@@ -38,6 +38,12 @@ export class ContentController {
     return this.contentService.findList(page);
   }
 
+  // 게시물 리스트
+  @Get("/list/all")
+  alllist() {
+    return this.contentService.findListAll();
+  }
+
   // 판매 중인 게시물 리스트
   @Get("/list/user/selling/:id")
   sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
@@ -61,7 +67,7 @@ export class ContentController {
 
   // 상세 게시물 조회
   @Get("/read/:id")
-  read(@Param("id", ParseIntPipe) contentId: number, @Req() req: Request) {
+  read(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.findOne(contentId);
   }
 
