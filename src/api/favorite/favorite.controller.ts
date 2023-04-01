@@ -5,7 +5,7 @@ import { FavoriteService } from './favorite.service';
 export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
   
-  // 관심 목록 리스트
+  // 특정 유저 관심 목록 리스트
   @Get(":id")
   getFavoriteList(@Param("id", ParseIntPipe) userId: number, @Query() page: number = 0) {
     if(isNaN(page)) page = 0

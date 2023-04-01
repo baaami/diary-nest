@@ -13,9 +13,9 @@ export class FavoriteService {
 
   async getFavoriteList(userId: number, page: number) {
     const favorites = this.FavoriteRepository.createQueryBuilder("favorites")
-    .leftJoinAndSelect('favorites.content', 'contents')
-    .leftJoinAndSelect('favorites.user', 'users')
     .where('favorites.user_id = :userId', { userId })
+    .leftJoinAndSelect('favorites.content', 'contents')
+    .leftJoinAndSelect('contents.images', 'images')
     .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
     .take(pagenation_content_size)
     .getMany();

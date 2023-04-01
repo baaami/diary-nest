@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsString, IsNumber, IsOptional, IsObject } from "class-validator";
+import { IsString, IsNumber, IsOptional, IsObject, IsBoolean } from "class-validator";
 import { Users } from "src/api/user/entities/user.entity";
 import { Images } from 'src/common/entities/image.entity';
 
@@ -27,6 +27,10 @@ export class CreateContentDto {
   @Transform(({value}) => parseInt(value))
   @IsNumber()
   price: number;
+
+  @IsOptional()
+  @IsBoolean()
+  completed: boolean = false;
 
   @IsOptional()
   @IsObject()
