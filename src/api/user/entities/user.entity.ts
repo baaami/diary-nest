@@ -12,7 +12,7 @@ import {
 } from "typeorm";
 import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Images } from "src/common/entities/image.entity";
 

@@ -3,7 +3,7 @@ import { Contents } from 'src/api/content/entities/content.entity';
 import { Users } from 'src/api/user/entities/user.entity';
 import * as dotenv from 'dotenv';
 import { Favorites } from 'src/common/entities/favorite.entity';
-import { Reviews } from 'src/common/entities/review.entity';
+import { Reviews } from 'src/api/review/entities/review.entity';
 import { Images } from 'src/common/entities/image.entity';
 
 dotenv.config();

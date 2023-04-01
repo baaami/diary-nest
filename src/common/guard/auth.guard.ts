@@ -30,6 +30,7 @@ export class AuthGuard implements CanActivate {
     const accessToken = request.headers.authorization.split("Bearer ")[1];
 
     // 검증
+    console.log("accessToken: ", accessToken)
     const decoded: JwtdecodedUser = this.jwtService.verify(
       accessToken.toString(),
       { secret: process.env.JWT_SECRET_KEY }
@@ -41,6 +42,7 @@ export class AuthGuard implements CanActivate {
 
     // 검증 성공
     request.user = decoded.user;
+    console.log("request.user: ", request.user)
     return true;
   }
 }
