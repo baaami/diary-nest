@@ -3,11 +3,13 @@ import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { WsAdapter } from "@nestjs/platform-ws";
 import { AppModule } from "./app.module";
-
+import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors();
+  // somewhere in your initialization file
+  app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
       // decorator가 없는 어떤 property에 대해서 값이 input되지 못하게함

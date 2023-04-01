@@ -23,11 +23,11 @@ export class AuthGuard implements CanActivate {
   }
 
   private validateUser(request: any) {
-    if (request.headers.hasOwnProperty("authorization") == false) {
+    if (request.cookies.hasOwnProperty("access_token") == false) {
       return false;
     }
     // 검증할 access token 획득
-    const accessToken = request.headers.authorization.split("Bearer ")[1];
+    const accessToken = request.cookies.access_token;
 
     // 검증
     const decoded: JwtdecodedUser = this.jwtService.verify(
