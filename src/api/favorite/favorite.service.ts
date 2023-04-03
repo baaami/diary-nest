@@ -18,7 +18,7 @@ export class FavoriteService {
     .leftJoinAndSelect('contents.images', 'images')
     .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
     .take(pagenation_content_size)
-    .getMany();
+    .getManyAndCount();
     return favorites
   }
 
