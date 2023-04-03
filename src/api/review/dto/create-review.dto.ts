@@ -6,4 +6,7 @@ import { Images } from 'src/common/entities/image.entity';
 export class CreateReviewDto {
   @IsString()
   readonly review: string;
+
+  @IsNumber()
+  readonly grade: number;
 }

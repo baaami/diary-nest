@@ -20,8 +20,6 @@ export class ReviewService {
 
   // 특정 회원 리뷰 조회
   async getlist(sellerId: number): Promise<Reviews[]> {
-
-    console.log(sellerId)
     const reviews = await this.ReviewRepository
     .createQueryBuilder('reviews')
     .leftJoinAndSelect('reviews.buyer', 'buyer')
@@ -41,6 +39,7 @@ export class ReviewService {
 
     const review = new Reviews()
 
+    review.grade = createReviewDto.grade
     review.review = createReviewDto.review,
     review.seller = seller,
     review.buyer = buyer
