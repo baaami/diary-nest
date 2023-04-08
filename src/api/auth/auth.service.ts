@@ -128,7 +128,7 @@ export class AuthService {
 
   async kakaoSignUp(
     updateUserDto: UpdateUserDto,
-    user: Users
+    user: Users,
     @Res() res: Response
   ) {
     const rep = await this.UserRepository.update(
