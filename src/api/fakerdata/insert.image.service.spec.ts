@@ -4,7 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../user/entities/user.entity";
 import * as ormconfig from "../../../ormconfig";
 import * as faker from "faker";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
 import { FavoriteService } from "../favorite/favorite.service";
 import { Images } from "src/common/entities/image.entity";
 import { Contents } from "../content/entities/content.entity";
@@ -14,6 +14,8 @@ import { Favorites } from "src/common/entities/favorite.entity";
 import axios, { all, AxiosResponse } from "axios";
 import { Console } from "console";
 import { image_cnt_per_content } from "./insert.common.types";
+
+jest.setTimeout(30000)
 
 describe("Insert Review", () => {
   let service: ContentService;

@@ -19,7 +19,7 @@
     "faker:image": "jest --forceExit ./src/api/fakerdata/insert.image.service.spec.ts",
     "faker:review": "jest --forceExit ./src/api/fakerdata/insert.review.service.spec.ts",
     "faker:favorite": "jest --forceExit ./src/api/fakerdata/insert.favorite.service.spec.ts",
-    "faker": "yarn faker:user && yarn faker:content && yarn faker:review && yarn faker:favorite",
+    "faker": "yarn faker:user && yarn faker:content && yarn faker:review && yarn faker:favorite && yarn faker:image",
     "test": "jest --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

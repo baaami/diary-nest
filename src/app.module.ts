@@ -15,7 +15,7 @@ import { AuthModule } from "./api/auth/auth.module";
 import { UserModule } from "./api/user/user.module";
 import { Users } from "./api/user/entities/user.entity";
 import { EventsModule } from "./events/events.module";
-import { Reviews } from "./common/entities/review.entity";
+import { Reviews } from "./api/review/entities/review.entity";
 import { Favorites } from "./common/entities/favorite.entity";
 import { ReviewModule } from "./api/review/review.module";
 import { FavoriteModule } from "./api/favorite/favorite.module";

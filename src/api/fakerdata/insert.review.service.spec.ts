@@ -49,6 +49,7 @@ describe("Insert Review", () => {
         review.seller = seller;
 
         review.review = faker.lorem.sentences(4, { words: 20 });
+        review.grade = faker.datatype.number({ min: 0, max: 5 });
 
         // 2. DB 저장
         const savedReview: Reviews = await service.insertFakerData(review);
@@ -57,6 +58,7 @@ describe("Insert Review", () => {
         expect(review.buyer).toEqual(savedReview.buyer);
         expect(review.seller).toEqual(savedReview.seller);
         expect(review.review).toEqual(savedReview.review);
+        expect(review.grade).toEqual(savedReview.grade);
       });
     }
   });

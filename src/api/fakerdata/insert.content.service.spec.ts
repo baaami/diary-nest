@@ -8,7 +8,7 @@ import { Contents } from "../content/entities/content.entity";
 import { ContentService } from "../content/content.service";
 import { Images } from "src/common/entities/image.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
 import { time } from "console";
 import { content_cnt } from "./insert.common.types";
 

@@ -26,6 +26,7 @@ import { ContentService } from "./content.service";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { Request } from "express";
+import { ContentList } from "src/common/entities/common.entity";
 
 @Controller("content")
 export class ContentController {
@@ -33,9 +34,15 @@ export class ContentController {
   
   // 게시물 리스트
   @Get("/list")
-  list(@Query('page') page: number = 0) {
+  async list(@Query('page') page: number = 0) {
     if(isNaN(page)) page = 0
-    return this.contentService.findList(page);
+
+    const [contents, totalPage] = await this.contentService.findList(page);
+    const result: ContentList = {
+      contents,
+      totalPage
+    }
+    return result;
   }
 
   // 게시물 리스트
@@ -46,23 +53,38 @@ export class ContentController {
 
   // 판매 중인 게시물 리스트
   @Get("/list/user/selling/:id")
-  sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
+  async sellingList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
     if(isNaN(page)) page = 0
-    return this.contentService.getSellingProductsByUser(userId, page);
+    const [contents, totalPage] = await this.contentService.getSellingProductsByUser(userId, page);
+    const result: ContentList = {
+      contents,
+      totalPage
+    }
+    return result;
   }
 
   // 판매 완료된 게시물 리스트
   @Get("/list/user/sold/:id")
-  soldList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
+  async soldList(@Param("id", ParseIntPipe) userId: number, @Query('page') page: number = 0) {
     if(isNaN(page)) page = 0
-    return this.contentService.getSoldProductsByUser(userId, page);
+    const [contents, totalPage] = await this.contentService.getSoldProductsByUser(userId, page);
+    const result: ContentList = {
+      contents,
+      totalPage
+    }
+    return result;
   }
 
   // 특정 카테고리 게시물 리스트
   @Get("/list/category")
-  categoryList(@Query('category') category: string, @Query('page') page: number = 0) {
+  async categoryList(@Query('category') category: string, @Query('page') page: number = 0) {
     if(isNaN(page)) page = 0
-    return this.contentService.getProductsByCategory(category, page);
+    const [contents, totalPage] = await this.contentService.getProductsByCategory(category, page);
+    const result: ContentList = {
+      contents,
+      totalPage
+    }
+    return result;
   }
 
   // 상세 게시물 조회

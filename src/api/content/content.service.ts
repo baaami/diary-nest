@@ -33,13 +33,13 @@ export class ContentService {
     return contents[randomIndex];
   }
 
-  async findList(page: number) {
+  async findList(page: number): Promise<[Contents[], number]> {
     const content = await this.ContentRepository.createQueryBuilder("contents")
     .leftJoinAndSelect('contents.owner', 'users') 
     .leftJoinAndSelect('contents.images', 'images')
     .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
     .take(pagenation_content_size)
-    .getMany();
+    .getManyAndCount();
 
     return content;
   }
@@ -71,7 +71,7 @@ export class ContentService {
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
-      .getMany();
+      .getManyAndCount();
 
     return content;
   }
@@ -84,7 +84,7 @@ export class ContentService {
       .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
-      .getMany();
+      .getManyAndCount();
 
     return content;
   }
@@ -96,7 +96,7 @@ export class ContentService {
       .where('contents.category = :category', { category: category })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
-      .getMany();
+      .getManyAndCount();
 
     return content;
   }

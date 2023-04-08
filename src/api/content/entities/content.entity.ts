@@ -13,7 +13,7 @@ import {
 } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { Images } from "src/common/entities/image.entity";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 
 @Entity({ schema: "school", name: "contents" })

@@ -1,4 +1,6 @@
+import { Contents } from "src/api/content/entities/content.entity";
 import { Users } from "src/api/user/entities/user.entity";
+import { Favorites } from "./favorite.entity";
 
 export interface KakaoServerResponse {
   data: KakaoServerData;
@@ -43,3 +45,14 @@ export interface KakaoServerUserData {
 export interface JwtdecodedUser {
   user: Users;
 }
+
+export interface ContentList {
+  totalPage: number;
+  contents: Contents[];
+}
+
+export interface FavoriteList {
+  totalPage: number;
+  favorites: Favorites[];
+}
+
