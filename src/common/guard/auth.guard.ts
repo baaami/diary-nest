@@ -18,16 +18,25 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     return this.validateUser(request);
   }
 
   private validateUser(request: any) {
-    if (request.cookies.hasOwnProperty("access_token") == false) {
-      return false;
+    if(request.hasOwnProperty("cookies")) {
+      console.log("request has not property cookies", request.cookies)
+      console.log("request has not property cookies", request.cookies.access_token)
+      // if (request.cookies == false) {
+      //   console.log(request)
+      //   return false;
+      // } else {
+      //   console.log("request has not property cookies", Object.keys(request))
+      //   return false
+      // }
+      return false
     }
     // 검증할 access token 획득
-    const accessToken = request.cookies.access_token;
+    const accessToken = (request as Request).cookies.access_token;
 
     // 검증
     console.log("accessToken: ", accessToken)

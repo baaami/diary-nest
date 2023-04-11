@@ -1,1 +1,1 @@
-export const pagenation_content_size = 20
+export const pagenation_content_size = 2

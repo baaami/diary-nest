@@ -121,9 +121,7 @@ export class AuthService {
     ), { httpOnly: true });
 
     // 4. user email을 기반으로 토큰 생성
-    return {
-      user: user,
-    };
+    return res.status(200).json({user});
   }
 
   async kakaoSignUp(

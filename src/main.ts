@@ -6,10 +6,15 @@ import { AppModule } from "./app.module";
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  app.enableCors();
-  // somewhere in your initialization file
+  
   app.use(cookieParser());
+
+  // withCredentials: true 옵션을 사용하는 경우, Access-Control-Allow-Origin 헤더는 와일드카드(*)가 아니라 요청을 보내는 도메인이어야 함
+  app.enableCors({
+    origin: 'http://localhost:3000', // 수정 필요
+    credentials: true, // withCredentials 옵션 사용시 필수
+  });
+  // somewhere in your initialization file
   app.useGlobalPipes(
     new ValidationPipe({
       // decorator가 없는 어떤 property에 대해서 값이 input되지 못하게함
