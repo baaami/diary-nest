@@ -23,16 +23,8 @@ export class AuthGuard implements CanActivate {
   }
 
   private validateUser(request: any) {
-    if(request.hasOwnProperty("cookies")) {
-      console.log("request has not property cookies", request.cookies)
-      console.log("request has not property cookies", request.cookies.access_token)
-      // if (request.cookies == false) {
-      //   console.log(request)
-      //   return false;
-      // } else {
-      //   console.log("request has not property cookies", Object.keys(request))
-      //   return false
-      // }
+    if(request.cookies.hasOwnProperty("access_token") == false) {
+      console.log("not exist access token")
       return false
     }
     // 검증할 access token 획득

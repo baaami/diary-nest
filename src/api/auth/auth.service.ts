@@ -145,9 +145,7 @@ export class AuthService {
       { secret: process.env.JWT_SECRET_KEY }
     ), { httpOnly: true });
 
-    return {
-      user: updateUser,
-    };
+    return res.status(200).json({updateUser});
   }
 
   /**
@@ -178,9 +176,7 @@ export class AuthService {
       { secret: process.env.JWT_SECRET_KEY }
     ), { httpOnly: true });
 
-    return {
-      user: user,
-    };
+    return res.status(200).json({user});
   }
 
   async localSignIn(createSignInDto: CreateSignInLocalDto, @Res() res: Response) {
@@ -204,8 +200,6 @@ export class AuthService {
       { secret: process.env.JWT_SECRET_KEY }
     ), { httpOnly: true });
 
-    return {
-      user: user,
-    };
+    return res.status(200).json({user});
   }
 }
