@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable, Res } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "src/api/user/entities/user.entity";
@@ -15,6 +15,7 @@ import {
   CreateAuthLocalDto,
   CreateSignInLocalDto
 } from "./dto/create-auth.dto";
+import { Response } from "express";
 
 async function GetAccessToken(
   permissionCode: string
@@ -84,7 +85,7 @@ export class AuthService {
     }
   }
 
-  async kakaoLogin(permissionCode: string) {
+  async kakaoLogin(permissionCode: string, @Res() res:Response) {
     // 1. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     const [ok, token] = await GetAccessToken(permissionCode);
     if (!ok) {
@@ -114,19 +115,19 @@ export class AuthService {
       console.log(c_user);
     }
 
+    res.cookie('access_token', this.jwtService.sign(
+      { user },
+      { secret: process.env.JWT_SECRET_KEY }
+    ), { httpOnly: true });
+
     // 4. user email을 기반으로 토큰 생성
-    return {
-      token: this.jwtService.sign(
-        { user },
-        { secret: process.env.JWT_SECRET_KEY }
-      ),
-      user: user,
-    };
+    return res.status(200).json({user});
   }
 
   async kakaoSignUp(
     updateUserDto: UpdateUserDto,
-    user: Users
+    user: Users,
+    @Res() res: Response
   ) {
     const rep = await this.UserRepository.update(
       { id: user.id },
@@ -139,13 +140,12 @@ export class AuthService {
     .where({ id: user.id })
     .getOne();
 
-    return {
-      token: this.jwtService.sign(
-        { updateUser },
-        { secret: process.env.JWT_SECRET_KEY }
-      ),
-      user: updateUser,
-    };
+    res.cookie('access_token', this.jwtService.sign(
+      { user },
+      { secret: process.env.JWT_SECRET_KEY }
+    ), { httpOnly: true });
+
+    return res.status(200).json({updateUser});
   }
 
   /**
@@ -154,7 +154,7 @@ export class AuthService {
    * @param createAuthLocalDto: local 회원가입 데이터 형식
    * @returns response 데이터
    */
-  async localSignUp(createAuthLocalDto: CreateAuthLocalDto) {
+  async localSignUp(createAuthLocalDto: CreateAuthLocalDto, @Res() res: Response) {
     // 1 회원, 비회원 확인
     // email이 db에 존재하는지 확인
     const UserWithRepository = await this.UserRepository.findOneBy({
@@ -171,16 +171,15 @@ export class AuthService {
     const user: Users = await this.UserRepository.save(createAuthLocalDto);
     console.log(user);
 
-    return {
-      token: this.jwtService.sign(
-        { user },
-        { secret: process.env.JWT_SECRET_KEY }
-      ),
-      user: user,
-    };
+    res.cookie('access_token', this.jwtService.sign(
+      { user },
+      { secret: process.env.JWT_SECRET_KEY }
+    ), { httpOnly: true });
+
+    return res.status(200).json({user});
   }
 
-  async localSignIn(createSignInDto: CreateSignInLocalDto) {
+  async localSignIn(createSignInDto: CreateSignInLocalDto, @Res() res: Response) {
     // email이 db에 존재하는지 확인 
     const user: Users = await this.UserRepository.findOneBy({
       email: createSignInDto.email,
@@ -196,12 +195,11 @@ export class AuthService {
       throw new HttpException("Invalid Password", HttpStatus.UNAUTHORIZED);
     }
 
-    return {
-      token: this.jwtService.sign(
-        { user },
-        { secret: process.env.JWT_SECRET_KEY }
-      ),
-      user: user,
-    };
+    res.cookie('access_token', this.jwtService.sign(
+      { user },
+      { secret: process.env.JWT_SECRET_KEY }
+    ), { httpOnly: true });
+
+    return res.status(200).json({user});
   }
 }
