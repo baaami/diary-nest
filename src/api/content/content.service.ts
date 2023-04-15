@@ -113,6 +113,16 @@ export class ContentService {
     return content;
   }
 
+  async complete(
+    contentId: number
+  ): Promise<UpdateResult> {
+    const content = await this.ContentRepository.update(
+      { id: contentId },
+      {completed: true},
+    );
+    return content;
+  }
+
   async writeOne(
     createContentDto: CreateContentDto,
     user: Users

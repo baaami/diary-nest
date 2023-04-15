@@ -125,6 +125,11 @@ export class ContentController {
     return this.contentService.Create(createContentDto, files, req.user);
   }
 
+  @UseGuards(AuthGuard)
+  @Post('/complete')
+  complete(@Param("id", ParseIntPipe) contentId: number) {
+    return this.contentService.complete(contentId);
+  }
     
   @UseGuards(AuthGuard)
   @Post()
