@@ -5,6 +5,7 @@ import { Users } from "src/api/user/entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateImageDto } from "src/common/dto/create-image.dto";
 import { Images } from "src/common/entities/image.entity";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 
 @Injectable()
 export class UserService {
@@ -60,6 +61,22 @@ export class UserService {
     .leftJoinAndSelect('users.images', 'images')
     .where({ id: user.id })
     .getOne();
+    return res;
+  }
+
+    async updateProfile(
+    updateProfileDto: UpdateProfileDto,
+    user: Users
+  ): Promise<Users> {
+    const rep = await this.UserRepository.update(
+      { id: user.id },
+      updateProfileDto
+    );
+
+    const res = await this.UserRepository.createQueryBuilder("users")
+    .where({ id: user.id })
+    .getOne();
+
     return res;
   }
 

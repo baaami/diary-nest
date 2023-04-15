@@ -20,6 +20,7 @@ import { CreateImageDto } from "src/common/dto/create-image.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserService } from "./user.service";
 import { editFileName } from "src/lib/multer/multerOption";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 
 @Controller("user")
 export class UserController {
@@ -42,6 +43,13 @@ export class UserController {
   @Post("/islogin")
   islogin(@Req() req: any) {
     return this.userService.islogin(req.user);
+  }
+
+  // 프로필 정보 업데이트
+  @UseGuards(AuthGuard)
+  @Post("/profile")
+  updateProfile(@Body() updateProfileDto: UpdateProfileDto, @Req() req: any) {
+    return this.userService.updateProfile(updateProfileDto, req.user);
   }
 
   // 유저 정보 업데이트
