@@ -75,6 +75,19 @@ export class ContentController {
     return result;
   }
 
+  // 로그인한 유저가 구매한 게시물 리스트
+  @UseGuards(AuthGuard)
+  @Get("/list/bought/:id")
+  async boughtList(@Req() req: any, @Query('page') page: number = 0) {
+    if(isNaN(page)) page = 0
+    const [contents, totalPage] = await this.contentService.getBoughtProductList(req.user, page);
+    const result: ContentList = {
+      contents,
+      totalPage
+    }
+    return result;
+  }
+
   // 특정 카테고리 게시물 리스트
   @Get("/list/category")
   async categoryList(@Query('category') category: string, @Query('page') page: number = 0) {
@@ -153,6 +166,7 @@ export class ContentController {
     return this.contentService.Update(updateContentDto, contentId, files);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(":id")
   @HttpCode(204)
   delete(@Param("id", ParseIntPipe) contentId: number) {

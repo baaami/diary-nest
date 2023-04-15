@@ -101,6 +101,17 @@ export class ContentService {
     return content;
   }
 
+  async getBoughtProductList(loginUser: Users, page: number) {
+    const content = await this.ContentRepository.createQueryBuilder("contents")
+      .leftJoinAndSelect('contents.owner', 'users') 
+      .leftJoinAndSelect('contents.images', 'images')
+      .where('contents.buyer = :buyer', { buyer: loginUser })
+      .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+      .take(pagenation_content_size)
+      .getManyAndCount();
+
+    return content;
+  }
 
   async writeOne(
     createContentDto: CreateContentDto,
@@ -173,6 +184,7 @@ export class ContentService {
   }
 
   async DeleteOne(contentId: number) {
+    // TODO: disk에 저장되는 이미지 삭제
     const content = await this.ContentRepository.delete({ id: contentId });
     return content;
   }
