@@ -23,17 +23,29 @@ export class AuthGuard implements CanActivate {
   }
 
   private validateUser(request: any) {
-    if(request.hasOwnProperty("cookies") == false) {
-      console.log("not exist cookies")
+    let cookieType: boolean = false
+    let headerType: boolean = false
+    if(request.hasOwnProperty("cookies") == true && request.cookies.hasOwnProperty("access_token") == true) {
+      cookieType = true
+    }
+
+    if (request.headers.hasOwnProperty("authorization") == true) {
+      headerType = true
+    }
+
+    let accessToken: string
+
+    if(cookieType == false && headerType == false ) {
       return false
     }
 
-    if(request.cookies.hasOwnProperty("access_token") == false) {
-      console.log("not exist access token")
-      return false
-    }
     // 검증할 access token 획득
-    const accessToken = (request as Request).cookies.access_token;
+    if(headerType) {
+      accessToken = request.headers.authorization.split("Bearer ")[1];
+    }
+    if(cookieType) {
+      accessToken = (request as Request).cookies.access_token;
+    }
 
     // 검증
     console.log("accessToken: ", accessToken)
