@@ -21,6 +21,13 @@ export class UserService {
     return user;
   }
 
+  async findNickName(userId: number): Promise<string> {
+    const user = await this.UserRepository.createQueryBuilder("users")
+    .where({ id: userId })
+    .getOne();
+    return user.nickname;
+  }
+
   async findlatest(): Promise<Users> {
     const rep = await this.UserRepository.find();
     return rep[0];

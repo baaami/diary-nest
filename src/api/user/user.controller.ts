@@ -31,6 +31,12 @@ export class UserController {
     return this.userService.findOne(userId);
   }
 
+  // 특정 유저 닉네임 조회
+  @Get("/find/:id")
+  getnickname(@Param("id", ParseIntPipe) userId: number) {
+    return this.userService.findNickName(userId);
+  }
+
   // 로그인 상태 유지
   @UseGuards(AuthGuard)
   @Post("/islogin")
