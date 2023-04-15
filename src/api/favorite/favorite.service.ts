@@ -50,6 +50,22 @@ export class FavoriteService {
     return 'Add Favorites ' + user.name + ' => ' + content.title;
   }
 
+  /**
+   * @brief 관심 목록 제거 API
+   * @param loginUser 로그인한 유저
+   * @param contentId 관심 목록에 추가할 게시물 ID
+   * @returns 삭제한 관심목록 데이터
+   */
+  async delFavorite(loginUser: Users, contentId: number) {
+    const res = await this.FavoriteRepository.delete(
+      {
+        user: loginUser,
+        content: await this.contentService.findOne(contentId)
+      }
+    )
+    return res
+  }
+
   async insertFakerData(fakerdata: Favorites): Promise<Favorites> {
     const res = await this.FavoriteRepository.save(fakerdata);
     return res;
