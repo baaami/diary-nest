@@ -33,7 +33,7 @@ export class UserController {
   }
 
   // 특정 유저 닉네임 조회
-  @Get("/find/:id")
+  @Get("/find/nickname/:id")
   getnickname(@Param("id", ParseIntPipe) userId: number) {
     return this.userService.findNickName(userId);
   }

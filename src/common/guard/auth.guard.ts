@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
   private validateUser(request: any) {
     let cookieType: boolean = false
     let headerType: boolean = false
-    if(request.hasOwnProperty("cookies") == true && request.cookies.hasOwnProperty("access_token") == true) {
+    if(request.hasOwnProperty("cookies") == true) {
       cookieType = true
     }
 
