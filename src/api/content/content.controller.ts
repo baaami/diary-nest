@@ -77,7 +77,7 @@ export class ContentController {
 
   // 로그인한 유저가 구매한 게시물 리스트
   @UseGuards(AuthGuard)
-  @Get("/list/bought/:id")
+  @Post("/list/bought/:id")
   async boughtList(@Req() req: any, @Query('page') page: number = 0) {
     if(isNaN(page)) page = 0
     const [contents, totalPage] = await this.contentService.getBoughtProductList(req.user, page);
