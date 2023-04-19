@@ -68,7 +68,7 @@ export class ContentService {
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .leftJoinAndSelect('contents.owner', 'users') 
       .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
+      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
       .getManyAndCount();
@@ -81,7 +81,7 @@ export class ContentService {
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .leftJoinAndSelect('contents.owner', 'users') 
       .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
+      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
       .getManyAndCount();

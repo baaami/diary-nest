@@ -38,14 +38,14 @@ export class AuthGuard implements CanActivate {
     if(cookieType == false && headerType == false ) {
       return false
     }
-
+    
     // 검증할 access token 획득
     if(headerType) {
       accessToken = request.headers.authorization.split("Bearer ")[1];
+    }else{
+      // headerType이 아닐경우에만 실행 - cookieType일 경우
+      accessToken = (request as Request).cookies.access_token;
     }
-    // if(cookieType) {
-    //   accessToken = (request as Request).cookies.access_token;
-    // }
 
     // 검증
     console.log("accessToken: ", accessToken)
