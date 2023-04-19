@@ -32,7 +32,7 @@ export class AuthGuard implements CanActivate {
     if (request.headers.hasOwnProperty("authorization") == true) {
       headerType = true
     }
-
+    console.log('cookieType',cookieType,'headerType',headerType)
     let accessToken: string
 
     if(cookieType == false && headerType == false ) {
@@ -43,9 +43,9 @@ export class AuthGuard implements CanActivate {
     if(headerType) {
       accessToken = request.headers.authorization.split("Bearer ")[1];
     }
-    if(cookieType) {
-      accessToken = (request as Request).cookies.access_token;
-    }
+    // if(cookieType) {
+    //   accessToken = (request as Request).cookies.access_token;
+    // }
 
     // 검증
     console.log("accessToken: ", accessToken)
