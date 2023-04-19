@@ -105,7 +105,7 @@ export class ContentService {
     const content = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect('contents.owner', 'users') 
       .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.buyer = :buyer', { buyer: loginUser })
+      .where('contents.buyer_id = :buyerId', { buyerId: loginUser.id })
       .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
       .take(pagenation_content_size)
       .getManyAndCount();
@@ -118,11 +118,12 @@ export class ContentService {
   ): Promise<UpdateResult> {
     const content = await this.ContentRepository.update(
       { id: contentId },
-      {completed: true},
+      {completed: true,
+      completed_date: Date()
+    },
     );
     return content;
   }
-
   async writeOne(
     createContentDto: CreateContentDto,
     user: Users
