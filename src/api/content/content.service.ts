@@ -119,7 +119,7 @@ export class ContentService {
       { id: contentId },
       {
         completed: true,
-        completed_date: Date()
+        completed_date: new Date()
     },
     );
     return content;
