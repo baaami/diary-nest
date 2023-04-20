@@ -126,7 +126,7 @@ export class ContentController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('/complete')
+  @Post('/complete/:id')
   complete(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.complete(contentId);
   }
