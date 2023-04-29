@@ -45,13 +45,6 @@ export class UserController {
     return this.userService.islogin(req.user);
   }
 
-  // 프로필 정보 업데이트
-  @UseGuards(AuthGuard)
-  @Post("/profile")
-  updateProfile(@Body() updateProfileDto: UpdateProfileDto, @Req() req: any) {
-    return this.userService.updateProfile(updateProfileDto, req.user);
-  }
-
   // 유저 정보 업데이트
   @UseGuards(AuthGuard)
   @Post("/info")
@@ -59,9 +52,9 @@ export class UserController {
     return this.userService.update(updateUserDto, req.user);
   }
 
-  // 프로필 이미지 업로드
+  // 프로필 정보 업데이트
   @UseGuards(AuthGuard)
-  @Post("/profile/image")
+  @Post("/profile")
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
       storage: diskStorage({
@@ -70,10 +63,11 @@ export class UserController {
       }),
     })
   )
-  uploadProfile(
+  updateProfile(
+    @Body() updateProfileDto: UpdateProfileDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
     @Req() req: any
   ) {
-    return this.userService.uploadProfile(files, req.user);
+    return this.userService.updateProfile(updateProfileDto, files, req.user);
   }
 }

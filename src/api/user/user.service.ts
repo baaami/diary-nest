@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import {
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository, UpdateResult } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
@@ -64,38 +69,26 @@ export class UserService {
     return res;
   }
 
-  async updateProfile(
-    updateProfileDto: UpdateProfileDto,
-    user: Users
-  ): Promise<Users> {
-    const rep = await this.UserRepository.update(
-      { id: user.id },
-      updateProfileDto
-    );
-
-    const res = await this.UserRepository.createQueryBuilder("users")
-      .where({ id: user.id })
-      .getOne();
-
-    return res;
-  }
-
-  async update(updateUserDto: UpdateUserDto, user: Users): Promise<Users> {
+  @HttpCode(204)
+  async update(updateUserDto: UpdateUserDto, user: Users) {
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto
     );
 
-    const res = await this.UserRepository.createQueryBuilder("users")
+    await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
       .leftJoinAndSelect("users.images", "images")
       .where({ id: user.id })
       .getOne();
-
-    return res;
   }
 
-  async uploadProfile(files: { images?: Express.Multer.File[] }, user: Users) {
+  @HttpCode(204)
+  async updateProfile(
+    updateProfileDto: UpdateProfileDto,
+    files: { images?: Express.Multer.File[] },
+    user: Users
+  ) {
     const { images } = files;
 
     if (images) {
@@ -110,6 +103,6 @@ export class UserService {
       console.log("image not found");
     }
 
-    return images;
+    await this.UserRepository.update({ id: user.id }, updateProfileDto);
   }
 }
