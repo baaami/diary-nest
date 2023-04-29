@@ -15,7 +15,7 @@ import { UserService } from "./user.service";
     MulterModule.register({
       dest: "./upload",
     }),
-],
+  ],
   controllers: [UserController],
   providers: [UserService, JwtService],
 })

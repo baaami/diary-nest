@@ -3,14 +3,13 @@ import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { WsAdapter } from "@nestjs/platform-ws";
 import { AppModule } from "./app.module";
-import * as cookieParser from 'cookie-parser';
+import * as cookieParser from "cookie-parser";
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  
-  
+
   // withCredentials: true 옵션을 사용하는 경우, Access-Control-Allow-Origin 헤더는 와일드카드(*)가 아니라 요청을 보내는 도메인이어야 함
   app.enableCors({
-    origin: 'http://localhost:3000', // 수정 필요
+    origin: "http://localhost:3000", // 수정 필요
     credentials: true, // withCredentials 옵션 사용시 필수
   });
   app.use(cookieParser());

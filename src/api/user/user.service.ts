@@ -11,21 +11,21 @@ import { UpdateProfileDto } from "./dto/update-profile.dto";
 export class UserService {
   constructor(
     @InjectRepository(Users) private UserRepository: Repository<Users>,
-    @InjectRepository(Images) private ImageRepository: Repository<Images>,
+    @InjectRepository(Images) private ImageRepository: Repository<Images>
   ) {}
   async findOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.createQueryBuilder("users")
-    .leftJoinAndSelect('users.contents', 'contents') 
-    .leftJoinAndSelect('users.images', 'images')
-    .where({ id: userId })
-    .getOne();
+      .leftJoinAndSelect("users.contents", "contents")
+      .leftJoinAndSelect("users.images", "images")
+      .where({ id: userId })
+      .getOne();
     return user;
   }
 
   async findNickName(userId: number): Promise<string> {
     const user = await this.UserRepository.createQueryBuilder("users")
-    .where({ id: userId })
-    .getOne();
+      .where({ id: userId })
+      .getOne();
     return user.nickname;
   }
 
@@ -57,14 +57,14 @@ export class UserService {
 
   async islogin(user: Users): Promise<Users> {
     const res = await this.UserRepository.createQueryBuilder("users")
-    .leftJoinAndSelect('users.contents', 'contents') 
-    .leftJoinAndSelect('users.images', 'images')
-    .where({ id: user.id })
-    .getOne();
+      .leftJoinAndSelect("users.contents", "contents")
+      .leftJoinAndSelect("users.images", "images")
+      .where({ id: user.id })
+      .getOne();
     return res;
   }
 
-    async updateProfile(
+  async updateProfile(
     updateProfileDto: UpdateProfileDto,
     user: Users
   ): Promise<Users> {
@@ -74,26 +74,23 @@ export class UserService {
     );
 
     const res = await this.UserRepository.createQueryBuilder("users")
-    .where({ id: user.id })
-    .getOne();
+      .where({ id: user.id })
+      .getOne();
 
     return res;
   }
 
-  async update(
-    updateUserDto: UpdateUserDto,
-    user: Users
-  ): Promise<Users> {
+  async update(updateUserDto: UpdateUserDto, user: Users): Promise<Users> {
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto
     );
 
     const res = await this.UserRepository.createQueryBuilder("users")
-    .leftJoinAndSelect('users.contents', 'contents') 
-    .leftJoinAndSelect('users.images', 'images')
-    .where({ id: user.id })
-    .getOne();
+      .leftJoinAndSelect("users.contents", "contents")
+      .leftJoinAndSelect("users.images", "images")
+      .where({ id: user.id })
+      .getOne();
 
     return res;
   }
@@ -106,13 +103,13 @@ export class UserService {
       images.forEach((image: Partial<CreateImageDto>) => {
         image.user = user;
         // 이미지 db에 저장
-        console.log(image)
+        console.log(image);
         this.ImageRepository.save(image);
       });
     } else {
       console.log("image not found");
     }
 
-    return images
+    return images;
   }
 }

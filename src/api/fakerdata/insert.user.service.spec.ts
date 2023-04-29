@@ -46,7 +46,7 @@ describe("Insert User", () => {
         fakeUser.longitude = faker.address.longitude();
         fakeUser.location = faker.address.city();
         fakeUser.grade = faker.datatype.number(4);
-        // fakeUser.images = 
+        // fakeUser.images =
 
         // 2. 글 생성
         const user: Users = await service.insertFakerData(fakeUser);

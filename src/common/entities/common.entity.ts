@@ -55,4 +55,3 @@ export interface FavoriteList {
   totalPage: number;
   favorites: Favorites[];
 }
-

@@ -20,29 +20,31 @@ export class ReviewService {
 
   // 특정 회원 리뷰 조회
   async getlist(sellerId: number): Promise<Reviews[]> {
-    const reviews = await this.ReviewRepository
-    .createQueryBuilder('reviews')
-    .leftJoinAndSelect('reviews.buyer', 'buyer')
-    .leftJoinAndSelect('reviews.seller', 'seller')
-    .where('reviews.seller_id = :sellerId', { sellerId })
-    .getMany();
+    const reviews = await this.ReviewRepository.createQueryBuilder("reviews")
+      .leftJoinAndSelect("reviews.buyer", "buyer")
+      .leftJoinAndSelect("reviews.seller", "seller")
+      .where("reviews.seller_id = :sellerId", { sellerId })
+      .getMany();
 
-    return reviews
+    return reviews;
   }
 
-  async create(createReviewDto: CreateReviewDto, sellerId: number, buyer: Users): Promise<Reviews> {
-
-    console.log("buyer: ", buyer)
+  async create(
+    createReviewDto: CreateReviewDto,
+    sellerId: number,
+    buyer: Users
+  ): Promise<Reviews> {
+    console.log("buyer: ", buyer);
     const seller: Users = await this.UserRepository.createQueryBuilder("users")
-    .where({ id: sellerId })
-    .getOne();
+      .where({ id: sellerId })
+      .getOne();
 
-    const review = new Reviews()
+    const review = new Reviews();
 
-    review.grade = createReviewDto.grade
-    review.review = createReviewDto.review,
-    review.seller = seller,
-    review.buyer = buyer
+    review.grade = createReviewDto.grade;
+    (review.review = createReviewDto.review),
+      (review.seller = seller),
+      (review.buyer = buyer);
 
     const res = await this.ReviewRepository.save(review);
     return res;

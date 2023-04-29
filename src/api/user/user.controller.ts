@@ -25,7 +25,7 @@ import { UpdateProfileDto } from "./dto/update-profile.dto";
 @Controller("user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  
+
   // 특정 유저 조회
   @Get("/find/:id")
   getOne(@Param("id", ParseIntPipe) userId: number) {
@@ -70,7 +70,10 @@ export class UserController {
       }),
     })
   )
-  uploadProfile(@UploadedFiles() files: { images?: Express.Multer.File[] }, @Req() req: any) {
+  uploadProfile(
+    @UploadedFiles() files: { images?: Express.Multer.File[] },
+    @Req() req: any
+  ) {
     return this.userService.uploadProfile(files, req.user);
   }
 }

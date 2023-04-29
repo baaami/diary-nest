@@ -13,7 +13,7 @@ import { CreateUserDto } from "src/api/user/dto/create-user.dto";
 import { UpdateUserDto } from "src/api/user/dto/update-user.dto";
 import {
   CreateAuthLocalDto,
-  CreateSignInLocalDto
+  CreateSignInLocalDto,
 } from "./dto/create-auth.dto";
 import { Response } from "express";
 
@@ -85,11 +85,14 @@ export class AuthService {
     }
   }
 
-  async kakaoLogin(permissionCode: string, @Res() res:Response) {
+  async kakaoLogin(permissionCode: string, @Res() res: Response) {
     // 1. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     const [ok, token] = await GetAccessToken(permissionCode);
     if (!ok) {
-      throw new HttpException("Get Access Token Error", HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        "Get Access Token Error",
+        HttpStatus.UNAUTHORIZED
+      );
     }
 
     // 2. access_token 유저 확인
@@ -115,13 +118,14 @@ export class AuthService {
       console.log(c_user);
     }
 
-    res.cookie('access_token', this.jwtService.sign(
-      { user },
-      { secret: process.env.JWT_SECRET_KEY }
-    ), { httpOnly: true });
+    res.cookie(
+      "access_token",
+      this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET_KEY }),
+      { httpOnly: true }
+    );
 
     // 4. user email을 기반으로 토큰 생성
-    return res.status(200).json({user});
+    return res.status(200).json({ user });
   }
 
   async kakaoSignUp(
@@ -135,17 +139,18 @@ export class AuthService {
     );
 
     const updateUser = await this.UserRepository.createQueryBuilder("users")
-    .leftJoinAndSelect('users.contents', 'contents') 
-    .leftJoinAndSelect('users.images', 'images')
-    .where({ id: user.id })
-    .getOne();
+      .leftJoinAndSelect("users.contents", "contents")
+      .leftJoinAndSelect("users.images", "images")
+      .where({ id: user.id })
+      .getOne();
 
-    res.cookie('access_token', this.jwtService.sign(
-      { user },
-      { secret: process.env.JWT_SECRET_KEY }
-    ), { httpOnly: true });
+    res.cookie(
+      "access_token",
+      this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET_KEY }),
+      { httpOnly: true }
+    );
 
-    return res.status(200).json({updateUser});
+    return res.status(200).json({ updateUser });
   }
 
   /**
@@ -154,7 +159,10 @@ export class AuthService {
    * @param createAuthLocalDto: local 회원가입 데이터 형식
    * @returns response 데이터
    */
-  async localSignUp(createAuthLocalDto: CreateAuthLocalDto, @Res() res: Response) {
+  async localSignUp(
+    createAuthLocalDto: CreateAuthLocalDto,
+    @Res() res: Response
+  ) {
     // 1 회원, 비회원 확인
     // email이 db에 존재하는지 확인
     const UserWithRepository = await this.UserRepository.findOneBy({
@@ -171,16 +179,20 @@ export class AuthService {
     const user: Users = await this.UserRepository.save(createAuthLocalDto);
     console.log(user);
 
-    res.cookie('access_token', this.jwtService.sign(
-      { user },
-      { secret: process.env.JWT_SECRET_KEY }
-    ), { httpOnly: true });
+    res.cookie(
+      "access_token",
+      this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET_KEY }),
+      { httpOnly: true }
+    );
 
-    return res.status(200).json({user});
+    return res.status(200).json({ user });
   }
 
-  async localSignIn(createSignInDto: CreateSignInLocalDto, @Res() res: Response) {
-    // email이 db에 존재하는지 확인 
+  async localSignIn(
+    createSignInDto: CreateSignInLocalDto,
+    @Res() res: Response
+  ) {
+    // email이 db에 존재하는지 확인
     const user: Users = await this.UserRepository.findOneBy({
       email: createSignInDto.email,
     });
@@ -191,15 +203,16 @@ export class AuthService {
     }
 
     // case: 존재하는 아이디
-    if(createSignInDto.password !== user.password) {
+    if (createSignInDto.password !== user.password) {
       throw new HttpException("Invalid Password", HttpStatus.UNAUTHORIZED);
     }
 
-    res.cookie('access_token', this.jwtService.sign(
-      { user },
-      { secret: process.env.JWT_SECRET_KEY }
-    ), { httpOnly: true });
+    res.cookie(
+      "access_token",
+      this.jwtService.sign({ user }, { secret: process.env.JWT_SECRET_KEY }),
+      { httpOnly: true }
+    );
 
-    return res.status(200).json({user});
+    return res.status(200).json({ user });
   }
 }

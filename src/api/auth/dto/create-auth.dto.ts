@@ -25,16 +25,15 @@ export class CreateAuthLocalDto {
   @IsString()
   readonly university: string;
 
-  @Transform(({value}) => parseInt(value))
+  @Transform(({ value }) => parseInt(value))
   @IsNumber()
   readonly gender: number;
 
-  @Transform(({value}) => parseFloat(value))
+  @Transform(({ value }) => parseFloat(value))
   @IsNumber()
   readonly latitude: number;
 
-
-  @Transform(({value}) => parseFloat(value))
+  @Transform(({ value }) => parseFloat(value))
   @IsNumber()
   readonly longitude: number;
 
