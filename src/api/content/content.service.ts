@@ -1,4 +1,4 @@
-import { Injectable, UseGuards } from "@nestjs/common";
+import { HttpCode, Injectable, UseGuards } from "@nestjs/common";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
 import { CreateImageDto } from "src/common/dto/create-image.dto";
 import { Images } from "src/common/entities/image.entity";
@@ -8,6 +8,8 @@ import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { Users } from "../user/entities/user.entity";
 import { pagenation_content_size } from "src/common/define";
+import { unlink } from "fs";
+import { join } from "path";
 
 @Injectable()
 export class ContentService {
@@ -210,21 +212,92 @@ export class ContentService {
     return content;
   }
 
+  @HttpCode(204)
   async Update(
     updateContentDto: UpdateContentDto,
     contentId: number,
-    files: { images?: Express.Multer.File[] }
-  ): Promise<UpdateResult> {
-    const content = await this.ContentRepository.update(
-      { id: contentId },
-      updateContentDto
-    );
-    return content;
+    files: { images?: Express.Multer.File[] },
+    user: Users
+  ) {
+    const { images } = files;
+
+    try {
+      const preContent = await this.ContentRepository.createQueryBuilder(
+        "contents"
+      )
+        .where({ id: contentId })
+        .getOne();
+
+      // 업데이트할 content의 image를 서버에서 전부삭제
+      const image_list = await this.ImageRepository.createQueryBuilder("images")
+        .where({ content: preContent })
+        .getMany();
+
+      image_list.forEach((image) => {
+        const deleteFilePath = join(__dirname, "../../../../", image.path);
+
+        unlink(deleteFilePath, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log(`File ${deleteFilePath} has been deleted successfully.`);
+        });
+      });
+
+      // 업데이트할 content의 image를 DB에서 전부삭제
+      await this.ImageRepository.delete({
+        content: preContent,
+      });
+
+      // content table 갱신
+      await this.ContentRepository.update({ id: contentId }, updateContentDto);
+
+      const content = await this.ContentRepository.findOneBy({ id: contentId });
+
+      images.forEach((image: Partial<CreateImageDto>) => {
+        image.content = content;
+        this.ImageRepository.save(image);
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
+  @HttpCode(204)
   async DeleteOne(contentId: number) {
-    // TODO: disk에 저장되는 이미지 삭제
-    const content = await this.ContentRepository.delete({ id: contentId });
-    return content;
+    try {
+      const content = await this.ContentRepository.createQueryBuilder(
+        "contents"
+      )
+        .where({ id: contentId })
+        .getOne();
+
+      // 업데이트할 content의 image를 서버에서 전부삭제
+      const image_list = await this.ImageRepository.createQueryBuilder("images")
+        .where({ content: content })
+        .getMany();
+
+      image_list.forEach((image) => {
+        const deleteFilePath = join(__dirname, "../../../../", image.path);
+
+        unlink(deleteFilePath, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log(`File ${deleteFilePath} has been deleted successfully.`);
+        });
+      });
+
+      // 업데이트할 content의 image를 DB에서 전부삭제
+      await this.ImageRepository.delete({
+        content: content,
+      });
+
+      await this.ContentRepository.delete({ id: contentId });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

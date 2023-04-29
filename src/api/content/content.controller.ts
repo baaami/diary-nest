@@ -167,7 +167,7 @@ export class ContentController {
     return this.contentService.uploadFiles(files);
   }
 
-  @Patch(":id")
+  @Patch("/update/:id")
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
       storage: diskStorage({
@@ -179,13 +179,19 @@ export class ContentController {
   update(
     @Body() updateContentDto: UpdateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Param("id", ParseIntPipe) contentId: number
+    @Param("id", ParseIntPipe) contentId: number,
+    @Req() req: any
   ) {
-    return this.contentService.Update(updateContentDto, contentId, files);
+    return this.contentService.Update(
+      updateContentDto,
+      contentId,
+      files,
+      req.user
+    );
   }
 
   @UseGuards(AuthGuard)
-  @Delete(":id")
+  @Delete("/delete/:id")
   @HttpCode(204)
   delete(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.DeleteOne(contentId);
