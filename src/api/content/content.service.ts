@@ -19,10 +19,10 @@ export class ContentService {
 
   async findOne(contentId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-    .leftJoinAndSelect('contents.owner', 'users') 
-    .leftJoinAndSelect('contents.images', 'images')
-    .where({ id: contentId })
-    .getOne();
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where({ id: contentId })
+      .getOne();
 
     return content;
   }
@@ -34,93 +34,121 @@ export class ContentService {
   }
 
   async findList(page: number): Promise<[Contents[], number]> {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-    .leftJoinAndSelect('contents.owner', 'users') 
-    .leftJoinAndSelect('contents.images', 'images')
-    .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
-    .take(pagenation_content_size)
-    .getManyAndCount();
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
+      .take(pagenation_content_size)
+      .getManyAndCount();
 
-    return content;
+    return content_list;
   }
 
   async findListAll() {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-    .leftJoinAndSelect('contents.owner', 'users') 
-    .leftJoinAndSelect('contents.images', 'images')
-    .getMany();
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .getMany();
 
-    return content;
+    return content_list;
   }
 
   async findListImageIsNull() {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-    .leftJoinAndSelect('contents.owner', 'users') 
-    .leftJoinAndSelect('contents.images', 'images')
-    .where('images.id IS NULL')
-    .getMany();
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where("images.id IS NULL")
+      .getMany();
 
-    return content;
+    return content_list;
   }
-  
+
   async getSellingProductsByUser(userId: number, page: number) {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect('contents.owner', 'users') 
-      .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: false })
-      .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where(
+        "contents.owner_id = :userId AND contents.completed = :Completed",
+        { userId, Completed: false }
+      )
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content;
+    return content_list;
   }
 
   async getSoldProductsByUser(userId: number, page: number) {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect('contents.owner', 'users') 
-      .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.owner_id = :userId AND contents.completed = :Completed', { userId, Completed: true })
-      .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where(
+        "contents.owner_id = :userId AND contents.completed = :Completed",
+        { userId, Completed: true }
+      )
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content;
+    return content_list;
   }
 
   async getProductsByCategory(category: string, page: number) {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect('contents.owner', 'users') 
-      .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.category = :category', { category: category })
-      .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where("contents.category = :category", { category: category })
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content;
+    return content_list;
   }
 
   async getBoughtProductList(loginUser: Users, page: number) {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect('contents.buyer', 'users') 
-      .leftJoinAndSelect('contents.images', 'images')
-      .where('contents.buyer_id = :buyerId', { buyerId: loginUser.id })
-      .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.buyer", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where("contents.buyer_id = :buyerId", { buyerId: loginUser.id })
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
       .take(pagenation_content_size)
       .getManyAndCount();
-    return content;
+    return content_list;
   }
 
-  async complete(
-    contentId: number
-  ): Promise<UpdateResult> {
+  async complete(contentId: number): Promise<UpdateResult> {
     const content = await this.ContentRepository.update(
       { id: contentId },
       {
         completed: true,
-        completed_date: new Date()
-    },
+        completed_date: new Date(),
+      }
     );
     return content;
   }
@@ -178,7 +206,7 @@ export class ContentService {
     } else {
       console.log("image not found");
     }
-    console.log(content)
+    console.log(content);
     return content;
   }
 

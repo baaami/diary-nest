@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { pagenation_content_size } from "src/common/define";
 import { Favorites } from "src/common/entities/favorite.entity";
@@ -16,18 +16,23 @@ export class FavoriteService {
     @Inject(ContentService)
     private readonly contentService: ContentService,
     @InjectRepository(Favorites)
-    private FavoriteRepository: Repository<Favorites>,
+    private FavoriteRepository: Repository<Favorites>
   ) {}
 
   async getFavoriteList(userId: number, page: number) {
-    const favorites = this.FavoriteRepository.createQueryBuilder("favorites")
-    .where('favorites.user_id = :userId', { userId })
-    .leftJoinAndSelect('favorites.content', 'contents')
-    .leftJoinAndSelect('contents.images', 'images')
-    .skip(page * pagenation_content_size != 0 ? page * pagenation_content_size : 0)
-    .take(pagenation_content_size)
-    .getManyAndCount();
-    return favorites
+    const favorite_list = this.FavoriteRepository.createQueryBuilder(
+      "favorites"
+    )
+      .where("favorites.user_id = :userId", { userId })
+      .leftJoinAndSelect("favorites.content", "contents")
+      .leftJoinAndSelect("contents.images", "images")
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
+      .take(pagenation_content_size)
+      .getManyAndCount();
+
+    return favorite_list;
   }
 
   /**
@@ -45,9 +50,18 @@ export class FavoriteService {
     const content = await this.contentService.findOne(contentId);
     favorite.content = content;
 
-    // 2. DB 저장
-    const res = await this.FavoriteRepository.save(favorite);
-    return 'Add Favorites ' + user.name + ' => ' + content.title;
+    // 관심 목록 리스트에 저장
+    try {
+      const res = await this.FavoriteRepository.save(favorite);
+    } catch (err) {
+      console.error(err);
+      return {
+        like_cnt: content.like_cnt,
+      };
+    }
+    return {
+      like_cnt: content.like_cnt + 1,
+    };
   }
 
   /**
@@ -57,13 +71,11 @@ export class FavoriteService {
    * @returns 삭제한 관심목록 데이터
    */
   async delFavorite(loginUser: Users, contentId: number) {
-    const res = await this.FavoriteRepository.delete(
-      {
-        user: loginUser,
-        content: await this.contentService.findOne(contentId)
-      }
-    )
-    return res
+    const res = await this.FavoriteRepository.delete({
+      user: loginUser,
+      content: await this.contentService.findOne(contentId),
+    });
+    return res;
   }
 
   async insertFakerData(fakerdata: Favorites): Promise<Favorites> {
