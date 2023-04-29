@@ -52,4 +52,10 @@ export class AuthController {
   signup(@Body() createAuthLocalDto: CreateAuthLocalDto, @Res() res: Response) {
     return this.authService.localSignUp(createAuthLocalDto, res);
   }
+
+  // 로그 아웃
+  @Post("/logout")
+  logout(@Res() res: Response) {
+    return this.authService.logout(res);
+  }
 }

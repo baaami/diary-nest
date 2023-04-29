@@ -215,4 +215,9 @@ export class AuthService {
 
     return res.status(200).json({ user });
   }
+
+  async logout(@Res() res: Response) {
+    res.clearCookie("access_token");
+    res.send(200);
+  }
 }
