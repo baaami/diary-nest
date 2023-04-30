@@ -12,6 +12,7 @@ export class UpdateProfileDto extends PartialType(CreateUserDto) {
   @IsString()
   readonly nickname: string;
 
+  @IsOptional()
   @IsString()
-  readonly password: string = "";
+  readonly password: string;
 }
