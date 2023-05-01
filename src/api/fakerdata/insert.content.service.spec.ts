@@ -11,6 +11,19 @@ import { Favorites } from "src/common/entities/favorite.entity";
 import { Reviews } from "src/api/review/entities/review.entity";
 import { time } from "console";
 import { content_cnt } from "./insert.common.types";
+import { randomIntFromInterval } from "src/common/util";
+
+const categories = [
+  "electronic",
+  "clothes",
+  "lecture",
+  "furniture",
+  "book",
+  "householdGoods",
+  "sports",
+  "hobby",
+  "beauty",
+];
 
 describe("Insert User", () => {
   let service: ContentService;
@@ -44,7 +57,7 @@ describe("Insert User", () => {
         const content = new Contents();
         content.title = faker.commerce.productName();
         content.body = faker.lorem.sentences(3, { words: 50 });
-        content.category = faker.lorem.word();
+        content.category = categories[randomIntFromInterval(0, 10)];
         content.completed = faker.datatype.boolean();
         content.price = faker.datatype.number({ min: 1000, max: 100000 });
         content.latitude = parseFloat(faker.address.latitude(36, 38));
