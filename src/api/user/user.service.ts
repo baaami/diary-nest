@@ -24,6 +24,25 @@ export class UserService {
       .leftJoinAndSelect("users.images", "images")
       .where({ id: userId })
       .getOne();
+
+    if (!user.images) {
+      user.images = {
+        id: 999999,
+        filename: "",
+        path: "upload/default.svg",
+        fieldname: "",
+        originalname: "",
+        encoding: "",
+        mimetype: "",
+        destination: "",
+        size: null,
+        createdAt: null,
+        updatedAt: null,
+        content: null,
+        user: null,
+      };
+    }
+
     return user;
   }
 
@@ -66,6 +85,27 @@ export class UserService {
       .leftJoinAndSelect("users.images", "images")
       .where({ id: user.id })
       .getOne();
+
+    if (!res.images) {
+      console.log("hi");
+      res.images = {
+        id: 999999,
+        filename: "",
+        path: "upload/default.svg",
+        fieldname: "",
+        originalname: "",
+        encoding: "",
+        mimetype: "",
+        destination: "",
+        size: null,
+        createdAt: null,
+        updatedAt: null,
+        content: null,
+        user: null,
+      };
+    }
+
+    console.log("res: ", res);
     return res;
   }
 
