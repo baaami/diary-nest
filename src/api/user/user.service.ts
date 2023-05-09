@@ -11,6 +11,8 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateImageDto } from "src/common/dto/create-image.dto";
 import { Images } from "src/common/entities/image.entity";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
+import { join } from "path";
+import { unlink } from "fs";
 
 @Injectable()
 export class UserService {
@@ -24,24 +26,6 @@ export class UserService {
       .leftJoinAndSelect("users.images", "images")
       .where({ id: userId })
       .getOne();
-
-    if (!user.images) {
-      user.images = {
-        id: 999999,
-        filename: "",
-        path: "upload/default.svg",
-        fieldname: "",
-        originalname: "",
-        encoding: "",
-        mimetype: "",
-        destination: "",
-        size: null,
-        createdAt: null,
-        updatedAt: null,
-        content: null,
-        user: null,
-      };
-    }
 
     return user;
   }
@@ -86,41 +70,26 @@ export class UserService {
       .where({ id: user.id })
       .getOne();
 
-    if (!res.images) {
-      console.log("hi");
-      res.images = {
-        id: 999999,
-        filename: "",
-        path: "upload/default.svg",
-        fieldname: "",
-        originalname: "",
-        encoding: "",
-        mimetype: "",
-        destination: "",
-        size: null,
-        createdAt: null,
-        updatedAt: null,
-        content: null,
-        user: null,
-      };
-    }
-
-    console.log("res: ", res);
     return res;
   }
 
   @HttpCode(204)
   async update(updateUserDto: UpdateUserDto, user: Users) {
-    const rep = await this.UserRepository.update(
-      { id: user.id },
-      updateUserDto
-    );
+    try {
+      await this.UserRepository.update({ id: user.id }, updateUserDto);
+    } catch (err) {
+      console.error(err);
+    }
 
-    await this.UserRepository.createQueryBuilder("users")
-      .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.images", "images")
-      .where({ id: user.id })
-      .getOne();
+    try {
+      await this.UserRepository.createQueryBuilder("users")
+        .leftJoinAndSelect("users.contents", "contents")
+        .leftJoinAndSelect("users.images", "images")
+        .where({ id: user.id })
+        .getOne();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   @HttpCode(204)
@@ -131,12 +100,38 @@ export class UserService {
   ) {
     const { images } = files;
 
+    // 프로필 이미지가 존재할 경우
     if (images) {
-      // console.log(images)
+      console.log("images: ", images);
+      /* 이전 프로필 이미지 삭제 */
+      const preUser = await this.UserRepository.createQueryBuilder("contents")
+        .where({ id: user.id })
+        .getOne();
+
+      // 업데이트할 content의 image를 서버에서 전부삭제
+      const image = await this.ImageRepository.createQueryBuilder("images")
+        .where({ user: preUser })
+        .getOne();
+
+      if (image) {
+        const deleteFilePath = join(__dirname, "../../../../", image.path);
+
+        unlink(deleteFilePath, (err) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          console.log(`File ${deleteFilePath} has been deleted successfully.`);
+        });
+
+        await this.ImageRepository.delete({
+          user: preUser,
+        });
+      }
+
+      /* 새로운 프로필 저장 */
       images.forEach((image: Partial<CreateImageDto>) => {
         image.user = user;
-        // 이미지 db에 저장
-        console.log(image);
         this.ImageRepository.save(image);
       });
     } else {

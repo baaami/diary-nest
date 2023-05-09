@@ -33,11 +33,15 @@ export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   // 게시물 리스트
+  @UseGuards(AuthGuard)
   @Get("/list")
-  async list(@Query("page") page: number = 0) {
+  async list(@Query("page") page: number = 0, @Req() req: any) {
     if (isNaN(page)) page = 0;
 
-    const [contents, totalPage] = await this.contentService.findList(page);
+    const [contents, totalPage] = await this.contentService.findList(
+      page,
+      req.isLogined
+    );
     const result: ContentList = {
       contents,
       totalPage,

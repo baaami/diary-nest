@@ -35,10 +35,11 @@ export class ContentService {
     return contents[randomIndex];
   }
 
-  async findList(page: number): Promise<[Contents[], number]> {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+  async findList(
+    page: number,
+    islogin: boolean
+  ): Promise<[Contents[], number]> {
+    let res = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect("contents.owner", "users")
       .leftJoinAndSelect("contents.images", "images")
       .skip(
@@ -47,7 +48,24 @@ export class ContentService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content_list;
+    // 로그인한 유저의 관심 목록 content id 획득
+    if (islogin) {
+      const [content_list, page_num] = res;
+
+      const favorite_content_id_list = [] as number[];
+
+      // 로그인한 유저의 관심 목록 like 설정
+      content_list.forEach((content) => {
+        if (favorite_content_id_list.includes(content.id)) {
+          content.like = true;
+        }
+      });
+
+      // 응답 body에 관심 목록을 설정한 리스트 할당
+      res = [content_list, page_num];
+    }
+
+    return res;
   }
 
   async findListAll() {
@@ -266,6 +284,7 @@ export class ContentService {
 
   @HttpCode(204)
   async DeleteOne(contentId: number) {
+    console.log("delete one");
     try {
       const content = await this.ContentRepository.createQueryBuilder(
         "contents"

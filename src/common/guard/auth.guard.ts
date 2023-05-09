@@ -34,9 +34,16 @@ export class AuthGuard implements CanActivate {
     }
 
     let accessToken: string;
-    // 쿠키, 헤더로 access token이 들어오지 않을 경우 전부 인증 거부
-    // response: 403
+
+    // GET 요청의 경우 인가를 허용해준다.
+    if ((request as Request).method === "GET") {
+      request.isLogined = false;
+      return true;
+    }
+
     if (cookieType == false && headerType == false) {
+      // 쿠키, 헤더로 access token이 들어오지 않을 경우 전부 인증 거부
+      // response: 403
       return false;
     }
 
@@ -61,6 +68,7 @@ export class AuthGuard implements CanActivate {
 
     // 검증 성공
     request.user = decoded.user;
+    request.isLogined = true;
     console.log("request.user: ", request.user);
     return true;
   }
