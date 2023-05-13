@@ -38,28 +38,16 @@ export class FavoriteController {
   // 특정 유저 관심 목록 추가
   @UseGuards(AuthGuard)
   @Post("/add/:id")
-  async addFavorite(
-    @Param("id", ParseIntPipe) contentId: number,
-    @Req() req: any
-  ) {
-    const res = await this.favoriteService.addFavorite(
-      (req.user as Users).id,
-      contentId
-    );
+  async addFavorite(@Param("id", ParseIntPipe) contentId: number) {
+    const res = await this.favoriteService.addFavorite(contentId);
     return res;
   }
 
   // 특정 유저 관심 목록 제거
   @UseGuards(AuthGuard)
   @Post("/delete/:id")
-  async delFavorite(
-    @Param("id", ParseIntPipe) contentId: number,
-    @Req() req: any
-  ) {
-    const res = await this.favoriteService.delFavorite(
-      req.user as Users,
-      contentId
-    );
+  async delFavorite(@Param("id", ParseIntPipe) contentId: number) {
+    const res = await this.favoriteService.delFavorite(contentId);
     return res;
   }
 }

@@ -9,6 +9,7 @@ import { JwtService } from "@nestjs/jwt";
 import { Users } from "../user/entities/user.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Reviews } from "src/api/review/entities/review.entity";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { Reviews } from "src/api/review/entities/review.entity";
     }),
   ],
   controllers: [ContentController],
-  providers: [ContentService, JwtService],
+  providers: [ContentService, AuthSharedService, JwtService],
 })
 export class ContentModule {}

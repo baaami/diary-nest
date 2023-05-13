@@ -16,6 +16,7 @@ import {
   CreateSignInLocalDto,
 } from "./dto/create-auth.dto";
 import { Response } from "express";
+import { AuthSharedService } from "./auth.shared.service";
 
 async function GetAccessToken(
   permissionCode: string
@@ -68,7 +69,8 @@ async function GetUserData(access_token: string): Promise<[boolean, string]> {
 export class AuthService {
   constructor(
     private jwtService: JwtService,
-    @InjectRepository(Users) private UserRepository: Repository<Users>
+    @InjectRepository(Users) private UserRepository: Repository<Users>,
+    private readonly authSharedService: AuthSharedService
   ) {}
 
   async validateToken(access_token: string) {
@@ -128,11 +130,8 @@ export class AuthService {
     return res.status(200).json({ user });
   }
 
-  async kakaoSignUp(
-    updateUserDto: UpdateUserDto,
-    user: Users,
-    @Res() res: Response
-  ) {
+  async kakaoSignUp(updateUserDto: UpdateUserDto, @Res() res: Response) {
+    const user = this.authSharedService.getUser();
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto

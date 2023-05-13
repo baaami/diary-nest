@@ -26,9 +26,8 @@ export class ReviewController {
   @Post("/create/:id")
   create(
     @Body() createReviewDto: CreateReviewDto,
-    @Param("id", ParseIntPipe) sellerId: number,
-    @Req() req: any
+    @Param("id", ParseIntPipe) sellerId: number
   ) {
-    return this.reviewService.create(createReviewDto, sellerId, req.user);
+    return this.reviewService.create(createReviewDto, sellerId);
   }
 }

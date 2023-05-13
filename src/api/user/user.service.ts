@@ -13,12 +13,14 @@ import { Images } from "src/common/entities/image.entity";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { join } from "path";
 import { unlink } from "fs";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(Users) private UserRepository: Repository<Users>,
-    @InjectRepository(Images) private ImageRepository: Repository<Images>
+    @InjectRepository(Images) private ImageRepository: Repository<Images>,
+    private readonly authSharedService: AuthSharedService
   ) {}
   async findOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.createQueryBuilder("users")
@@ -63,7 +65,8 @@ export class UserService {
     return res;
   }
 
-  async islogin(user: Users): Promise<Users> {
+  async islogin(): Promise<Users> {
+    const user = this.authSharedService.getUser();
     const res = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
       .leftJoinAndSelect("users.images", "images")
@@ -74,7 +77,8 @@ export class UserService {
   }
 
   @HttpCode(204)
-  async update(updateUserDto: UpdateUserDto, user: Users) {
+  async update(updateUserDto: UpdateUserDto) {
+    const user = this.authSharedService.getUser();
     try {
       await this.UserRepository.update({ id: user.id }, updateUserDto);
     } catch (err) {
@@ -95,9 +99,9 @@ export class UserService {
   @HttpCode(204)
   async updateProfile(
     updateProfileDto: UpdateProfileDto,
-    files: { images?: Express.Multer.File[] },
-    user: Users
+    files: { images?: Express.Multer.File[] }
   ) {
+    const user = this.authSharedService.getUser();
     const { images } = files;
 
     // 프로필 이미지가 존재할 경우
