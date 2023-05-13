@@ -26,8 +26,9 @@ export class ContentService {
 
   async findOne(contentId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.owner", "users")
-      .leftJoinAndSelect("contents.images", "images")
+      .leftJoinAndSelect("contents.owner", "owner")
+      .leftJoinAndSelect("owner.images", "ownerImages")
+      .leftJoinAndSelect("contents.images", "contentImages")
       .where({ id: contentId })
       .getOne();
 
