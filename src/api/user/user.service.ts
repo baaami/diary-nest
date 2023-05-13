@@ -101,15 +101,14 @@ export class UserService {
     updateProfileDto: UpdateProfileDto,
     files: { images?: Express.Multer.File[] }
   ) {
-    const user = this.authSharedService.getUser();
+    const loginedUser = this.authSharedService.getUser();
     const { images } = files;
 
     // 프로필 이미지가 존재할 경우
     if (images) {
-      console.log("images: ", images);
       /* 이전 프로필 이미지 삭제 */
-      const preUser = await this.UserRepository.createQueryBuilder("contents")
-        .where({ id: user.id })
+      const preUser = await this.UserRepository.createQueryBuilder("users")
+        .where({ id: loginedUser.id })
         .getOne();
 
       // 업데이트할 content의 image를 서버에서 전부삭제
@@ -135,13 +134,13 @@ export class UserService {
 
       /* 새로운 프로필 저장 */
       images.forEach((image: Partial<CreateImageDto>) => {
-        image.user = user;
+        image.user = loginedUser;
         this.ImageRepository.save(image);
       });
     } else {
       console.log("image not found");
     }
 
-    await this.UserRepository.update({ id: user.id }, updateProfileDto);
+    await this.UserRepository.update({ id: loginedUser.id }, updateProfileDto);
   }
 }
