@@ -7,10 +7,11 @@ import { ReviewController } from "./review.controller";
 import { Users } from "../user/entities/user.entity";
 import { AuthService } from "../auth/auth.service";
 import { JwtService } from "@nestjs/jwt";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Reviews, Users])],
   controllers: [ReviewController],
-  providers: [ReviewService, JwtService],
+  providers: [ReviewService, AuthSharedService, JwtService],
 })
 export class ReviewModule {}

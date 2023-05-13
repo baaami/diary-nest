@@ -30,12 +30,8 @@ export class AuthController {
   // 카카오 회원 가입
   @UseGuards(AuthGuard)
   @Post("/kakao/signup")
-  kakaoSignUp(
-    @Body() updateUserDto: UpdateUserDto,
-    @Req() req: any,
-    @Res() res: Response
-  ) {
-    return this.authService.kakaoSignUp(updateUserDto, req.user, res);
+  kakaoSignUp(@Body() updateUserDto: UpdateUserDto, @Res() res: Response) {
+    return this.authService.kakaoSignUp(updateUserDto, res);
   }
 
   // 로컬 로그인

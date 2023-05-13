@@ -8,6 +8,7 @@ import { AuthService } from "../auth/auth.service";
 import { Users } from "./entities/user.entity";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Module({
   imports: [
@@ -17,6 +18,6 @@ import { UserService } from "./user.service";
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, JwtService],
+  providers: [UserService, JwtService, AuthSharedService],
 })
 export class UserModule {}

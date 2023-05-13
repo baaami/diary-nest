@@ -9,10 +9,17 @@ import { UserService } from "../user/user.service";
 import { ContentService } from "../content/content.service";
 import { Images } from "src/common/entities/image.entity";
 import { JwtService } from "@nestjs/jwt";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Favorites, Users, Contents, Images])],
   controllers: [FavoriteController],
-  providers: [FavoriteService, UserService, ContentService, JwtService],
+  providers: [
+    FavoriteService,
+    UserService,
+    ContentService,
+    AuthSharedService,
+    JwtService,
+  ],
 })
 export class FavoriteModule {}

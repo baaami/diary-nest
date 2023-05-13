@@ -41,15 +41,15 @@ export class UserController {
   // 로그인 상태 유지
   @UseGuards(AuthGuard)
   @Post("/islogin")
-  islogin(@Req() req: any) {
-    return this.userService.islogin(req.user);
+  islogin() {
+    return this.userService.islogin();
   }
 
   // 유저 정보 업데이트
   @UseGuards(AuthGuard)
   @Post("/info")
-  update(@Body() updateUserDto: UpdateUserDto, @Req() req: any) {
-    return this.userService.update(updateUserDto, req.user);
+  update(@Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(updateUserDto);
   }
 
   // 프로필 정보 업데이트
@@ -65,9 +65,8 @@ export class UserController {
   )
   updateProfile(
     @Body() updateProfileDto: UpdateProfileDto,
-    @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Req() req: any
+    @UploadedFiles() files: { images?: Express.Multer.File[] }
   ) {
-    return this.userService.updateProfile(updateProfileDto, files, req.user);
+    return this.userService.updateProfile(updateProfileDto, files);
   }
 }

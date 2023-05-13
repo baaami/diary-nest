@@ -5,12 +5,14 @@ import { Reviews } from "src/api/review/entities/review.entity";
 import { Repository } from "typeorm";
 import { Users } from "../user/entities/user.entity";
 import { CreateReviewDto } from "./dto/create-review.dto";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Injectable()
 export class ReviewService {
   constructor(
     @InjectRepository(Reviews) private ReviewRepository: Repository<Reviews>,
-    @InjectRepository(Users) private UserRepository: Repository<Users>
+    @InjectRepository(Users) private UserRepository: Repository<Users>,
+    private readonly authSharedService: AuthSharedService
   ) {}
 
   async insertFakerData(fakerdata: Reviews): Promise<Reviews> {
@@ -31,10 +33,9 @@ export class ReviewService {
 
   async create(
     createReviewDto: CreateReviewDto,
-    sellerId: number,
-    buyer: Users
+    sellerId: number
   ): Promise<Reviews> {
-    console.log("buyer: ", buyer);
+    const buyer: Users = this.authSharedService.getUser();
     const seller: Users = await this.UserRepository.createQueryBuilder("users")
       .where({ id: sellerId })
       .getOne();

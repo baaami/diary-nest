@@ -7,6 +7,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { UserService } from "../user/user.service";
 import { Images } from "src/common/entities/image.entity";
+import { AuthSharedService } from "./auth.shared.service";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { Images } from "src/common/entities/image.entity";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, UserService],
+  providers: [AuthService, UserService, AuthSharedService],
   exports: [JwtModule],
 })
 export class AuthModule {}

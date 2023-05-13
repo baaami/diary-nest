@@ -48,6 +48,9 @@ export class Contents {
   @Column("int", { name: "like_cnt", default: 0 })
   like_cnt: number;
 
+  @Column("boolean", { name: "like", default: false })
+  like: boolean;
+
   @Column("int", { name: "chat_cnt", default: 0 })
   chat_cnt: number;
 

@@ -33,6 +33,7 @@ export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   // 게시물 리스트
+  @UseGuards(AuthGuard)
   @Get("/list")
   async list(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
@@ -86,10 +87,10 @@ export class ContentController {
   // 로그인한 유저가 구매한 게시물 리스트
   @UseGuards(AuthGuard)
   @Post("/list/bought/:id")
-  async boughtList(@Req() req: any, @Query("page") page: number = 0) {
+  async boughtList(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
     const [contents, totalPage] =
-      await this.contentService.getBoughtProductList(req.user, page);
+      await this.contentService.getBoughtProductList(page);
     const result: ContentList = {
       contents,
       totalPage,
@@ -132,10 +133,9 @@ export class ContentController {
   @UseGuards(AuthGuard)
   create(
     @Body() createContentDto: CreateContentDto,
-    @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Req() req: any
+    @UploadedFiles() files: { images?: Express.Multer.File[] }
   ) {
-    return this.contentService.Create(createContentDto, files, req.user);
+    return this.contentService.Create(createContentDto, files);
   }
 
   @UseGuards(AuthGuard)
@@ -146,8 +146,8 @@ export class ContentController {
 
   @UseGuards(AuthGuard)
   @Post()
-  write(@Body() createContentDto: CreateContentDto, @Req() req: any) {
-    return this.contentService.writeOne(createContentDto, req.user);
+  write(@Body() createContentDto: CreateContentDto) {
+    return this.contentService.writeOne(createContentDto);
   }
 
   // @UseGuards(AuthGuard)
@@ -179,15 +179,9 @@ export class ContentController {
   update(
     @Body() updateContentDto: UpdateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Param("id", ParseIntPipe) contentId: number,
-    @Req() req: any
+    @Param("id", ParseIntPipe) contentId: number
   ) {
-    return this.contentService.Update(
-      updateContentDto,
-      contentId,
-      files,
-      req.user
-    );
+    return this.contentService.Update(updateContentDto, contentId, files);
   }
 
   @UseGuards(AuthGuard)

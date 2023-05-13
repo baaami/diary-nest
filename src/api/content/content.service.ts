@@ -10,12 +10,17 @@ import { Users } from "../user/entities/user.entity";
 import { pagenation_content_size } from "src/common/define";
 import { unlink } from "fs";
 import { join } from "path";
+import { AuthSharedService } from "../auth/auth.shared.service";
+import { Favorites } from "src/common/entities/favorite.entity";
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
     @InjectRepository(Images) private ImageRepository: Repository<Images>,
+    @InjectRepository(Favorites)
+    private FavoriteRepository: Repository<Favorites>,
+    private readonly authSharedService: AuthSharedService,
     @InjectEntityManager() private ContentManager: EntityManager
   ) {}
 
@@ -36,9 +41,7 @@ export class ContentService {
   }
 
   async findList(page: number): Promise<[Contents[], number]> {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+    let res = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect("contents.owner", "users")
       .leftJoinAndSelect("contents.images", "images")
       .skip(
@@ -47,7 +50,34 @@ export class ContentService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content_list;
+    // 로그인한 유저의 관심 목록 content id 획득
+    if (this.authSharedService.getLogined()) {
+      const userId = this.authSharedService.getUser().id;
+      const [content_list, page_num] = res;
+
+      // 로그인한 유저의 관심 목록 획득
+      const favorite_content_list =
+        await this.FavoriteRepository.createQueryBuilder("favorites")
+          .select("favorites.content_id")
+          .where("favorites.user_id = :userId", { userId })
+          .getRawMany();
+
+      const favoriteContentIdList = favorite_content_list.map(
+        (favorite) => favorite.content_id
+      );
+
+      // 로그인한 유저의 관심 목록 like 설정
+      content_list.forEach((content) => {
+        if (favoriteContentIdList.includes(content.id)) {
+          content.like = true;
+        }
+      });
+
+      // 응답 body에 관심 목록을 설정한 리스트 할당
+      res = [content_list, page_num];
+    }
+
+    return res;
   }
 
   async findListAll() {
@@ -129,13 +159,14 @@ export class ContentService {
     return content_list;
   }
 
-  async getBoughtProductList(loginUser: Users, page: number) {
+  async getBoughtProductList(page: number) {
+    const user = this.authSharedService.getUser();
     const content_list = await this.ContentRepository.createQueryBuilder(
       "contents"
     )
       .leftJoinAndSelect("contents.buyer", "users")
       .leftJoinAndSelect("contents.images", "images")
-      .where("contents.buyer_id = :buyerId", { buyerId: loginUser.id })
+      .where("contents.buyer_id = :buyerId", { buyerId: user.id })
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
       )
@@ -155,10 +186,9 @@ export class ContentService {
     return content;
   }
   async writeOne(
-    createContentDto: CreateContentDto,
-    user: Users
+    createContentDto: CreateContentDto
   ): Promise<CreateContentDto & Contents> {
-    createContentDto.owner = user;
+    createContentDto.owner = this.authSharedService.getUser();
 
     const content = await this.ContentRepository.save(createContentDto);
     return content;
@@ -189,12 +219,11 @@ export class ContentService {
 
   async Create(
     createContentDto: CreateContentDto,
-    files: { images?: Express.Multer.File[] },
-    user: Users
+    files: { images?: Express.Multer.File[] }
   ) {
     const { images } = files;
 
-    createContentDto.owner = user;
+    createContentDto.owner = this.authSharedService.getUser();
 
     const content: Contents = await this.ContentRepository.save(
       createContentDto
@@ -216,8 +245,7 @@ export class ContentService {
   async Update(
     updateContentDto: UpdateContentDto,
     contentId: number,
-    files: { images?: Express.Multer.File[] },
-    user: Users
+    files: { images?: Express.Multer.File[] }
   ) {
     const { images } = files;
 

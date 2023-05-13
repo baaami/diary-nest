@@ -1,19 +1,15 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Observable } from "rxjs";
-import { CreateUserDto } from "src/api/user/dto/create-user.dto";
-import { UpdateUserDto } from "src/api/user/dto/update-user.dto";
-import { Users } from "src/api/user/entities/user.entity";
-import { Repository } from "typeorm";
 import { JwtdecodedUser } from "../entities/common.entity";
 import { Request } from "express";
+import { AuthSharedService } from "src/api/auth/auth.shared.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectRepository(Users) private userRepository: Repository<Users>
+    private readonly authSharedService: AuthSharedService
   ) {}
   canActivate(
     context: ExecutionContext
@@ -26,17 +22,28 @@ export class AuthGuard implements CanActivate {
     let cookieType: boolean = false;
     let headerType: boolean = false;
     if (request.hasOwnProperty("cookies") == true) {
-      cookieType = true;
+      if (request.cookies.access_token) {
+        cookieType = true;
+        console.log("cookieType");
+      }
     }
 
     if (request.headers.hasOwnProperty("authorization") == true) {
+      console.log("headerType");
       headerType = true;
     }
-
     let accessToken: string;
-    // 쿠키, 헤더로 access token이 들어오지 않을 경우 전부 인증 거부
-    // response: 403
+
     if (cookieType == false && headerType == false) {
+      // 쿠키, 헤더로 access token이 들어오지 않을 경우
+
+      // GET 요청의 경우 비로그인 사용자에게 인가를 허용해준다.
+      if ((request as Request).method === "GET") {
+        this.authSharedService.setLogined(false);
+        return true;
+      }
+
+      // response: 403
       return false;
     }
 
@@ -49,19 +56,29 @@ export class AuthGuard implements CanActivate {
     }
 
     // 검증
-    console.log("accessToken: ", accessToken);
-    const decoded: JwtdecodedUser = this.jwtService.verify(
-      accessToken.toString(),
-      { secret: process.env.JWT_SECRET_KEY }
-    );
+    try {
+      const decoded: JwtdecodedUser = this.jwtService.verify(
+        accessToken.toString(),
+        { secret: process.env.JWT_SECRET_KEY }
+      );
 
-    // 검증 실패 혹은 decoding 실패
-    if (typeof decoded !== "object" || decoded.hasOwnProperty("user") === false)
-      return false;
+      // 검증 실패 혹은 decoding 실패
+      if (
+        typeof decoded !== "object" ||
+        decoded.hasOwnProperty("user") === false
+      )
+        return false;
 
-    // 검증 성공
-    request.user = decoded.user;
-    console.log("request.user: ", request.user);
-    return true;
+      // 검증 성공
+
+      // Singleton Service에 로그인 여부 등록
+      this.authSharedService.setLogined(true);
+
+      // Singleton Service에 로그인 유저 등록
+      this.authSharedService.setUser(decoded.user);
+      return true;
+    } catch (err) {
+      console.error(err);
+    }
   }
 }

@@ -7,6 +7,7 @@ import { Users } from "../user/entities/user.entity";
 import { Contents } from "../content/entities/content.entity";
 import { UserService } from "../user/user.service";
 import { ContentService } from "../content/content.service";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Injectable()
 export class FavoriteService {
@@ -16,7 +17,8 @@ export class FavoriteService {
     @Inject(ContentService)
     private readonly contentService: ContentService,
     @InjectRepository(Favorites)
-    private FavoriteRepository: Repository<Favorites>
+    private FavoriteRepository: Repository<Favorites>,
+    private readonly authSharedService: AuthSharedService
   ) {}
 
   async getFavoriteList(userId: number, page: number) {
@@ -41,10 +43,11 @@ export class FavoriteService {
    * @param contentId 관심 목록에 추가할 게시물 ID
    * @returns 저장한 게시물 데이터
    */
-  async addFavorite(userId: number, contentId: number) {
+  async addFavorite(contentId: number) {
     const favorite = new Favorites();
+    const loginedUser = this.authSharedService.getUser();
 
-    const user = await this.userService.findOne(userId);
+    const user = await this.userService.findOne(loginedUser.id);
     favorite.user = user;
 
     const content = await this.contentService.findOne(contentId);
@@ -66,13 +69,11 @@ export class FavoriteService {
 
   /**
    * @brief 관심 목록 제거 API
-   * @param loginUser 로그인한 유저
    * @param contentId 관심 목록에 추가할 게시물 ID
    * @returns 삭제한 관심목록 데이터
    */
-  async delFavorite(loginUser: Users, contentId: number) {
+  async delFavorite(contentId: number) {
     const res = await this.FavoriteRepository.delete({
-      user: loginUser,
       content: await this.contentService.findOne(contentId),
     });
     return res;
