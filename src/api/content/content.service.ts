@@ -40,8 +40,39 @@ export class ContentService {
     return contents[randomIndex];
   }
 
+  async updateFavoriteField(content_list: Contents[]): Promise<Contents[]> {
+    const userId = this.authSharedService.getUser().id;
+
+    // 로그인한 유저의 관심 목록 획득
+    const favorite_content_list =
+      await this.FavoriteRepository.createQueryBuilder("favorites")
+        .select("favorites.content_id")
+        .where("favorites.user_id = :userId", { userId })
+        .getRawMany();
+
+    const favoriteContentIdList = favorite_content_list.map(
+      (favorite) => favorite.content_id
+    );
+
+    // 로그인한 유저의 관심 목록 like 설정
+    content_list.forEach((content) => {
+      if (favoriteContentIdList.includes(content.id)) {
+        content.like = true;
+      }
+    });
+
+    return content_list;
+  }
+
+  // [START] 상품 리스트 획득 API
+  /**
+   * 전체 상품 리스트를 획득 하는 API
+   * @param page pagination 페이지
+   * @returns 상품 리스트, 상품 리스트 개수
+   */
   async findList(page: number): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
+      .where("contents.completed = :completed", { completed: false })
       .leftJoinAndSelect("contents.owner", "users")
       .leftJoinAndSelect("contents.images", "images")
       .skip(
@@ -52,58 +83,54 @@ export class ContentService {
 
     // 로그인한 유저의 관심 목록 content id 획득
     if (this.authSharedService.getLogined()) {
-      const userId = this.authSharedService.getUser().id;
       const [content_list, page_num] = res;
-
-      // 로그인한 유저의 관심 목록 획득
-      const favorite_content_list =
-        await this.FavoriteRepository.createQueryBuilder("favorites")
-          .select("favorites.content_id")
-          .where("favorites.user_id = :userId", { userId })
-          .getRawMany();
-
-      const favoriteContentIdList = favorite_content_list.map(
-        (favorite) => favorite.content_id
+      const update_content_list: Contents[] = await this.updateFavoriteField(
+        content_list
       );
-
-      // 로그인한 유저의 관심 목록 like 설정
-      content_list.forEach((content) => {
-        if (favoriteContentIdList.includes(content.id)) {
-          content.like = true;
-        }
-      });
-
       // 응답 body에 관심 목록을 설정한 리스트 할당
-      res = [content_list, page_num];
+      res = [update_content_list, page_num];
     }
 
     return res;
   }
 
-  async findListAll() {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+  /**
+   * 특정 카테고리의 전체 상품 리스트를 획득 하는 API
+   * @param category  카테고리
+   * @param page      pagination 페이지
+   * @returns         상품 리스트, 상품 리스트 개수
+   */
+  async getProductsByCategory(
+    category: string,
+    page: number
+  ): Promise<[Contents[], number]> {
+    let res = await this.ContentRepository.createQueryBuilder("contents")
+      .where("contents.completed = :completed", { completed: false })
       .leftJoinAndSelect("contents.owner", "users")
       .leftJoinAndSelect("contents.images", "images")
-      .getMany();
+      .where("contents.category = :category", { category: category })
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
+      .take(pagenation_content_size)
+      .getManyAndCount();
 
-    return content_list;
+    if (this.authSharedService.getLogined()) {
+      const [content_list, page_num] = res;
+      const update_content_list: Contents[] = await this.updateFavoriteField(
+        content_list
+      );
+      // 응답 body에 관심 목록을 설정한 리스트 할당
+      res = [update_content_list, page_num];
+    }
+
+    return res;
   }
 
-  async findListImageIsNull() {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
-      .leftJoinAndSelect("contents.owner", "users")
-      .leftJoinAndSelect("contents.images", "images")
-      .where("images.id IS NULL")
-      .getMany();
-
-    return content_list;
-  }
-
-  async getSellingProductsByUser(userId: number, page: number) {
+  async getSellingProductsByUser(
+    userId: number,
+    page: number
+  ): Promise<[Contents[], number]> {
     const content_list = await this.ContentRepository.createQueryBuilder(
       "contents"
     )
@@ -123,7 +150,10 @@ export class ContentService {
     return content_list;
   }
 
-  async getSoldProductsByUser(userId: number, page: number) {
+  async getSoldProductsByUser(
+    userId: number,
+    page: number
+  ): Promise<[Contents[], number]> {
     const content_list = await this.ContentRepository.createQueryBuilder(
       "contents"
     )
@@ -143,23 +173,7 @@ export class ContentService {
     return content_list;
   }
 
-  async getProductsByCategory(category: string, page: number) {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
-      .leftJoinAndSelect("contents.owner", "users")
-      .leftJoinAndSelect("contents.images", "images")
-      .where("contents.category = :category", { category: category })
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
-
-    return content_list;
-  }
-
-  async getBoughtProductList(page: number) {
+  async getBoughtProductList(page: number): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
     const content_list = await this.ContentRepository.createQueryBuilder(
       "contents"
@@ -174,6 +188,7 @@ export class ContentService {
       .getManyAndCount();
     return content_list;
   }
+  // [END] 상품 리스트 획득 API
 
   async complete(contentId: number): Promise<UpdateResult> {
     const content = await this.ContentRepository.update(
@@ -185,6 +200,7 @@ export class ContentService {
     );
     return content;
   }
+
   async writeOne(
     createContentDto: CreateContentDto
   ): Promise<CreateContentDto & Contents> {

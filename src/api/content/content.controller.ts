@@ -46,12 +46,6 @@ export class ContentController {
     return result;
   }
 
-  // 게시물 리스트
-  @Get("/list/all")
-  alllist() {
-    return this.contentService.findListAll();
-  }
-
   // 판매 중인 게시물 리스트
   @Get("/list/user/selling/:id")
   async sellingList(
