@@ -13,6 +13,8 @@ import { time } from "console";
 import { content_cnt } from "./insert.common.types";
 import { randomIntFromInterval } from "src/common/util";
 
+// jest.setTimeout(30000);
+
 const categories = [
   "electronic",
   "clothes",
@@ -66,11 +68,14 @@ describe("Insert User", () => {
         content.like_cnt = faker.datatype.number({ min: 0, max: 100 });
         content.chat_cnt = faker.datatype.number({ min: 0, max: 10 });
         content.completed_date = faker.date.future();
-        const user = await user_service.findRandomOne();
-        content.buyer = user;
 
-        const owner = await user_service.findExcludeRandomOne(user.id);
-        content.owner = owner;
+        const seller = await user_service.findRandomOne();
+        content.seller = seller;
+
+        if (content.completed) {
+          const user = await user_service.findExcludeRandomOne(seller.id);
+          content.buyer = user;
+        }
 
         // 2. 글 생성
         const savedContent: Contents = await service.insertFakerData(content);
@@ -86,7 +91,7 @@ describe("Insert User", () => {
         expect(savedContent.chat_cnt).toEqual(content.chat_cnt);
         expect(savedContent.completed_date).toEqual(content.completed_date);
         expect(savedContent.buyer).toEqual(content.buyer);
-        expect(savedContent.owner).toEqual(content.owner);
+        expect(savedContent.seller).toEqual(content.seller);
       });
     }
   });

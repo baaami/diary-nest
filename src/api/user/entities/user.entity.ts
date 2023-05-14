@@ -70,7 +70,7 @@ export class Users {
   @ManyToMany(() => Favorites, (favorite) => favorite.id)
   favorites: Favorites[];
 
-  @OneToMany(() => Contents, (content) => content.owner)
+  @OneToMany(() => Contents, (content) => content.seller)
   contents: Contents;
 
   @OneToOne(() => Images, (image) => image.user)

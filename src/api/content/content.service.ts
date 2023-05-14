@@ -26,8 +26,9 @@ export class ContentService {
 
   async findOne(contentId: number) {
     const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.owner", "owner")
-      .leftJoinAndSelect("owner.images", "ownerImages")
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.buyer", "buyer")
+      .leftJoinAndSelect("seller.profileImage", "sellerImages")
       .leftJoinAndSelect("contents.images", "contentImages")
       .where({ id: contentId })
       .getOne();
@@ -74,7 +75,7 @@ export class ContentService {
   async findList(page: number): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
       .where("contents.completed = :completed", { completed: false })
-      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.images", "images")
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
@@ -107,7 +108,8 @@ export class ContentService {
   ): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
       .where("contents.completed = :completed", { completed: false })
-      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where("contents.category = :category", { category: category })
       .skip(
@@ -136,10 +138,11 @@ export class ContentService {
       "contents"
     )
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where(
-        "contents.owner_id = :userId AND contents.completed = :Completed",
+        "contents.seller_id = :userId AND contents.completed = :Completed",
         { userId, Completed: false }
       )
       .skip(
@@ -159,10 +162,11 @@ export class ContentService {
       "contents"
     )
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect("contents.owner", "users")
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where(
-        "contents.owner_id = :userId AND contents.completed = :Completed",
+        "contents.seller_id = :userId AND contents.completed = :Completed",
         { userId, Completed: true }
       )
       .skip(
@@ -179,7 +183,8 @@ export class ContentService {
     const content_list = await this.ContentRepository.createQueryBuilder(
       "contents"
     )
-      .leftJoinAndSelect("contents.buyer", "users")
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where("contents.buyer_id = :buyerId", { buyerId: user.id })
       .skip(
@@ -205,7 +210,7 @@ export class ContentService {
   async writeOne(
     createContentDto: CreateContentDto
   ): Promise<CreateContentDto & Contents> {
-    createContentDto.owner = this.authSharedService.getUser();
+    createContentDto.seller = this.authSharedService.getUser();
 
     const content = await this.ContentRepository.save(createContentDto);
     return content;
@@ -240,7 +245,7 @@ export class ContentService {
   ) {
     const { images } = files;
 
-    createContentDto.owner = this.authSharedService.getUser();
+    createContentDto.seller = this.authSharedService.getUser();
 
     const content: Contents = await this.ContentRepository.save(
       createContentDto
@@ -344,5 +349,67 @@ export class ContentService {
     } catch (error) {
       console.error(error);
     }
+  }
+  // [END] CRUD
+
+  // [For AUTO CREATE FAKER DATA]
+  async findListAll() {
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.seller", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .getMany();
+
+    return content_list;
+  }
+
+  async findListImageIsNull() {
+    const content_list = await this.ContentRepository.createQueryBuilder(
+      "contents"
+    )
+      .leftJoinAndSelect("contents.seller", "users")
+      .leftJoinAndSelect("contents.images", "images")
+      .where("images.id IS NULL")
+      .getMany();
+
+    return content_list;
+  }
+
+  async insertFakerData(fakerdata: Contents): Promise<Contents> {
+    const res = await this.ContentRepository.save(fakerdata);
+    return res;
+  }
+
+  async insertFakerImageData(fakerdata: ProductImages): Promise<ProductImages> {
+    const res = await this.ProductImageRepository.save(fakerdata);
+    return res;
+  }
+
+  async getFakerImages(content: Contents): Promise<ProductImages[]> {
+    const productImages: ProductImages[] = [];
+
+    const image_width = 640;
+    const image_height = 480;
+    const fakerimage: AxiosResponse<any, any> = await axios.get(
+      `http://placeimg.com/${image_width}/${image_height}/tech`,
+      { responseType: "arraybuffer" }
+    );
+
+    const image = new ProductImages();
+
+    const filename = `test_${Math.random().toString()}.jpg`;
+    writeFileSync(`./upload/${filename}`, fakerimage.data);
+    image.path = `upload/${filename}`;
+    image.content = content;
+
+    try {
+      await this.insertFakerImageData(image);
+      productImages.push(image);
+    } catch (err) {
+      console.error("insertFakerImageData error", image);
+    }
+
+    return productImages;
   }
 }

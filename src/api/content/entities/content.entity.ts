@@ -71,8 +71,8 @@ export class Contents {
   deletedAt: Date | null;
 
   @ManyToOne(() => Users, (user) => user.id)
-  @JoinColumn({ name: "owner_id" })
-  owner: Users;
+  @JoinColumn({ name: "seller_id" })
+  seller: Users;
 
   @ManyToMany(() => Favorites, (favorite) => favorite.id)
   favorites: Favorites[];

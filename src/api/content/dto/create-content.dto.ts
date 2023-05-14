@@ -40,5 +40,5 @@ export class CreateContentDto {
 
   @IsOptional()
   @IsObject()
-  owner: Users;
+  seller: Users;
 }
