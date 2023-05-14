@@ -16,7 +16,7 @@ import {
 } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { AuthGuard } from "src/common/guard/auth.guard";
-import { CreateImageDto } from "src/common/dto/create-image.dto";
+import { CreateProfileImageDto } from "src/common/dto/create-profile-image.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserService } from "./user.service";
 import { editFileName } from "src/lib/multer/multerOption";

@@ -8,8 +8,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Not, Repository, UpdateResult } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { CreateImageDto } from "src/common/dto/create-image.dto";
-import { Images } from "src/common/entities/image.entity";
+import { CreateProfileImageDto } from "src/common/dto/create-profile-image.dto";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { join } from "path";
 import { unlink } from "fs";
@@ -19,13 +19,14 @@ import { AuthSharedService } from "../auth/auth.shared.service";
 export class UserService {
   constructor(
     @InjectRepository(Users) private UserRepository: Repository<Users>,
-    @InjectRepository(Images) private ImageRepository: Repository<Images>,
+    @InjectRepository(ProfileImages)
+    private ProfileImageRepository: Repository<ProfileImages>,
     private readonly authSharedService: AuthSharedService
   ) {}
   async findOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.images", "images")
+      .leftJoinAndSelect("users.profileImage", "images")
       .where({ id: userId })
       .getOne();
 
@@ -69,7 +70,7 @@ export class UserService {
     const user = this.authSharedService.getUser();
     const res = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.images", "images")
+      .leftJoinAndSelect("users.profileImage", "images")
       .where({ id: user.id })
       .getOne();
 
@@ -88,7 +89,7 @@ export class UserService {
     try {
       await this.UserRepository.createQueryBuilder("users")
         .leftJoinAndSelect("users.contents", "contents")
-        .leftJoinAndSelect("users.images", "images")
+        .leftJoinAndSelect("users.profileImage", "images")
         .where({ id: user.id })
         .getOne();
     } catch (err) {
@@ -112,7 +113,9 @@ export class UserService {
         .getOne();
 
       // 업데이트할 content의 image를 서버에서 전부삭제
-      const image = await this.ImageRepository.createQueryBuilder("images")
+      const image = await this.ProfileImageRepository.createQueryBuilder(
+        "profileimages"
+      )
         .where({ user: preUser })
         .getOne();
 
@@ -127,20 +130,40 @@ export class UserService {
           console.log(`File ${deleteFilePath} has been deleted successfully.`);
         });
 
-        await this.ImageRepository.delete({
+        await this.ProfileImageRepository.delete({
           user: preUser,
         });
       }
 
       /* 새로운 프로필 저장 */
-      images.forEach((image: Partial<CreateImageDto>) => {
+      images.forEach((image: Partial<CreateProfileImageDto>) => {
         image.user = loginedUser;
-        this.ImageRepository.save(image);
+        this.ProfileImageRepository.save(image);
       });
     } else {
       console.log("image not found");
     }
 
     await this.UserRepository.update({ id: loginedUser.id }, updateProfileDto);
+  }
+
+  async getDefaultImage(): Promise<ProfileImages> {
+    // 기본 이미지 설정
+    const defaultImage = await this.ProfileImageRepository.findOneBy({
+      path: "upload/default.svg",
+    });
+
+    // 기본이미지가 DB에 존재할 경우, 기본 이미지 그대로 사용
+    if (defaultImage) {
+      return defaultImage;
+    } else {
+      // 기본이미지가 DB에 존재하지 않을 경우, 기본 이미지 save 후 사용
+      // 반드시 upload 폴더에는 default.svg가 존재해야함
+      const saveDefaultImage = await this.ProfileImageRepository.save({
+        path: "upload/default.svg",
+      });
+
+      return saveDefaultImage;
+    }
   }
 }

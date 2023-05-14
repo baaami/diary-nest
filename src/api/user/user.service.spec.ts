@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "./entities/user.entity";
 import { Contents } from "../content/entities/content.entity";
-import { Images } from "src/common/entities/image.entity";
+import { Images } from "src/common/entities/productimage.entity";
 
 import { UserController } from "./user.controller";
 import * as ormconfig from "../../../ormconfig";

@@ -10,7 +10,7 @@ import { Repository } from "typeorm";
 import { UserModule } from "../user/user.module";
 import { Users } from "../user/entities/user.entity";
 import { Contents } from "../content/entities/content.entity";
-import { Images } from "src/common/entities/image.entity";
+import { Images } from "src/common/entities/productimage.entity";
 
 describe("AuthService", () => {
   let service: AuthService;

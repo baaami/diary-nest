@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { ContentController } from "./content.controller";
 import { ContentService } from "./content.service";
 import { Contents } from "./entities/content.entity";
@@ -13,7 +13,13 @@ import { AuthSharedService } from "../auth/auth.shared.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Contents, Images, Users, Favorites, Reviews]),
+    TypeOrmModule.forFeature([
+      Contents,
+      ProductImages,
+      Users,
+      Favorites,
+      Reviews,
+    ]),
     MulterModule.register({
       dest: "./upload",
     }),

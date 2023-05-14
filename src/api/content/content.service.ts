@@ -1,23 +1,26 @@
 import { HttpCode, Injectable, UseGuards } from "@nestjs/common";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
-import { CreateImageDto } from "src/common/dto/create-image.dto";
-import { Images } from "src/common/entities/image.entity";
+import { CreateProductImageDto } from "src/common/dto/create-product-image.dto";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { Contents } from "src/api/content/entities/content.entity";
 import { InsertResult, UpdateResult, Repository, EntityManager } from "typeorm";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { Users } from "../user/entities/user.entity";
 import { pagenation_content_size } from "src/common/define";
-import { unlink } from "fs";
+import { unlink, writeFileSync } from "fs";
 import { join } from "path";
 import { AuthSharedService } from "../auth/auth.shared.service";
 import { Favorites } from "src/common/entities/favorite.entity";
+import axios, { AxiosResponse } from "axios";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
-    @InjectRepository(Images) private ImageRepository: Repository<Images>,
+    @InjectRepository(ProductImages)
+    private ProductImageRepository: Repository<ProductImages>,
     @InjectRepository(Favorites)
     private FavoriteRepository: Repository<Favorites>,
     private readonly authSharedService: AuthSharedService,
@@ -216,29 +219,7 @@ export class ContentService {
     return content;
   }
 
-  async insertFakerData(fakerdata: Contents): Promise<Contents> {
-    const res = await this.ContentRepository.save(fakerdata);
-    return res;
-  }
-
-  async insertFakerImageData(fakerdata: Images): Promise<Images> {
-    const res = await this.ImageRepository.save(fakerdata);
-    return res;
-  }
-
-  async uploadFiles(files: { images?: Express.Multer.File[] }) {
-    const result = [];
-    const { images } = files;
-
-    images.forEach((image: Partial<CreateImageDto>) => {
-      // 이미지 db에 저장
-      this.ImageRepository.save(image);
-      result.push(image);
-    });
-
-    return result;
-  }
-
+  // [START] CRUD
   async Create(
     createContentDto: CreateContentDto,
     files: { images?: Express.Multer.File[] }
@@ -252,14 +233,14 @@ export class ContentService {
     );
 
     if (images) {
-      images.forEach((image: Partial<CreateImageDto>) => {
+      images.forEach((image: Partial<CreateProductImageDto>) => {
         image.content = content;
-        this.ImageRepository.save(image);
+        this.ProductImageRepository.save(image);
       });
     } else {
       console.log("image not found");
     }
-    console.log(content);
+
     return content;
   }
 
@@ -279,7 +260,9 @@ export class ContentService {
         .getOne();
 
       // 업데이트할 content의 image를 서버에서 전부삭제
-      const image_list = await this.ImageRepository.createQueryBuilder("images")
+      const image_list = await this.ProductImageRepository.createQueryBuilder(
+        "productimages"
+      )
         .where({ content: preContent })
         .getMany();
 
@@ -296,7 +279,7 @@ export class ContentService {
       });
 
       // 업데이트할 content의 image를 DB에서 전부삭제
-      await this.ImageRepository.delete({
+      await this.ProductImageRepository.delete({
         content: preContent,
       });
 
@@ -305,9 +288,9 @@ export class ContentService {
 
       const content = await this.ContentRepository.findOneBy({ id: contentId });
 
-      images.forEach((image: Partial<CreateImageDto>) => {
+      images.forEach((image: Partial<CreateProductImageDto>) => {
         image.content = content;
-        this.ImageRepository.save(image);
+        this.ProductImageRepository.save(image);
       });
     } catch (error) {
       console.error(error);
@@ -324,7 +307,9 @@ export class ContentService {
         .getOne();
 
       // 업데이트할 content의 image를 서버에서 전부삭제
-      const image_list = await this.ImageRepository.createQueryBuilder("images")
+      const image_list = await this.ProductImageRepository.createQueryBuilder(
+        "productimages"
+      )
         .where({ content: content })
         .getMany();
 
@@ -341,7 +326,7 @@ export class ContentService {
       });
 
       // 업데이트할 content의 image를 DB에서 전부삭제
-      await this.ImageRepository.delete({
+      await this.ProductImageRepository.delete({
         content: content,
       });
 

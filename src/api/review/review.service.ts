@@ -25,9 +25,9 @@ export class ReviewService {
     const reviews = await this.ReviewRepository.createQueryBuilder("reviews")
       .where("reviews.seller_id = :sellerId", { sellerId })
       .leftJoinAndSelect("reviews.buyer", "buyer")
-      .leftJoinAndSelect("buyer.images", "buyerImages")
+      .leftJoinAndSelect("buyer.profileImage", "buyerImages")
       .leftJoinAndSelect("reviews.seller", "seller")
-      .leftJoinAndSelect("seller.images", "sellerImages")
+      .leftJoinAndSelect("seller.profileImage", "sellerImages")
       .getMany();
 
     return reviews;

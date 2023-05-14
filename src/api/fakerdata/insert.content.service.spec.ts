@@ -6,12 +6,16 @@ import * as ormconfig from "../../../ormconfig";
 import * as faker from "faker";
 import { Contents } from "../content/entities/content.entity";
 import { ContentService } from "../content/content.service";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { Reviews } from "src/api/review/entities/review.entity";
 import { time } from "console";
 import { content_cnt } from "./insert.common.types";
 import { randomIntFromInterval } from "src/common/util";
+import { AuthSharedService } from "../auth/auth.shared.service";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
+
+jest.setTimeout(30000);
 
 // jest.setTimeout(30000);
 
@@ -33,10 +37,17 @@ describe("Insert User", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forFeature([Users, Contents, Images, Favorites, Reviews]),
+        TypeOrmModule.forFeature([
+          Users,
+          Contents,
+          ProductImages,
+          ProfileImages,
+          Favorites,
+          Reviews,
+        ]),
         TypeOrmModule.forRoot(ormconfig),
       ],
-      providers: [ContentService, UserService],
+      providers: [ContentService, UserService, AuthSharedService],
     }).compile();
     service = module.get<ContentService>(ContentService);
     user_service = module.get<UserService>(UserService);
@@ -59,7 +70,7 @@ describe("Insert User", () => {
         const content = new Contents();
         content.title = faker.commerce.productName();
         content.body = faker.lorem.sentences(3, { words: 50 });
-        content.category = categories[randomIntFromInterval(0, 10)];
+        content.category = categories[randomIntFromInterval(0, 8)];
         content.completed = faker.datatype.boolean();
         content.price = faker.datatype.number({ min: 1000, max: 100000 });
         content.latitude = parseFloat(faker.address.latitude(36, 38));
@@ -76,6 +87,8 @@ describe("Insert User", () => {
           const user = await user_service.findExcludeRandomOne(seller.id);
           content.buyer = user;
         }
+
+        content.images = await service.getFakerImages(content);
 
         // 2. 글 생성
         const savedContent: Contents = await service.insertFakerData(content);

@@ -6,20 +6,27 @@ import * as ormconfig from "../../../ormconfig";
 import * as faker from "faker";
 import { Contents } from "../content/entities/content.entity";
 import { ContentService } from "../content/content.service";
-import { Images } from "src/common/entities/image.entity";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "../review/entities/review.entity";
 import { user_cnt } from "./insert.common.types";
+import { AuthSharedService } from "../auth/auth.shared.service";
 
 describe("Insert User", () => {
   let service: UserService;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forFeature([Users, Contents, Images, Favorites, Reviews]),
+        TypeOrmModule.forFeature([
+          Users,
+          Contents,
+          ProfileImages,
+          Favorites,
+          Reviews,
+        ]),
         TypeOrmModule.forRoot(ormconfig),
       ],
-      providers: [UserService],
+      providers: [UserService, AuthSharedService],
     }).compile();
     service = module.get<UserService>(UserService);
   });
@@ -46,7 +53,7 @@ describe("Insert User", () => {
         fakeUser.longitude = faker.address.longitude();
         fakeUser.location = faker.address.city();
         fakeUser.grade = faker.datatype.number(4);
-        // fakeUser.images =
+        fakeUser.profileImage = await service.getDefaultImage();
 
         // 2. 글 생성
         const user: Users = await service.insertFakerData(fakeUser);
@@ -64,6 +71,7 @@ describe("Insert User", () => {
         expect(user.longitude).toEqual(fakeUser.longitude);
         expect(user.location).toEqual(fakeUser.location);
         expect(user.grade).toEqual(fakeUser.grade);
+        expect(user.profileImage).toEqual(fakeUser.profileImage);
       });
     }
   });

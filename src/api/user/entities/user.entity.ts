@@ -5,6 +5,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -14,7 +15,8 @@ import { Contents } from "src/api/content/entities/content.entity";
 import { IsOptional } from "class-validator";
 import { Reviews } from "src/api/review/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 @Entity({ schema: "school", name: "users" })
 export class Users {
@@ -73,6 +75,6 @@ export class Users {
   @OneToMany(() => Contents, (content) => content.seller)
   contents: Contents;
 
-  @OneToOne(() => Images, (image) => image.user)
-  images: Images;
+  @ManyToOne(() => ProfileImages, (image) => image.user)
+  profileImage: ProfileImages;
 }
