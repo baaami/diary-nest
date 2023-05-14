@@ -12,7 +12,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Users } from "src/api/user/entities/user.entity";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { Reviews } from "src/api/review/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
 
@@ -77,6 +77,6 @@ export class Contents {
   @ManyToMany(() => Favorites, (favorite) => favorite.id)
   favorites: Favorites[];
 
-  @OneToMany(() => Images, (image) => image.content)
-  images: Images[];
+  @OneToMany(() => ProductImages, (image) => image.content)
+  images: ProductImages[];
 }

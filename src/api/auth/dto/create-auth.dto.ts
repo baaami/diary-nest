@@ -1,5 +1,6 @@
 import { Transform, Type } from "class-transformer";
-import { IsString, IsNumber, IsBoolean } from "class-validator";
+import { IsString, IsNumber, IsBoolean, IsOptional } from "class-validator";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 export class CreateAuthKakaoDto {
   @IsString()
@@ -39,6 +40,9 @@ export class CreateAuthLocalDto {
 
   @IsString()
   readonly location: string;
+
+  @IsOptional()
+  profileImage: ProfileImages;
 }
 
 export class CreateSignInLocalDto {
