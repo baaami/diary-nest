@@ -11,7 +11,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { CreateProfileImageDto } from "src/common/dto/create-profile-image.dto";
 import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { join } from "path";
+import path, { join } from "path";
 import { unlink } from "fs";
 import { AuthSharedService } from "../auth/auth.shared.service";
 
@@ -26,7 +26,7 @@ export class UserService {
   async findOne(userId: number): Promise<Users> {
     const user = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.profileImage", "images")
+      .leftJoinAndSelect("users.profileImage", "profileImage")
       .where({ id: userId })
       .getOne();
 
@@ -70,7 +70,7 @@ export class UserService {
     const user = this.authSharedService.getUser();
     const res = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.profileImage", "images")
+      .leftJoinAndSelect("users.profileImage", "profileImage")
       .where({ id: user.id })
       .getOne();
 
@@ -89,7 +89,7 @@ export class UserService {
     try {
       await this.UserRepository.createQueryBuilder("users")
         .leftJoinAndSelect("users.contents", "contents")
-        .leftJoinAndSelect("users.profileImage", "images")
+        .leftJoinAndSelect("users.profileImage", "profileImage")
         .where({ id: user.id })
         .getOne();
     } catch (err) {
@@ -100,46 +100,66 @@ export class UserService {
   @HttpCode(204)
   async updateProfile(
     updateProfileDto: UpdateProfileDto,
-    files: { images?: Express.Multer.File[] }
+    files: { profileImage?: Express.Multer.File[] }
   ) {
     const loginedUser = this.authSharedService.getUser();
-    const { images } = files;
+    console.log("files: ", files);
+    const { profileImage } = files;
 
     // 프로필 이미지가 존재할 경우
-    if (images) {
+    if (profileImage) {
       /* 이전 프로필 이미지 삭제 */
       const preUser = await this.UserRepository.createQueryBuilder("users")
         .where({ id: loginedUser.id })
+        .leftJoinAndSelect("users.profileImage", "profileImage")
         .getOne();
+
+      console.log("preUser: ", preUser);
 
       // 업데이트할 content의 image를 서버에서 전부삭제
-      const image = await this.ProfileImageRepository.createQueryBuilder(
-        "profileimages"
-      )
-        .where({ user: preUser })
-        .getOne();
+      if (
+        preUser.profileImage &&
+        preUser.profileImage.path != "upload/default.svg"
+      ) {
+        const image = await this.ProfileImageRepository.createQueryBuilder(
+          "profileimages"
+        )
+          .where({ path: preUser.profileImage.path })
+          .getOne();
 
-      if (image) {
-        const deleteFilePath = join(__dirname, "../../../../", image.path);
+        if (image) {
+          const deleteFilePath = join(__dirname, "../../../../", image.path);
 
-        unlink(deleteFilePath, (err) => {
-          if (err) {
-            console.error(err);
-            return;
-          }
-          console.log(`File ${deleteFilePath} has been deleted successfully.`);
-        });
+          unlink(deleteFilePath, (err) => {
+            if (err) {
+              console.error(err);
+              return;
+            }
+            console.log(
+              `File ${deleteFilePath} has been deleted successfully.`
+            );
+          });
 
-        await this.ProfileImageRepository.delete({
-          user: preUser,
-        });
+          const delete_path = preUser.profileImage.path;
+
+          preUser.profileImage = null;
+          await this.UserRepository.save(preUser);
+
+          await this.ProfileImageRepository.delete({
+            path: delete_path,
+          });
+        }
       }
 
       /* 새로운 프로필 저장 */
-      images.forEach((image: Partial<CreateProfileImageDto>) => {
-        image.user = loginedUser;
-        this.ProfileImageRepository.save(image);
-      });
+      let imageDto: CreateProfileImageDto = {
+        path: profileImage[0].path,
+        users: [],
+      };
+      imageDto.users.push(loginedUser);
+
+      const newProfileImage = await this.ProfileImageRepository.save(imageDto);
+      updateProfileDto.profileImage = newProfileImage;
     } else {
       console.log("image not found");
     }

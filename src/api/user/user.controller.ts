@@ -56,7 +56,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Post("/profile")
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
+    FileFieldsInterceptor([{ name: "profileImage", maxCount: 1 }], {
       storage: diskStorage({
         destination: "./upload",
         filename: editFileName,
@@ -65,7 +65,7 @@ export class UserController {
   )
   updateProfile(
     @Body() updateProfileDto: UpdateProfileDto,
-    @UploadedFiles() files: { images?: Express.Multer.File[] }
+    @UploadedFiles() files: { profileImage?: Express.Multer.File[] }
   ) {
     return this.userService.updateProfile(updateProfileDto, files);
   }

@@ -30,6 +30,5 @@ export class ProfileImages {
   updatedAt: Date;
 
   @OneToMany(() => Users, (user) => user.profileImage)
-  @JoinColumn({ name: "user_id" })
-  user: Users;
+  user: Users[];
 }

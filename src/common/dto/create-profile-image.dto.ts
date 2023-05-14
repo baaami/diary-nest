@@ -3,9 +3,9 @@ import { Users } from "src/api/user/entities/user.entity";
 
 export class CreateProfileImageDto {
   @IsString()
-  readonly path: string;
+  path: string;
 
   @IsOptional()
   @IsObject()
-  user: Users;
+  users: Users[];
 }

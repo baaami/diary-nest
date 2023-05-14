@@ -7,6 +7,7 @@ import {
 } from "class-validator";
 import { PartialType } from "@nestjs/mapped-types";
 import { CreateUserDto } from "./create-user.dto";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 export class UpdateProfileDto extends PartialType(CreateUserDto) {
   @IsString()
@@ -15,4 +16,7 @@ export class UpdateProfileDto extends PartialType(CreateUserDto) {
   @IsOptional()
   @IsString()
   readonly password: string;
+
+  @IsOptional()
+  profileImage: ProfileImages;
 }

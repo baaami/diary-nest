@@ -76,5 +76,6 @@ export class Users {
   contents: Contents;
 
   @ManyToOne(() => ProfileImages, (image) => image.user)
+  @JoinColumn({ name: "profile_image_id" })
   profileImage: ProfileImages;
 }
