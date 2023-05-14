@@ -7,12 +7,21 @@ import { FavoriteService } from "./favorite.service";
 import { Contents } from "../content/entities/content.entity";
 import { UserService } from "../user/user.service";
 import { ContentService } from "../content/content.service";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { JwtService } from "@nestjs/jwt";
 import { AuthSharedService } from "../auth/auth.shared.service";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Favorites, Users, Contents, Images])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Favorites,
+      Users,
+      Contents,
+      ProductImages,
+      ProfileImages,
+    ]),
+  ],
   controllers: [FavoriteController],
   providers: [
     FavoriteService,

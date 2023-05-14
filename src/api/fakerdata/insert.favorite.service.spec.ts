@@ -4,13 +4,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "../user/entities/user.entity";
 import * as ormconfig from "../../../ormconfig";
 import * as faker from "faker";
-import { Reviews } from "src/common/entities/review.entity";
+import { Reviews } from "../review/entities/review.entity";
 import { FavoriteService } from "../favorite/favorite.service";
-import { Images } from "src/common/entities/image.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 import { Contents } from "../content/entities/content.entity";
 import { ContentService } from "../content/content.service";
 import { Favorites } from "src/common/entities/favorite.entity";
 import { favorite_cnt } from "./insert.common.types";
+import { AuthSharedService } from "../auth/auth.shared.service";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 describe("Insert Review", () => {
   let service: FavoriteService;
@@ -19,10 +21,22 @@ describe("Insert Review", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forFeature([Reviews, Users, Images, Contents, Favorites]),
+        TypeOrmModule.forFeature([
+          Reviews,
+          Users,
+          ProductImages,
+          Contents,
+          Favorites,
+          ProfileImages,
+        ]),
         TypeOrmModule.forRoot(ormconfig),
       ],
-      providers: [FavoriteService, UserService, ContentService],
+      providers: [
+        FavoriteService,
+        UserService,
+        ContentService,
+        AuthSharedService,
+      ],
     }).compile();
     service = module.get<FavoriteService>(FavoriteService);
     user_service = module.get<UserService>(UserService);

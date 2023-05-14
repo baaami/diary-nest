@@ -1,32 +1,26 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Contents } from 'src/api/content/entities/content.entity';
-import { Users } from 'src/api/user/entities/user.entity';
-import * as dotenv from 'dotenv';
-import { Favorites } from 'src/common/entities/favorite.entity';
-import { Reviews } from 'src/api/review/entities/review.entity';
-import { Images } from 'src/common/entities/image.entity';
+import { TypeOrmModuleOptions } from "@nestjs/typeorm";
+import { Contents } from "src/api/content/entities/content.entity";
+import { Users } from "src/api/user/entities/user.entity";
+import * as dotenv from "dotenv";
+import { Favorites } from "src/common/entities/favorite.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 
 dotenv.config();
 
-const config:TypeOrmModuleOptions = {
-    type:'mysql',
-    host:'localhost',
-    port:3306,
-    username:process.env.DB_USERNAME,
-    password:process.env.DB_PASSWORD,
-    database:process.env.DB_DATABASE,
-    entities:[
-        Contents,
-        Users,
-        Favorites,
-        Reviews,
-        Images,
-    ],
-    synchronize : true, // 한번 true한 뒤로는 무조건 false
-    autoLoadEntities:true,
-    charset:'utf8mb4',
-    logging:false, 
-    keepConnectionAlive:true,
-}
+const config: TypeOrmModuleOptions = {
+  type: "mysql",
+  host: "localhost",
+  port: 3306,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  entities: [Contents, Users, Favorites, Reviews, ProductImages],
+  synchronize: true, // 한번 true한 뒤로는 무조건 false
+  autoLoadEntities: true,
+  charset: "utf8mb4",
+  logging: false,
+  keepConnectionAlive: true,
+};
 
 export = config;

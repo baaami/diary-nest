@@ -8,6 +8,7 @@ import {
 import { PartialType } from "@nestjs/mapped-types";
 import { CreateUserDto } from "./create-user.dto";
 import { Type, Transform } from "class-transformer";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
@@ -43,4 +44,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsString()
   readonly location: string;
+
+  @IsOptional()
+  profileImage: ProfileImages;
 }

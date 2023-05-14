@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { Users } from "../user/entities/user.entity";
 import { Contents } from "../content/entities/content.entity";
-import { Images } from "src/common/entities/image.entity";
+import { Images } from "src/common/entities/productimage.entity";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ContentService } from "./content.service";
 import { UserService } from "src/api/user/user.service";

@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable, Res } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Users } from "src/api/user/entities/user.entity";
+import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { Repository } from "typeorm";
 import * as qs from "qs";
 import axios, { AxiosResponse } from "axios";
@@ -70,6 +71,8 @@ export class AuthService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(Users) private UserRepository: Repository<Users>,
+    @InjectRepository(ProfileImages)
+    private ProfileImageRepository: Repository<ProfileImages>,
     private readonly authSharedService: AuthSharedService
   ) {}
 
@@ -117,7 +120,6 @@ export class AuthService {
     } else {
       // 존재하지 않을 경우, db 저장
       const c_user = await this.UserRepository.save(user);
-      console.log(c_user);
     }
 
     res.cookie(
@@ -132,6 +134,25 @@ export class AuthService {
 
   async kakaoSignUp(updateUserDto: UpdateUserDto, @Res() res: Response) {
     const user = this.authSharedService.getUser();
+
+    // 기본 이미지 설정
+    const defaultImage = await this.ProfileImageRepository.findOneBy({
+      path: "upload/default.svg",
+    });
+
+    // 기본이미지가 DB에 존재할 경우, 기본 이미지 그대로 사용
+    if (defaultImage) {
+      updateUserDto.profileImage = defaultImage;
+    } else {
+      // 기본이미지가 DB에 존재하지 않을 경우, 기본 이미지 save 후 사용
+      // 반드시 upload 폴더에는 default.svg가 존재해야함
+      const saveDefaultImage = await this.ProfileImageRepository.save({
+        path: "upload/default.svg",
+      });
+
+      updateUserDto.profileImage = saveDefaultImage;
+    }
+
     const rep = await this.UserRepository.update(
       { id: user.id },
       updateUserDto
@@ -139,7 +160,7 @@ export class AuthService {
 
     const updateUser = await this.UserRepository.createQueryBuilder("users")
       .leftJoinAndSelect("users.contents", "contents")
-      .leftJoinAndSelect("users.images", "images")
+      .leftJoinAndSelect("users.profileImage", "images")
       .where({ id: user.id })
       .getOne();
 
@@ -167,16 +188,33 @@ export class AuthService {
     const UserWithRepository = await this.UserRepository.findOneBy({
       email: createAuthLocalDto.email,
     });
+
     if (UserWithRepository) {
       // 존재할 경우, 사용 중인 이메일이라는 response를 줘야함
       throw new HttpException("Duplicated Email", HttpStatus.CONFLICT);
     }
 
-    // c_user : create_user
-    // u_user : update_user
-    // d_user : delete_user
+    // 2. 존재하지 않을 경우 회원가입을 진행함
+
+    // 2.1. 기본 이미지 설정
+    const defaultImage = await this.ProfileImageRepository.findOneBy({
+      path: "upload/default.svg",
+    });
+
+    // 기본이미지가 DB에 존재할 경우, 기본 이미지 그대로 사용
+    if (defaultImage) {
+      createAuthLocalDto.profileImage = defaultImage;
+    } else {
+      // 기본이미지가 DB에 존재하지 않을 경우, 기본 이미지 save 후 사용
+      // 반드시 upload 폴더에는 default.svg가 존재해야함
+      const saveDefaultImage = await this.ProfileImageRepository.save({
+        path: "upload/default.svg",
+      });
+
+      createAuthLocalDto.profileImage = saveDefaultImage;
+    }
+
     const user: Users = await this.UserRepository.save(createAuthLocalDto);
-    console.log(user);
 
     res.cookie(
       "access_token",

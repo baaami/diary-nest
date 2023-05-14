@@ -144,23 +144,6 @@ export class ContentController {
     return this.contentService.writeOne(createContentDto);
   }
 
-  // @UseGuards(AuthGuard)
-  @Post("/image")
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
-      storage: diskStorage({
-        destination: "./upload",
-        filename: editFileName,
-      }),
-    })
-  )
-  uploadFiles(
-    @UploadedFiles() files: { images?: Express.Multer.File[] },
-    @Req() req: Request
-  ) {
-    return this.contentService.uploadFiles(files);
-  }
-
   @Patch("/update/:id")
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
