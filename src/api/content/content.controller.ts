@@ -28,12 +28,13 @@ import { UpdateContentDto } from "./dto/update-content.dto";
 import { Request } from "express";
 import { ContentList } from "src/common/entities/common.entity";
 
+@UseGuards(AuthGuard)
 @Controller("content")
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   // 게시물 리스트
-  @UseGuards(AuthGuard)
+
   @Get("/list")
   async list(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
@@ -79,7 +80,7 @@ export class ContentController {
   }
 
   // 로그인한 유저가 구매한 게시물 리스트
-  @UseGuards(AuthGuard)
+
   @Post("/list/bought/:id")
   async boughtList(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
@@ -93,6 +94,7 @@ export class ContentController {
   }
 
   // 특정 카테고리 게시물 리스트
+
   @Get("/list/category")
   async categoryList(
     @Query("category") category: string,
@@ -124,7 +126,6 @@ export class ContentController {
       }),
     })
   )
-  @UseGuards(AuthGuard)
   create(
     @Body() createContentDto: CreateContentDto,
     @UploadedFiles() files: { images?: Express.Multer.File[] }
@@ -132,13 +133,11 @@ export class ContentController {
     return this.contentService.Create(createContentDto, files);
   }
 
-  @UseGuards(AuthGuard)
   @Post("/complete/:id")
   complete(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.complete(contentId);
   }
 
-  @UseGuards(AuthGuard)
   @Post()
   write(@Body() createContentDto: CreateContentDto) {
     return this.contentService.writeOne(createContentDto);
@@ -161,7 +160,6 @@ export class ContentController {
     return this.contentService.Update(updateContentDto, contentId, files);
   }
 
-  @UseGuards(AuthGuard)
   @Delete("/delete/:id")
   @HttpCode(204)
   delete(@Param("id", ParseIntPipe) contentId: number) {
