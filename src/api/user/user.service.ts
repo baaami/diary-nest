@@ -101,7 +101,7 @@ export class UserService {
   async updateProfile(
     updateProfileDto: UpdateProfileDto,
     files: { profileImage?: Express.Multer.File[] }
-  ) {
+  ): Promise<Users> {
     const loginedUser = this.authSharedService.getUser();
     console.log("files: ", files);
     const { profileImage } = files;
@@ -165,6 +165,14 @@ export class UserService {
     }
 
     await this.UserRepository.update({ id: loginedUser.id }, updateProfileDto);
+
+    const user = await this.UserRepository.createQueryBuilder("users")
+      .leftJoinAndSelect("users.contents", "contents")
+      .leftJoinAndSelect("users.profileImage", "profileImage")
+      .where({ id: loginedUser.id })
+      .getOne();
+
+    return user;
   }
 
   async getDefaultImage(): Promise<ProfileImages> {
