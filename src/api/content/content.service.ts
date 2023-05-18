@@ -36,6 +36,13 @@ export class ContentService {
       .where({ id: contentId })
       .getOne();
 
+    const isLikeContent = await this.FavoriteRepository.createQueryBuilder(
+      "favorites"
+    )
+      .where("favorites.content_id = :contentId", { contentId })
+      .getCount();
+
+    content.like = isLikeContent == 1 ? true : false;
     return content;
   }
 
@@ -45,7 +52,10 @@ export class ContentService {
     return contents[randomIndex];
   }
 
-  async updateFavoriteField(content_list: Contents[]): Promise<Contents[]> {
+  async updateFavoriteField(
+    content_list_And_cnt: [Contents[], number]
+  ): Promise<[Contents[], number]> {
+    const [content_list, page_num] = content_list_And_cnt;
     const userId = this.authSharedService.getUser().id;
 
     // 로그인한 유저의 관심 목록 획득
@@ -66,7 +76,7 @@ export class ContentService {
       }
     });
 
-    return content_list;
+    return [content_list, page_num];
   }
 
   // [START] 상품 리스트 획득 API
@@ -86,14 +96,8 @@ export class ContentService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    // 로그인한 유저의 관심 목록 content id 획득
     if (this.authSharedService.getLogined()) {
-      const [content_list, page_num] = res;
-      const update_content_list: Contents[] = await this.updateFavoriteField(
-        content_list
-      );
-      // 응답 body에 관심 목록을 설정한 리스트 할당
-      res = [update_content_list, page_num];
+      res = await this.updateFavoriteField(res);
     }
 
     return res;
@@ -122,12 +126,7 @@ export class ContentService {
       .getManyAndCount();
 
     if (this.authSharedService.getLogined()) {
-      const [content_list, page_num] = res;
-      const update_content_list: Contents[] = await this.updateFavoriteField(
-        content_list
-      );
-      // 응답 body에 관심 목록을 설정한 리스트 할당
-      res = [update_content_list, page_num];
+      res = await this.updateFavoriteField(res);
     }
 
     return res;
@@ -137,9 +136,7 @@ export class ContentService {
     userId: number,
     page: number
   ): Promise<[Contents[], number]> {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+    let res = await this.ContentRepository.createQueryBuilder("contents")
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.buyer", "buyer")
@@ -154,16 +151,19 @@ export class ContentService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content_list;
+    if (this.authSharedService.getLogined()) {
+      console.log(this.authSharedService.getUser());
+      res = await this.updateFavoriteField(res);
+    }
+
+    return res;
   }
 
   async getSoldProductsByUser(
     userId: number,
     page: number
   ): Promise<[Contents[], number]> {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+    let res = await this.ContentRepository.createQueryBuilder("contents")
       // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.buyer", "buyer")
@@ -178,14 +178,16 @@ export class ContentService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return content_list;
+    if (this.authSharedService.getLogined()) {
+      res = await this.updateFavoriteField(res);
+    }
+
+    return res;
   }
 
   async getBoughtProductList(page: number): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
+    let res = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
@@ -195,7 +197,12 @@ export class ContentService {
       )
       .take(pagenation_content_size)
       .getManyAndCount();
-    return content_list;
+
+    if (this.authSharedService.getLogined()) {
+      res = await this.updateFavoriteField(res);
+    }
+
+    return res;
   }
   // [END] 상품 리스트 획득 API
 

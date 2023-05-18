@@ -22,9 +22,7 @@ export class FavoriteService {
   ) {}
 
   async getFavoriteList(userId: number, page: number) {
-    const favorite_list = this.FavoriteRepository.createQueryBuilder(
-      "favorites"
-    )
+    let res = await this.FavoriteRepository.createQueryBuilder("favorites")
       .where("favorites.user_id = :userId", { userId })
       .leftJoinAndSelect("favorites.content", "contents")
       .leftJoinAndSelect("contents.images", "images")
@@ -34,7 +32,15 @@ export class FavoriteService {
       .take(pagenation_content_size)
       .getManyAndCount();
 
-    return favorite_list;
+    const [favorite_list, count] = res;
+
+    favorite_list.forEach((favorite) => {
+      favorite.content.like = true;
+    });
+
+    res = [favorite_list, count];
+
+    return res;
   }
 
   /**
