@@ -49,6 +49,7 @@ export class AuthGuard implements CanActivate {
     // 검증할 access token 획득
     if (headerType) {
       accessToken = request.headers.authorization.split("Bearer ")[1];
+      console.log("request.headers: ", request.headers);
     } else {
       // headerType이 아닐경우에만 실행 - cookieType일 경우
       accessToken = (request as Request).cookies.access_token;
@@ -81,7 +82,13 @@ export class AuthGuard implements CanActivate {
       this.authSharedService.setUser(decoded.user);
       return true;
     } catch (err) {
-      console.error(err);
+      // 잘못된 access token을 보냈으므로 login 하라고 알려줘야함
+      if ((request as Request).method === "GET") {
+        this.authSharedService.setLogined(false);
+        return true;
+      }
+
+      // response: 403
       return false;
     }
   }
