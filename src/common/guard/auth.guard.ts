@@ -34,9 +34,8 @@ export class AuthGuard implements CanActivate {
     }
     let accessToken: string;
 
+    // 쿠키, 헤더로 access token이 들어오지 않을 경우
     if (cookieType == false && headerType == false) {
-      // 쿠키, 헤더로 access token이 들어오지 않을 경우
-
       // GET 요청의 경우 비로그인 사용자에게 인가를 허용해준다.
       if ((request as Request).method === "GET") {
         this.authSharedService.setLogined(false);
@@ -53,6 +52,10 @@ export class AuthGuard implements CanActivate {
     } else {
       // headerType이 아닐경우에만 실행 - cookieType일 경우
       accessToken = (request as Request).cookies.access_token;
+    }
+
+    if (!accessToken) {
+      return false;
     }
 
     // 검증
@@ -79,6 +82,7 @@ export class AuthGuard implements CanActivate {
       return true;
     } catch (err) {
       console.error(err);
+      return false;
     }
   }
 }
