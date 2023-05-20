@@ -114,8 +114,6 @@ export class UserService {
         .leftJoinAndSelect("users.profileImage", "profileImage")
         .getOne();
 
-      console.log("preUser: ", preUser);
-
       // 업데이트할 content의 image를 서버에서 전부삭제
       if (
         preUser.profileImage &&

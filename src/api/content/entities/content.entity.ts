@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToMany,
   ManyToOne,
@@ -21,9 +22,11 @@ export class Contents {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
+  @Index({ fulltext: true })
   @Column("varchar", { name: "title", length: 100 })
   title: string;
 
+  @Index({ fulltext: true })
   @Column("varchar", { name: "body", length: 2000 })
   body: string;
 

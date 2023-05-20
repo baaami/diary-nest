@@ -79,6 +79,30 @@ export class ContentService {
     return [content_list, page_num];
   }
 
+  async searchContentByKeyword(
+    keyword: string,
+    page: number
+  ): Promise<[Contents[], number]> {
+    let res = await this.ContentRepository.createQueryBuilder("contents")
+      .where("MATCH (contents.title) AGAINST (:keyword IN BOOLEAN MODE)", {
+        keyword: `*${keyword}*`,
+      })
+      .orWhere("MATCH (contents.body ) AGAINST (:keyword IN BOOLEAN MODE)", {
+        keyword: `*${keyword}*`,
+      })
+      .skip(
+        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
+      )
+      .take(pagenation_content_size)
+      .getManyAndCount();
+
+    if (this.authSharedService.getLogined()) {
+      res = await this.updateFavoriteField(res);
+    }
+
+    return res;
+  }
+
   // [START] 상품 리스트 획득 API
   /**
    * 전체 상품 리스트를 획득 하는 API

@@ -33,8 +33,25 @@ import { ContentList } from "src/common/entities/common.entity";
 export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
-  // 게시물 리스트
+  // 검색 게시물 리스트
 
+  // 게시물 리스트 Default
+  @Get("/search")
+  async searchContentByKeyword(
+    @Query("keyword") keyword: string,
+    @Query("page") page: number = 0
+  ) {
+    if (isNaN(page)) page = 0;
+    const [contents, totalPage] =
+      await this.contentService.searchContentByKeyword(keyword, page);
+    const result: ContentList = {
+      contents,
+      totalPage,
+    };
+    return result;
+  }
+
+  // 게시물 리스트
   @Get("/list")
   async list(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
@@ -143,6 +160,7 @@ export class ContentController {
     return this.contentService.writeOne(createContentDto);
   }
 
+  // 상세 게시물 업데이트
   @Patch("/update/:id")
   @UseInterceptors(
     FileFieldsInterceptor([{ name: "images", maxCount: 5 }], {
@@ -160,6 +178,7 @@ export class ContentController {
     return this.contentService.Update(updateContentDto, contentId, files);
   }
 
+  // 상세 게시물 삭제
   @Delete("/delete/:id")
   @HttpCode(204)
   delete(@Param("id", ParseIntPipe) contentId: number) {
