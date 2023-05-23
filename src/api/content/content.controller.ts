@@ -34,16 +34,16 @@ export class ContentController {
   constructor(private readonly contentService: ContentService) {}
 
   // 검색 게시물 리스트
-
-  // 게시물 리스트 Default
   @Get("/search")
   async searchContentByKeyword(
     @Query("keyword") keyword: string,
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] =
-      await this.contentService.searchContentByKeyword(keyword, page);
+    const [contents, totalPage] = await this.contentService.getListByKeyword(
+      keyword,
+      page
+    );
     const result: ContentList = {
       contents,
       totalPage,
@@ -51,7 +51,7 @@ export class ContentController {
     return result;
   }
 
-  // 게시물 리스트
+  // 게시물 리스트 Default
   @Get("/list")
   async list(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;

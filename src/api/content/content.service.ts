@@ -79,17 +79,17 @@ export class ContentService {
     return [content_list, page_num];
   }
 
-  async searchContentByKeyword(
-    keyword: string,
-    page: number
-  ): Promise<[Contents[], number]> {
+  // [START] 상품 리스트 획득 API
+  /**
+   * 전체 상품 리스트를 획득 하는 API
+   * @param page pagination 페이지
+   * @returns 상품 리스트, 상품 리스트 개수
+   */
+  async findList(page: number): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("MATCH (contents.title) AGAINST (:keyword IN BOOLEAN MODE)", {
-        keyword: `*${keyword}*`,
-      })
-      .orWhere("MATCH (contents.body ) AGAINST (:keyword IN BOOLEAN MODE)", {
-        keyword: `*${keyword}*`,
-      })
+      .where("contents.completed = :completed", { completed: false })
+      .leftJoinAndSelect("contents.seller", "seller")
+      .leftJoinAndSelect("contents.images", "images")
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
       )
@@ -103,17 +103,17 @@ export class ContentService {
     return res;
   }
 
-  // [START] 상품 리스트 획득 API
-  /**
-   * 전체 상품 리스트를 획득 하는 API
-   * @param page pagination 페이지
-   * @returns 상품 리스트, 상품 리스트 개수
-   */
-  async findList(page: number): Promise<[Contents[], number]> {
+  async getListByKeyword(
+    keyword: string,
+    page: number
+  ): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("contents.completed = :completed", { completed: false })
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.images", "images")
+      .where("MATCH (contents.title) AGAINST (:keyword IN BOOLEAN MODE)", {
+        keyword: `*${keyword}*`,
+      })
+      .orWhere("MATCH (contents.body ) AGAINST (:keyword IN BOOLEAN MODE)", {
+        keyword: `*${keyword}*`,
+      })
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
       )
@@ -256,6 +256,7 @@ export class ContentService {
     files: { images?: Express.Multer.File[] }
   ) {
     const { images } = files;
+    console.log("Create files: ", files);
 
     createContentDto.seller = this.authSharedService.getUser();
 
@@ -282,6 +283,7 @@ export class ContentService {
     files: { images?: Express.Multer.File[] }
   ) {
     const { images } = files;
+    console.log("Update files: ", files);
 
     try {
       const preContent = await this.ContentRepository.createQueryBuilder(
@@ -321,6 +323,7 @@ export class ContentService {
 
       images.forEach((image: Partial<CreateProductImageDto>) => {
         image.content = content;
+        console.log("save image: ", image);
         this.ProductImageRepository.save(image);
       });
     } catch (error) {
