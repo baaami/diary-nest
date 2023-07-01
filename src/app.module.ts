@@ -7,7 +7,6 @@ import {
 import { ServeStaticModule } from "@nestjs/serve-static";
 import * as ormconfig from "../ormconfig";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { JwtMiddleWare } from "./middleware/jwt.middleware";
 import { join } from "path";
 
 import { ContentModule } from "./api/content/content.module";
