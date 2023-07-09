@@ -24,6 +24,9 @@ interface MessagePayload {
   message: string;
 }
 
+const getRoomName = (room: ChatRoom): string => {
+  return room.roomId + "-" + room.buyerId;
+};
 // namespace를 'chat' 으로 설정
 // 프론트 측에서 http://localhost:4000/chat에서 '/chat'에 해당되는 부분
 @WebSocketGateway(8080, {
@@ -45,37 +48,58 @@ export class EventGateway
     this.logger.log("웹소켓 서버 초기화 ✅");
   }
 
-  // 소켓 연결이 되면 실행
+  /**
+   * @brief User가 웹 사이트 로그인 시 받는 msg
+   * @param socket
+   */
   handleConnection(@ConnectedSocket() socket: Socket) {
     this.logger.log(`${socket.id} 소켓 연결`);
     // who are you -> emit
   }
 
-  // 소켓 연결이 끊기면 실행
+  /**
+   * @brief User가 웹 사이트 로그아웃 시 받는 msg
+   * @param socket
+   */
   handleDisconnect(@ConnectedSocket() socket: Socket) {
     this.logger.log(`${socket.id} 소켓 연결 해제 ❌`);
+
+    this.clients.delete(socket.id);
   }
 
-  // 소켓 연결이 되면 실행
+  /**
+   * @brief 사용자가 로그인 시 웹 소켓을 통하여 자신 id를 1회 등록한다.
+   *
+   * @param socket socket 인스턴스
+   * @param userId 유저 식별자
+   */
   handleWhoAreYou(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() data: string
+    @MessageBody() userId: string
   ) {
     // TODO: map을 사용할지, interface를 사용할지?
     // -> map을 쓰는 것이 좋을 것 같음
     // 소켓 id와 user id를 Array에 추가
+    this.clients.set(socket.id, userId);
   }
 
-  @SubscribeMessage("join")
+  /**
+   * @brief User가 특정 채팅방에 접속시 받는 msg
+   *
+   * @param socket
+   * @param msgRoom
+   * @returns
+   */
+  @SubscribeMessage("roomIn")
   handleInEvent(
     @ConnectedSocket() socket: Socket,
     // data: 상품 글 id
-    @MessageBody() { roomId, sellerId, buyerId }: ChatRoom
+    @MessageBody() msgRoom: ChatRoom
   ) {
-    console.log("socket.id : ", socket.id);
-    console.log("in data: ", roomId);
+    const { roomId, sellerId, buyerId } = msgRoom;
 
     let room: ChatRoom = this.rooms.find((r) => r.roomId === roomId);
+    // 기존에 방이 없는 경우
     if (!room) {
       room = {
         roomId,
@@ -83,15 +107,17 @@ export class EventGateway
         buyerId,
       };
 
-      this.rooms.push(room);
-
-      socket.join(roomId);
+      if (roomId) this.rooms.push(room);
+      else {
+        socket.emit("joinedRoom", "방만들기 실패");
+        return;
+      }
     }
 
-    socket.join(roomId);
+    socket.join(getRoomName(room));
 
     // 조인 성공 이벤트를 해당 클라이언트에게 보냄
-    socket.emit("joinedRoom", room);
+    socket.emit("joinedRoom", "Join 성공");
 
     console.log("현재 방 List");
     for (let temp of this.rooms) {
@@ -100,21 +126,43 @@ export class EventGateway
     return;
   }
 
+  /**
+   * @brief User가 특정 채팅방에 접속되어 있을 때 채팅 msg를 송/수신하면 호출
+   *
+   * @param socket
+   * @param msgRoom
+   * @returns
+   */
   @SubscribeMessage("message")
   // data: 채팅방 id, message 내용
   handleMessageEvent(
+    @ConnectedSocket() socket: Socket,
     @MessageBody() { roomId, message }: MessagePayload
-  ): string {
+  ) {
+    console.log("message: ", message);
     // 메시지 처리
-    console.log("message data: ", message);
-    return message;
+    const room = this.rooms.find((r) => r.roomId === roomId);
+    if (room) {
+      // TODO: 방 안에 있는 사람들한테 해야됨
+      // 해당 방에 있는 모든 클라이언트에게 메시지 전송
+      socket.emit("messageReceived", { roomId: roomId, message: message });
+
+      // room
+      socket.to(getRoomName(room)).emit(message);
+    }
+    return;
   }
 
-  @SubscribeMessage("out")
-  handleOutEvent(@MessageBody() data: string): string {
-    console.log("out data: ", data);
+  @SubscribeMessage("roomOut")
+  handleOutEvent(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() msgRoom: ChatRoom
+  ) {
+    const { roomId, sellerId, buyerId } = msgRoom;
+    let room: ChatRoom = this.rooms.find((r) => r.roomId === roomId);
 
-    // 채팅방 삭제
-    return data;
+    socket.leave(getRoomName(room));
+
+    return;
   }
 }
