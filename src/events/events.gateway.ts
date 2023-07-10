@@ -13,6 +13,7 @@ import {
 import { Server } from "http";
 import { from, map, Observable } from "rxjs";
 import { Namespace, Socket } from "socket.io";
+import { CHAT_PORT } from "src/common/define";
 
 interface ChatRoom {
   roomId: string;
@@ -29,7 +30,7 @@ const getRoomName = (room: ChatRoom): string => {
 };
 // namespace를 'chat' 으로 설정
 // 프론트 측에서 http://localhost:4000/chat에서 '/chat'에 해당되는 부분
-@WebSocketGateway(8080, {
+@WebSocketGateway(CHAT_PORT, {
   cors: {
     origin: "http://localhost:3000",
   },
@@ -49,7 +50,7 @@ export class EventGateway
   }
 
   /**
-   * @brief User가 웹 사이트 로그인 시 받는 msg
+   * @brief User가 채팅방 입장 시 발생
    * @param socket
    */
   handleConnection(@ConnectedSocket() socket: Socket) {
@@ -58,7 +59,7 @@ export class EventGateway
   }
 
   /**
-   * @brief User가 웹 사이트 로그아웃 시 받는 msg
+   * @brief User가 채팅방 나가기 시 발생
    * @param socket
    */
   handleDisconnect(@ConnectedSocket() socket: Socket) {
@@ -77,14 +78,11 @@ export class EventGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() userId: string
   ) {
-    // TODO: map을 사용할지, interface를 사용할지?
-    // -> map을 쓰는 것이 좋을 것 같음
-    // 소켓 id와 user id를 Array에 추가
     this.clients.set(socket.id, userId);
   }
 
   /**
-   * @brief User가 특정 채팅방에 접속시 받는 msg
+   * @brief User가 특정 채팅방에 접속 후 곧바로 송신
    *
    * @param socket
    * @param msgRoom
