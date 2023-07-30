@@ -3,7 +3,7 @@ import { UserService } from "./user.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Users } from "./entities/user.entity";
 import { Contents } from "../content/entities/content.entity";
-import { Images } from "src/common/entities/productimage.entity";
+import { ProductImages } from "src/common/entities/productimage.entity";
 
 import { UserController } from "./user.controller";
 import * as ormconfig from "../../../ormconfig";
@@ -17,7 +17,7 @@ describe("AuthService", () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TypeOrmModule.forFeature([Users, Contents, Images]),
+        TypeOrmModule.forFeature([Users, Contents, ProductImages]),
         TypeOrmModule.forRoot(ormconfig),
       ],
       providers: [UserService, AuthService, JwtService],

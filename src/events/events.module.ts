@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
-import { EventGateway } from "./events.gateway";
-import { PushGateway } from "./push.gateway";
+import { ChatGateway } from "./chat/chats.gateway";
+import { PushGateway } from "./push/push.gateway";
 
 @Module({
-  providers: [EventGateway, PushGateway],
+  providers: [ChatGateway, PushGateway],
 })
 export class EventsModule {}
