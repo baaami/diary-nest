@@ -17,7 +17,8 @@ import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
 
 interface MessagePayload {
-  content_id: string;
+  room: Rooms;
+  send_id: number;
   message: string;
 }
 
@@ -68,7 +69,8 @@ export class ChatGateway
   }
 
   /**
-   * @brief 사용자가 로그인 시 웹 소켓을 통하여 자신 id를 1회 등록한다.
+   * @brief 사용자가 로그인 시 웹 소켓을 통하여 자신 id를 1회 등록
+   *        참가되어있는 모든 방에 join한다.
    *
    * @param socket socket 인스턴스
    * @param userId 유저 식별자
@@ -85,7 +87,14 @@ export class ChatGateway
       Number(userId)
     );
 
+    const joined_room_id_list = await Promise.all(
+      joined_room_list.map((joined_room) => {
+        return this.chatService.getRoomId(joined_room);
+      })
+    );
+
     // User가 속해있는 room들을 DB에서 획득
+    socket.join(joined_room_id_list);
   }
 
   /**
@@ -122,9 +131,15 @@ export class ChatGateway
   // data: 채팅방 id, message 내용
   async handleMessageEvent(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() { content_id, message }: MessagePayload
+    @MessageBody() { room, send_id, message }: MessagePayload
   ) {
-    await this.chatService.addMessage();
+    const room_id = await this.chatService.getRoomId(room);
+    // 해당 방에 broad cast
+    socket.to(room_id).emit(message);
+
+    // 전제 조건 : content_id는 기존에 존재하는 채팅방
+    // -> join_room을 통하여 생성
+    await this.chatService.addMessage(room, send_id, message);
     return;
   }
 }
