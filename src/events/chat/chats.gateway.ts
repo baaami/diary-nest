@@ -33,7 +33,7 @@ export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   constructor(private readonly chatService: ChatService) {} // @InjectRepository
-  private logger = new Logger("Gateway");
+  private logger = new Logger("ChatGateway");
 
   // key: socket id
   // value: user id
@@ -43,7 +43,7 @@ export class ChatGateway
 
   // 초기화 이후에 실행
   afterInit() {
-    this.logger.log("웹소켓 서버 초기화 ✅");
+    this.logger.log(`웹소켓 서버 초기화 ${CHAT_PORT}`);
   }
 
   /**
@@ -105,7 +105,7 @@ export class ChatGateway
    * @returns
    */
   @SubscribeMessage("join_room")
-  async handleInEvent(
+  async handleJoinRoomEvent(
     @ConnectedSocket() socket: Socket,
     // data: 상품 글 id
     @MessageBody() room: Rooms
@@ -118,6 +118,19 @@ export class ChatGateway
       socket.join(roomId);
     }
     return;
+  }
+
+  @SubscribeMessage("leave_room")
+  async handleLeaveRoomEvent(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() room: Rooms
+  ) {
+    const roomId: string = await this.chatService.getRoomId(room);
+
+    const bSocketInRoom = socket.rooms.has(roomId);
+    if (bSocketInRoom == true) {
+      socket.leave(roomId);
+    }
   }
 
   /**
