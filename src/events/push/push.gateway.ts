@@ -35,7 +35,7 @@ export class PushGateway
   private clients = new Map<string, string>();
 
   afterInit() {
-    this.logger.log("웹소켓 서버 초기화 ✅");
+    this.logger.log(`Initialize Web Socket Server [${PUSH_PORT}]`);
   }
 
   handleConnection(@ConnectedSocket() socket: Socket) {

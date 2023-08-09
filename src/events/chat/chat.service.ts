@@ -31,7 +31,9 @@ export class ChatService {
     }
 
     if (target_room == null) {
-      target_room = this.RoomRepository.create(room as CreateRoomDto);
+      target_room = await this.RoomRepository.save(room as CreateRoomDto);
+      console.log("Create New Room: ", target_room);
+      console.log("New Room Id: ", target_room.id);
     }
 
     return String(target_room.id);
@@ -43,7 +45,7 @@ export class ChatService {
    * @param room     찾고자하는 혹은 추가할 Room 인터페이스
    * @returns        찾고자하는 혹은 추가된 Room Id
    */
-  async getRoom(room: Rooms | CreateRoomDto): Promise<Rooms> {
+  async getRoom(room: CreateRoomDto): Promise<Rooms> {
     let target_room: Rooms;
 
     try {
@@ -56,7 +58,7 @@ export class ChatService {
     }
 
     if (target_room == null) {
-      target_room = this.RoomRepository.create(room as CreateRoomDto);
+      target_room = await this.RoomRepository.save(room as CreateRoomDto);
     }
 
     return target_room;
@@ -96,7 +98,25 @@ export class ChatService {
     chat.room == (await this.getRoom(room));
 
     try {
-      this.ChatRepository.create(chat);
+      this.ChatRepository.save(chat);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  /**
+   * @brief          전달된 Room의 식별자 전달
+   *
+   * @param room     찾고자하는 혹은 추가할 Room 인터페이스
+   * @returns        찾고자하는 혹은 추가된 Room Id
+   */
+  async deleteRoom(roomId: number) {
+    try {
+      await this.RoomRepository.delete({
+        id: roomId,
+      });
+
+      console.log(`Success to Delete Room [${roomId}]`);
     } catch (err) {
       console.error(err);
     }
