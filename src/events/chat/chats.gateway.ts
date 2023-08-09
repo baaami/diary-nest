@@ -43,7 +43,7 @@ export class ChatGateway
 
   // 초기화 이후에 실행
   afterInit() {
-    this.logger.log(`웹소켓 서버 초기화 ${CHAT_PORT}`);
+    this.logger.log(`Initialize Web Socket Server [${CHAT_PORT}]`);
   }
 
   /**
@@ -76,11 +76,47 @@ export class ChatGateway
    * @param userId 유저 식별자
    */
   @SubscribeMessage("login")
-  async handleWhoAreYou(
+  async handleLogin(
     @ConnectedSocket() socket: Socket,
     @MessageBody() userId: string
   ) {
+    // TODO: Validation check userID
     this.clients.set(socket.id, userId);
+
+    console.log("login client id: ", userId);
+
+    // User가 사용하고 있는 room들에 모두 join한다.
+    const joined_room_list: Rooms[] = await this.chatService.getJoinedRoomList(
+      Number(userId)
+    );
+
+    console.log(`id: ${userId}, join room list`, joined_room_list);
+
+    const joined_room_id_list = await Promise.all(
+      joined_room_list.map((joined_room) => {
+        return this.chatService.getRoomId(joined_room);
+      })
+    );
+
+    // User가 속해있는 room들을 DB에서 획득
+    socket.join(joined_room_id_list);
+
+    socket.emit("login", `login success ${socket.id}: ${userId}`);
+  }
+
+  /**
+   * @brief 사용자가 logout 시 웹 소켓을 통하여 자신 id를 delete
+   *        참가되어있는 모든 방에 leave 한다.
+   *
+   * @param socket socket 인스턴스
+   * @param userId 유저 식별자
+   */
+  @SubscribeMessage("logout")
+  async handleLogout(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() userId: string
+  ) {
+    this.clients.delete(socket.id);
 
     // User가 사용하고 있는 room들에 모두 join한다.
     const joined_room_list: Rooms[] = await this.chatService.getJoinedRoomList(
@@ -93,8 +129,9 @@ export class ChatGateway
       })
     );
 
-    // User가 속해있는 room들을 DB에서 획득
-    socket.join(joined_room_id_list);
+    joined_room_id_list.forEach((room_id) => {
+      socket.leave(room_id);
+    });
   }
 
   /**
@@ -111,6 +148,7 @@ export class ChatGateway
     @MessageBody() room: Rooms
   ) {
     const roomId: string = await this.chatService.getRoomId(room);
+    console.log("Joined Room: ", roomId);
 
     // join이 되어있던 room인지 확인
     const bSocketInRoom = socket.rooms.has(roomId);
@@ -120,12 +158,19 @@ export class ChatGateway
     return;
   }
 
+  /**
+   * @brief 채팅방 삭제 시 발생하는 이벤트
+   *
+   * @param socket socket 인스턴스
+   * @param room
+   */
   @SubscribeMessage("leave_room")
   async handleLeaveRoomEvent(
     @ConnectedSocket() socket: Socket,
     @MessageBody() room: Rooms
   ) {
     const roomId: string = await this.chatService.getRoomId(room);
+    await this.chatService.deleteRoom(Number(roomId));
 
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == true) {

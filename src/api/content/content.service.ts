@@ -8,7 +8,7 @@ import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { Users } from "../user/entities/user.entity";
 import { pagenation_content_size } from "src/common/define";
-import { unlink, writeFileSync } from "fs";
+import { unlink, writeFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { AuthSharedService } from "../auth/auth.shared.service";
 import { Favorites } from "src/common/entities/favorite.entity";
@@ -408,18 +408,11 @@ export class ContentService {
   async getFakerImages(content: Contents): Promise<ProductImages[]> {
     const productImages: ProductImages[] = [];
 
-    const image_width = 640;
-    const image_height = 480;
-    const fakerimage: AxiosResponse<any, any> = await axios.get(
-      `http://placeimg.com/${image_width}/${image_height}/tech`,
-      { responseType: "arraybuffer" }
-    );
-
     const image = new ProductImages();
 
-    const filename = `test_${Math.random().toString()}.jpg`;
-    writeFileSync(`./upload/${filename}`, fakerimage.data);
-    image.path = `upload/${filename}`;
+    const dirContents = readdirSync("./upload/");
+    const randomNum = Math.ceil(Math.random() * 100);
+    image.path = `upload/${dirContents[randomNum]}`;
     image.content = content;
 
     try {
