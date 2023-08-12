@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { Chats } from "./chat.entity";
 
 @Entity({ schema: "school", name: "rooms" })
@@ -14,6 +20,9 @@ export class Rooms {
 
   @Column("int", { name: "buyer_id" })
   buyer_id: number;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Chats, (chat) => chat.id)
   chats: Chats[];

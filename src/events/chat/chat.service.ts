@@ -5,6 +5,7 @@ import { Chats } from "./entities/chat.entity";
 import { Rooms } from "./entities/room.entity";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { CreateChatDto } from "./dto/create-chat.dto";
+import { pagenation_chat_size } from "src/common/define";
 
 @Injectable()
 export class ChatService {
@@ -84,6 +85,27 @@ export class ChatService {
     });
 
     return target_room_list;
+  }
+
+  async getChatList(
+    page: number = 0,
+    roomId: Number
+  ): Promise<[Chats[], number]> {
+    let res: [Chats[], number];
+
+    try {
+      res = await this.ChatRepository.createQueryBuilder("chats")
+        .leftJoinAndSelect("chats.room", "room")
+        .where("room.id = :roomId", { roomId })
+        .skip(
+          page * pagenation_chat_size != 0 ? page * pagenation_chat_size : 0
+        )
+        .getManyAndCount();
+    } catch (err) {
+      console.error(err);
+    }
+
+    return res;
   }
 
   /**
