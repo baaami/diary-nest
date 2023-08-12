@@ -5,7 +5,7 @@ import { ChatService } from "src/events/chat/chat.service";
 export class RoomController {
   constructor(private readonly chatService: ChatService) {}
 
-  @Get("/list")
+  @Get("/list/:id")
   async getList(@Param("id", ParseIntPipe) userId: number) {
     return this.chatService.getJoinedRoomList(userId);
   }
