@@ -18,6 +18,7 @@ import { Reviews } from "./api/review/entities/review.entity";
 import { Favorites } from "./common/entities/favorite.entity";
 import { ReviewModule } from "./api/review/review.module";
 import { FavoriteModule } from "./api/favorite/favorite.module";
+import { RoomModule } from "./api/room/room.module";
 @Module({
   imports: [
     ContentModule,
@@ -25,6 +26,7 @@ import { FavoriteModule } from "./api/favorite/favorite.module";
     AuthModule,
     ReviewModule,
     FavoriteModule,
+    RoomModule,
     TypeOrmModule.forFeature([Users, Reviews, Favorites]),
     TypeOrmModule.forRoot(ormconfig),
     ServeStaticModule.forRoot({
