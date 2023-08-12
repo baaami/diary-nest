@@ -15,8 +15,8 @@ export class Chats {
   @Column("int", { name: "send_id" })
   send_id: number;
 
-  @Column("varchar", { name: "msg", length: 500 })
-  msg: string;
+  @Column("varchar", { name: "message", length: 500 })
+  message: string;
 
   @ManyToOne(() => Rooms, (room) => room.id)
   @JoinColumn({ name: "room_id" })

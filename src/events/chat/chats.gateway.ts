@@ -15,12 +15,7 @@ import { Namespace, Socket } from "socket.io";
 import { CHAT_PORT } from "src/common/define";
 import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
-
-interface MessagePayload {
-  room: Rooms;
-  send_id: number;
-  message: string;
-}
+import { CreateChatDto } from "./dto/create-chat.dto";
 
 // namespace를 'chat' 으로 설정
 // 프론트 측에서 http://localhost:4000/chat에서 '/chat'에 해당되는 부분
@@ -189,15 +184,15 @@ export class ChatGateway
   // data: 채팅방 id, message 내용
   async handleMessageEvent(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() { room, send_id, message }: MessagePayload
+    @MessageBody() msgPayload: CreateChatDto
   ) {
-    const room_id = await this.chatService.getRoomId(room);
+    const room_id = await this.chatService.getRoomId(msgPayload.room);
     // 해당 방에 broad cast
-    socket.to(room_id).emit(message);
+    socket.to(room_id).emit(msgPayload.message);
 
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
-    await this.chatService.addMessage(room, send_id, message);
+    await this.chatService.addMessage(msgPayload);
     return;
   }
 }

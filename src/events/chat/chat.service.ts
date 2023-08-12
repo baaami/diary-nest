@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import { Chats } from "./entities/chat.entity";
 import { Rooms } from "./entities/room.entity";
 import { CreateRoomDto } from "./dto/create-room.dto";
+import { CreateChatDto } from "./dto/create-chat.dto";
 
 @Injectable()
 export class ChatService {
@@ -90,15 +91,9 @@ export class ChatService {
    * @param room    Room 정보
    * @param msg     송/수신 메시지
    */
-  async addMessage(room: Rooms, send_id: number, msg: string) {
-    const chat = new Chats();
-
-    chat.msg = msg;
-    chat.send_id = send_id;
-    chat.room == (await this.getRoom(room));
-
+  async addMessage(msgPayload: CreateChatDto) {
     try {
-      this.ChatRepository.save(chat);
+      this.ChatRepository.save(msgPayload);
     } catch (err) {
       console.error(err);
     }
