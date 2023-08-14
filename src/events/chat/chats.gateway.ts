@@ -170,6 +170,7 @@ export class ChatGateway
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == true) {
       socket.leave(roomId);
+      socket.to(roomId).emit("success leave room")
     }
   }
 
@@ -188,11 +189,15 @@ export class ChatGateway
   ) {
     const room_id = await this.chatService.getRoomId(msgPayload.room);
     // 해당 방에 broad cast
-    socket.to(room_id).emit(msgPayload.message);
-
+    const message = {
+      ...msgPayload,
+      updatedDate:new Date()
+    }
+    
+    socket.broadcast.to(room_id).emit('message',message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
-    await this.chatService.addMessage(msgPayload);
+    // await this.chatService.addMessage(msgPayload);
     return;
   }
 }
