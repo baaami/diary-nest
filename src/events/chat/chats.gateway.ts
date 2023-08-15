@@ -30,6 +30,8 @@ export class ChatGateway
   constructor(private readonly chatService: ChatService) {} // @InjectRepository
   private logger = new Logger("ChatGateway");
 
+  @WebSocketServer() nsp: Namespace;
+
   // key: socket id
   // value: user id
   // socket id는 중복 체크가 되는데 user id도 1개만 접속이 되어있어야하는 것 아닐까??
@@ -170,7 +172,7 @@ export class ChatGateway
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == true) {
       socket.leave(roomId);
-      socket.to(roomId).emit("success leave room")
+      socket.to(roomId).emit("success leave room");
     }
   }
 
@@ -191,13 +193,16 @@ export class ChatGateway
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
-      updatedDate:new Date()
-    }
-    
-    socket.broadcast.to(room_id).emit('message',message);
+      updatedDate: new Date(),
+    };
+
+    // socket.emit("message", message);
+    // socket.to(room_id).emit("message", message);
+
+    socket.broadcast.to(room_id).emit("message", message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
-    // await this.chatService.addMessage(msgPayload);
+    await this.chatService.addMessage(msgPayload);
     return;
   }
 }
