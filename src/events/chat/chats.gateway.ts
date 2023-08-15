@@ -11,7 +11,7 @@ import {
   WsResponse,
   WebSocketGateway,
 } from "@nestjs/websockets";
-import { Namespace, Socket } from "socket.io";
+import { Namespace, Server, Socket } from "socket.io";
 import { CHAT_PORT } from "src/common/define";
 import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
@@ -30,7 +30,8 @@ export class ChatGateway
   constructor(private readonly chatService: ChatService) {} // @InjectRepository
   private logger = new Logger("ChatGateway");
 
-  @WebSocketServer() nsp: Namespace;
+  @WebSocketServer()
+  server: Server;
 
   // key: socket id
   // value: user id
@@ -197,9 +198,9 @@ export class ChatGateway
     };
 
     // socket.emit("message", message);
-    // socket.to(room_id).emit("message", message);
+    this.server.to(room_id).emit("message", message);
 
-    socket.broadcast.to(room_id).emit("message", message);
+    // socket.broadcast.to(room_id).emit("message", message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
     await this.chatService.addMessage(msgPayload);
