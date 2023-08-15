@@ -191,6 +191,7 @@ export class ChatGateway
     @MessageBody() msgPayload: CreateChatDto
   ) {
     const room_id = await this.chatService.getRoomId(msgPayload.room);
+    msgPayload.room.id = Number(room_id);
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
