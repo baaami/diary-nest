@@ -194,7 +194,7 @@ export class ChatGateway
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
-      updatedDate: new Date(),
+      updatedAt: new Date(),
     };
 
     // socket.emit("message", message);
