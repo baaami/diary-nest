@@ -8,68 +8,90 @@
 - REST API with [TypeORM](http://typeorm.io) 지원
 - Socket I.O를 통한 채팅, 알림 기능 지원
 
-지원 API (수정 예정)
+지원 API
+
+REST API
+
+- 상품 읽기/등록/수정/삭제
+- 상품 리스트 제공 (카테고리, 날짜)
+- 회원 가입 (SNS, LOCAL)
+- 회원 정보 제공
+- 검색 기능 제공 (상품 제목, 글 텍스트 매칭)
+- 관심 목록 읽기/등록
+- 리뷰 읽기/등록
+
+Socket.IO
+
+- 채팅
+- 알림
 
 ## 1. Getting started
 
 ### 1.1 Requirements
 
-Before starting, make sure you have at least those components on your workstation:
-
-- An up-to-date release of [NodeJS](https://nodejs.org/) and NPM
-- A database such as MariaDB, MySQL or PostgreSQL. You may use the provided `docker-compose` file.
-
-[Docker](https://www.docker.com/) may also be useful for advanced testing and image building, although it is not required for development.
+MySQL 데이터베이스 준비
+- Default: localhost 내 3306 포트로 사용 가능
 
 ### 1.2 Project configuration
 
-Start by cloning this project on your workstation.
+프로젝트 Clone
 
 ``` sh
-git clone https://github.com/saluki/nestjs-template my-project
+git clone [https://github.com/saluki/nestjs-template my-project](https://github.com/baaami/school_market.git)
 ```
 
-The next thing will be to install all the dependencies of the project.
+프로젝트의 종속 라이브러리 설치
 
 ```sh
-cd ./my-project
-npm install
+cd ./school_market
+yarn install // or npm install
 ```
 
-Once the dependencies are installed, you can now configure your project by creating a new `.env` file containing your environment variables used for development.
+아래 환경 변수 설명란을 참고하여 .env 파일 작성
 
 ```
 cp .env.example .env
 vi .env
 ```
 
-For a standard development configuration, you can leave the default values for `API_PORT`, `API_PREFIX` and `API_CORS` under the `Api configuration` section. The `SWAGGER_ENABLE` rule allows you to control the Swagger documentation module for NestJS. Leave it to `1` when starting this example.
+환경 변수 설정
 
-Next comes to the TypeORM configuration: change everything according to your own database setup. It may be also useful to turn `TYPEORM_SYNCHRONIZE` to `true` in order to avoid migrations during the development phase. Do not modify the values in the `TypeORM internals` section, unless you change the folder structure.
+    // .env File
+    
+    // JWT 토큰 방식에 사용할 KEY
+    JWT_SECRET_KEY="${ANYTHING}"
 
-Last but not least, define a `JWT_SECRET` to sign the JWT tokens or leave the default value in a development environment. Update the `JWT_ISSUER` to the correct value as set in the JWT. 
+    DB_USERNAME="{MYSQL_USERNAME]"
+    DB_PASSWORD="{MYSQL_PASSWORD}"
+    // MYSQL SERVER 설치 후 사용할 DATABASE 생성, 해당 DATABASE 기입
+    DB_DATABASE="{MYSQL_DATABASE}"
+
+    // SNS 로그인 사용 시 KAKAO DEVELOPER 페이지 내 프로젝트 등록 후 기입
+    KAKAO_ID="{KAKAO_ID}"
+    KAKAO_CALLBACK_URL="{KAKAO CALLBACK URL}"
 
 ### 1.3 Launch and discover
 
-You are now ready to launch the NestJS application using the command below.
+프로젝트 DEV 모드 실행
 
 ```sh
-# Perform migrations in your database using TypeORM
-npm run migration:run
-
 # Launch the development server with TSNode
 npm run dev
 ```
 
-You can now head to `http://localhost:4000/docs` and see your API Swagger docs. The example passenger API is located at the `http://localhost:4000/api/v2/passengers` endpoint.
+### 1.4 Create Faker Data
 
-For restricted routes, for testing you can use the below JWT
+상품 설명에 포함될 가짜 이미지 다운로드
 
+```sh
+# image*는 약 100개 이상의 이미지 파일들을 의미
+cp image* ${PROJECT_ROOT_PATH}/upload
 ```
-eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJERUZBVUxUX0lTU1VFUiIsImlhdCI6MTYzMTEwNDMzNCwicm9sZSI6InJlc3RyaWN0ZWQifQ.o2HcQBBpx-EJMcUFiqmAiD_jZ5J92gRDOyhybT9FakE
-```
 
-> The sample JWT above does not have a expiry, remember to use valid JWT and enforce the required claims in production
+가짜 데이터 생성
+```sh
+yarn faker
+```
 
 ## 2. Project structure
 
@@ -77,76 +99,109 @@ This template was made with a well-defined directory structure.
 
 ```sh
 src/
-├── migrations/  # TypeORM migrations created using "npm run migration:create"
-├── modules
-│   ├── app.module.ts
-│   ├── common/  # The common module contains pipes, guards, service and provider used in the whole application
-│   ├── passenger/  # A module example that manages "passenger" resources
-│   │   ├── controller/
-│   │   │   └── passenger.controller.ts
-│   │   ├── flow/  # The "flow" directory contains the pipes, interceptors and everything that may change the request or response flow
-│   │   │   └── passenger.pipe.ts
-│   │   ├── model/
-│   │   │   ├── passenger.data.ts  # The model that will be returned in the response
-│   │   │   ├── passenger.entity.ts  # The actual TypeORM entity
-│   │   │   └── passenger.input.ts  # The model that is used in the request
-│   │   ├── passenger.module.ts
-│   │   ├── service/
-│   │   │   └── passenger.service.ts
-│   │   └── spec/
-│   └── tokens.ts
-└── server.ts
+├── api
+│   ├── auth
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   ├── auth.service.spec.ts
+│   │   ├── auth.service.ts
+│   │   ├── auth.shared.service.ts
+│   │   ├── constant.ts
+│   │   └── dto
+│   │       └── create-auth.dto.ts
+│   ├── content
+│   │   ├── content.controller.ts
+│   │   ├── content.module.ts
+│   │   ├── content.service.spec.ts
+│   │   ├── content.service.ts
+│   │   ├── dto
+│   │   │   ├── create-content.dto.ts
+│   │   │   └── update-content.dto.ts
+│   │   └── entities
+│   │       └── content.entity.ts
+│   ├── fakerdata
+│   │   ├── insert.common.types.ts
+│   │   ├── insert.content.service.spec.ts
+│   │   ├── insert.favorite.service.spec.ts
+│   │   ├── insert.review.service.spec.ts
+│   │   └── insert.user.service.spec.ts
+│   ├── favorite
+│   │   ├── favorite.controller.ts
+│   │   ├── favorite.module.ts
+│   │   ├── favorite.service.spec.ts
+│   │   └── favorite.service.ts
+│   ├── review
+│   │   ├── dto
+│   │   │   ├── create-review.dto.ts
+│   │   │   └── update-review.dto.ts
+│   │   ├── entities
+│   │   │   └── review.entity.ts
+│   │   ├── review.controller.spec.ts
+│   │   ├── review.controller.ts
+│   │   ├── review.module.ts
+│   │   ├── review.service.spec.ts
+│   │   └── review.service.ts
+│   ├── room
+│   │   ├── room.controller.ts
+│   │   ├── room.module.ts
+│   │   └── rooms.service.ts
+│   └── user
+│       ├── dto
+│       │   ├── create-user.dto.ts
+│       │   ├── update-profile.dto.ts
+│       │   └── update-user.dto.ts
+│       ├── entities
+│       │   └── user.entity.ts
+│       ├── user.controller.ts
+│       ├── user.module.ts
+│       ├── user.service.spec.ts
+│       └── user.service.ts
+├── app.module.ts
+├── common
+│   ├── define.ts
+│   ├── dto
+│   │   ├── create-product-image.dto.ts
+│   │   ├── create-profile-image.dto.ts
+│   │   └── update-product-image.dto.ts
+│   ├── entities
+│   │   ├── common.entity.ts
+│   │   ├── define.entity.ts
+│   │   ├── favorite.entity.ts
+│   │   ├── productimage.entity.ts
+│   │   └── profileimage.entity.ts
+│   ├── guard
+│   │   └── auth.guard.ts
+│   └── util.ts
+├── events
+│   ├── chat
+│   │   ├── chat.controller.ts
+│   │   ├── chat.service.ts
+│   │   ├── chats.gateway.ts
+│   │   ├── dto
+│   │   │   ├── create-chat.dto.ts
+│   │   │   └── create-room.dto.ts
+│   │   └── entities
+│   │       ├── chat.entity.ts
+│   │       └── room.entity.ts
+│   ├── events.module.ts
+│   └── push
+│       └── push.gateway.ts
+├── lib
+│   └── multer
+│       └── multerOption.ts
+├── main.ts
+├── middleware
+│   └── jwt.middleware.ts
+└── sql
+    ├── contents.sql
+    ├── favorites.sql
+    ├── initialize.sql
+    └── reviews.sql
 ```
+## 3. Project goals
 
-## 3. Default NPM commands
+작성 예정
 
-The NPM commands below are already included with this template and can be used to quickly run, build and test your project.
-
-```sh
-# Start the application using the transpiled NodeJS
-npm run start
-
-# Run the application using "ts-node"
-npm run dev
-
-# Transpile the TypeScript files
-npm run build
-
-# Internal command used during the Docker build stage
-npm run build:docker
-
-# Run the project' functional tests
-npm run test
-
-# Lint the project files using TSLint
-npm run lint
-
-# Create a new migration named MyMigration
-npm run migration:create [MyMigration]
-
-# Run the TypeORM migrations
-npm run migration:run
-
-# Revert the TypeORM migrations
-npm run migration:revert
-```
-
-## 4. Project goals
-
-The goal of this project is to provide a clean and up-to-date "starter pack" for REST API projects that are built with NestJS.
-
-## 5. Roadmap
-
-The following improvements are currently in progress : 
-
-- [x] Configuration validation
-- [ ] Dockerfile improvements and better usage of environment variables
-- [x] Project structure documentation
-- [x] TypeORM migration support
-- [ ] Healtcheck support
-- [ ] Better logging configuration with environment variables
-- [ ] Working further on examples for production instructions
-
-## 6. Contributing
+## 4. Contributing
 
 Feel free to suggest an improvement, report a bug, or ask something: [https://github.com/saluki/nestjs-template/issues](https://github.com/saluki/nestjs-template/issues)
