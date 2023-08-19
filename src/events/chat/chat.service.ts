@@ -97,11 +97,28 @@ export class ChatService {
       res = await this.ChatRepository.createQueryBuilder("chats")
         .leftJoinAndSelect("chats.room", "room")
         .where("room.id = :roomId", { roomId })
+        .orderBy("chats.id", "DESC")
         .skip(
           page * pagenation_chat_size != 0 ? page * pagenation_chat_size : 0
         )
         .take(pagenation_chat_size)
         .getManyAndCount();
+    } catch (err) {
+      console.error(err);
+    }
+
+    return res;
+  }
+
+  async getChatLatest(roomId: Number): Promise<Chats> {
+    let res: Chats;
+
+    try {
+      res = await this.ChatRepository.createQueryBuilder("chats")
+        .leftJoinAndSelect("chats.room", "room")
+        .where("room.id = :roomId", { roomId })
+        .orderBy("chats.updatedAt", "DESC")
+        .getOne();
     } catch (err) {
       console.error(err);
     }

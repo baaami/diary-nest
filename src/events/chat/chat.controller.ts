@@ -23,4 +23,11 @@ export class ChatController {
 
     return result;
   }
+
+  @Get("/latest/:id")
+  async getLatestOne(@Param("id", ParseIntPipe) roomId: number) {
+    const result = await this.chatService.getChatLatest(roomId);
+
+    return result;
+  }
 }
