@@ -1,5 +1,6 @@
 import { Controller, Get, Param, ParseIntPipe, Query } from "@nestjs/common";
 import { ChatService } from "./chat.service";
+import { ChatList } from "src/common/entities/common.entity";
 
 @Controller("chat")
 export class ChatController {
@@ -10,6 +11,16 @@ export class ChatController {
     @Query("page") page: number = 0,
     @Param("id", ParseIntPipe) roomId: number
   ) {
-    return this.chatService.getChatList(page, roomId);
+    const [chat_list, totalPage] = await this.chatService.getChatList(
+      page,
+      roomId
+    );
+
+    const result: ChatList = {
+      chat_list,
+      totalPage,
+    };
+
+    return result;
   }
 }
