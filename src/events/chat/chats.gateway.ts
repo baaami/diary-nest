@@ -12,7 +12,7 @@ import {
   WebSocketGateway,
 } from "@nestjs/websockets";
 import { Namespace, Server, Socket } from "socket.io";
-import { CHAT_PORT } from "src/common/define";
+import { BUYER, CHAT_PORT, SELLER } from "src/common/define";
 import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
 import { CreateChatDto } from "./dto/create-chat.dto";
@@ -145,7 +145,13 @@ export class ChatGateway
     @MessageBody() room: Rooms
   ) {
     const roomId: string = await this.chatService.getRoomId(room);
-    console.log("Joined Room: ", roomId);
+
+    const clientId = Number(this.clients.get(socket.id));
+    if (clientId == room.buyer_id) {
+      this.chatService.updateConfirmTime(room.id, BUYER);
+    } else {
+      this.chatService.updateConfirmTime(room.id, SELLER);
+    }
 
     // join이 되어있던 room인지 확인
     const bSocketInRoom = socket.rooms.has(roomId);

@@ -21,6 +21,12 @@ export class Rooms {
   @Column("int", { name: "buyer_id" })
   buyer_id: number;
 
+  @UpdateDateColumn()
+  seller_confirm_time: Date;
+
+  @UpdateDateColumn()
+  buyer_confirm_time: Date;
+
   @OneToMany(() => Chats, (chat) => chat.id)
   chats: Chats[];
 }

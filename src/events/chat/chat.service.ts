@@ -5,7 +5,7 @@ import { Chats } from "./entities/chat.entity";
 import { Rooms } from "./entities/room.entity";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { CreateChatDto } from "./dto/create-chat.dto";
-import { pagenation_chat_size } from "src/common/define";
+import { SELLER, pagenation_chat_size } from "src/common/define";
 
 @Injectable()
 export class ChatService {
@@ -134,6 +134,33 @@ export class ChatService {
   async addMessage(msgPayload: CreateChatDto) {
     try {
       this.ChatRepository.save(msgPayload);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  /**
+   *
+   * @param roomId     room id
+   * @param memberType buyer or seller
+   */
+  async updateConfirmTime(roomId: number, memberType: number) {
+    try {
+      if (memberType == SELLER) {
+        this.RoomRepository.update(
+          { id: roomId },
+          {
+            seller_confirm_time: new Date(),
+          }
+        );
+      } else {
+        this.RoomRepository.update(
+          { id: roomId },
+          {
+            buyer_confirm_time: new Date(),
+          }
+        );
+      }
     } catch (err) {
       console.error(err);
     }
