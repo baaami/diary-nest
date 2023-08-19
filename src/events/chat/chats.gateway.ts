@@ -149,8 +149,12 @@ export class ChatGateway
     const clientId = Number(this.clients.get(socket.id));
     if (clientId == room.buyer_id) {
       this.chatService.updateConfirmTime(room.id, BUYER);
-    } else {
+    } else if (clientId == room.seller_id) {
       this.chatService.updateConfirmTime(room.id, SELLER);
+    } else if (clientId == 0) {
+      console.log("Not Login User Access");
+    } else {
+      console.log("Unknown User");
     }
 
     // join이 되어있던 room인지 확인
