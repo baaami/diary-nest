@@ -18,7 +18,6 @@ import { Rooms } from "./entities/room.entity";
 import { CreateChatDto } from "./dto/create-chat.dto";
 
 // namespace를 'chat' 으로 설정
-// 프론트 측에서 http://localhost:4000/chat에서 '/chat'에 해당되는 부분
 @WebSocketGateway(CHAT_PORT, {
   cors: {
     origin: "http://localhost:3000",
@@ -195,7 +194,7 @@ export class ChatGateway
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
-      updatedDate: new Date(),
+      updatedAt: new Date(),
     };
 
     // socket.emit("message", message);

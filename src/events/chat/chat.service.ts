@@ -100,6 +100,7 @@ export class ChatService {
         .skip(
           page * pagenation_chat_size != 0 ? page * pagenation_chat_size : 0
         )
+        .take(pagenation_chat_size)
         .getManyAndCount();
     } catch (err) {
       console.error(err);
