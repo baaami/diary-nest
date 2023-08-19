@@ -37,7 +37,7 @@ MySQL 데이터베이스 준비
 프로젝트 Clone
 
 ``` sh
-git clone [https://github.com/saluki/nestjs-template my-project](https://github.com/baaami/school_market.git)
+git clone https://github.com/baaami/school_market.git
 ```
 
 프로젝트의 종속 라이브러리 설치
