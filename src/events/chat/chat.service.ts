@@ -117,7 +117,7 @@ export class ChatService {
       res = await this.ChatRepository.createQueryBuilder("chats")
         .leftJoinAndSelect("chats.room", "room")
         .where("room.id = :roomId", { roomId })
-        .orderBy("chats.updatedAt", "DESC")
+        .orderBy("chats.createdAt", "DESC")
         .getOne();
     } catch (err) {
       console.error(err);

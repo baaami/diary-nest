@@ -1,10 +1,10 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm";
 import { Rooms } from "./room.entity";
 
@@ -19,8 +19,8 @@ export class Chats {
   @Column("varchar", { name: "message", length: 500 })
   message: string;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
   @ManyToOne(() => Rooms, (room) => room.id)
   @JoinColumn({ name: "room_id" })
