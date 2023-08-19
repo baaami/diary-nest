@@ -21,10 +21,10 @@ export class Rooms {
   @Column("int", { name: "buyer_id" })
   buyer_id: number;
 
-  @UpdateDateColumn()
+  @Column("timestamp", { name: "seller_confirm_time" })
   seller_confirm_time: Date;
 
-  @UpdateDateColumn()
+  @Column("timestamp", { name: "buyer_confirm_time" })
   buyer_confirm_time: Date;
 
   @OneToMany(() => Chats, (chat) => chat.id)
