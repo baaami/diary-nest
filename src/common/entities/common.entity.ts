@@ -49,7 +49,7 @@ export interface JwtdecodedUser {
 
 export interface ContentList {
   totalPage: number;
-  content_list: Contents[];
+  contents: Contents[];
 }
 
 export interface ChatList {
@@ -59,5 +59,5 @@ export interface ChatList {
 
 export interface FavoriteList {
   totalPage: number;
-  favorite_list: Favorites[];
+  favorites: Favorites[];
 }
