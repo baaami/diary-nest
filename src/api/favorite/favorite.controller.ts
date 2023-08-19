@@ -24,12 +24,10 @@ export class FavoriteController {
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [favorites, totalPage] = await this.favoriteService.getFavoriteList(
-      userId,
-      page
-    );
+    const [favorite_list, totalPage] =
+      await this.favoriteService.getFavoriteList(userId, page);
     const result: FavoriteList = {
-      favorites,
+      favorite_list,
       totalPage,
     };
     return result;

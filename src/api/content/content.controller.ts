@@ -40,12 +40,10 @@ export class ContentController {
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] = await this.contentService.getListByKeyword(
-      keyword,
-      page
-    );
+    const [content_list, totalPage] =
+      await this.contentService.getListByKeyword(keyword, page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
@@ -56,9 +54,9 @@ export class ContentController {
   async list(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
 
-    const [contents, totalPage] = await this.contentService.findList(page);
+    const [content_list, totalPage] = await this.contentService.findList(page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
@@ -71,10 +69,10 @@ export class ContentController {
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] =
+    const [content_list, totalPage] =
       await this.contentService.getSellingProductsByUser(userId, page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
@@ -87,10 +85,10 @@ export class ContentController {
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] =
+    const [content_list, totalPage] =
       await this.contentService.getSoldProductsByUser(userId, page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
@@ -101,10 +99,10 @@ export class ContentController {
   @Post("/list/bought/:id")
   async boughtList(@Query("page") page: number = 0) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] =
+    const [content_list, totalPage] =
       await this.contentService.getBoughtProductList(page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
@@ -118,10 +116,10 @@ export class ContentController {
     @Query("page") page: number = 0
   ) {
     if (isNaN(page)) page = 0;
-    const [contents, totalPage] =
+    const [content_list, totalPage] =
       await this.contentService.getProductsByCategory(category, page);
     const result: ContentList = {
-      contents,
+      content_list,
       totalPage,
     };
     return result;
