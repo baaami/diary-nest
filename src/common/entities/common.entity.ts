@@ -54,6 +54,7 @@ export interface ContentList {
 
 export interface ChatList {
   totalPage: number;
+  currentPage: number;
   chat_list: Chats[];
 }
 

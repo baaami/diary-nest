@@ -18,6 +18,7 @@ export class ChatController {
 
     const result: ChatList = {
       chat_list,
+      currentPage: page,
       totalPage,
     };
 
