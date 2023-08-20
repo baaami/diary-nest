@@ -1,4 +1,4 @@
-import { IsNumber } from "class-validator";
+import { IsNumber, IsDate } from "class-validator";
 
 export class CreateRoomDto {
   @IsNumber()
@@ -9,4 +9,10 @@ export class CreateRoomDto {
 
   @IsNumber()
   readonly buyer_id: number;
+
+  @IsDate()
+  seller_confirm_time: Date;
+
+  @IsDate()
+  buyer_confirm_time: Date;
 }

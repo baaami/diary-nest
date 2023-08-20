@@ -33,6 +33,8 @@ export class ChatService {
     }
 
     if (target_room == null) {
+      room.buyer_confirm_time = new Date();
+      room.seller_confirm_time = new Date();
       target_room = await this.RoomRepository.save(room as CreateRoomDto);
       console.log("Create New Room: ", target_room);
       console.log("New Room Id: ", target_room.id);
@@ -60,6 +62,8 @@ export class ChatService {
     }
 
     if (target_room == null) {
+      room.buyer_confirm_time = new Date();
+      room.seller_confirm_time = new Date();
       target_room = await this.RoomRepository.save(room as CreateRoomDto);
     }
 
