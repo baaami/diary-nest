@@ -91,6 +91,18 @@ export class ChatService {
     return target_room_list;
   }
 
+/**
+   * @brief             전달된 User가 참가하여 있는 Room 전달
+   *
+   * @param     roomId  Room 식별자
+   * @returns           찾고자하는 Room List
+   */
+  async getRoomInfo(roomId: number): Promise<Rooms> {
+    const target_room: Rooms = await this.RoomRepository.findOneBy({ id: roomId });
+    console.log('요청받은 room',target_room)
+    return target_room;
+  }
+
   async getChatList(
     page: number = 0,
     roomId: Number

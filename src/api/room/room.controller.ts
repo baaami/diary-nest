@@ -9,4 +9,9 @@ export class RoomController {
   async getList(@Param("id", ParseIntPipe) userId: number) {
     return this.chatService.getJoinedRoomList(userId);
   }
+
+  @Get("/:id")
+  async getRoom(@Param("id", ParseIntPipe) roomId: number) {
+    return this.chatService.getRoomInfo(roomId);
+  }
 }
