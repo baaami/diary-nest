@@ -161,6 +161,7 @@ export class ChatGateway
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == false) {
       socket.join(roomId);
+      socket.emit("roomId_after_join_room",roomId)
     }
     return;
   }
