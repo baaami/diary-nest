@@ -18,10 +18,14 @@ export class PhotosController {
       const uploadPath = path.join(__dirname, '..','..','..','..', newName);
 
       // 파일 데이터를 지정된 경로에 저장
-      await fs.writeFile(uploadPath, buffer,(err) => {
-        if (err) throw err;
-        console.log('The file has been saved!');
-      }); 
+      try{
+        await fs.writeFile(uploadPath, buffer,(err) => {
+          if (err) throw err;
+          console.log('The file has been saved!');
+        }); 
+      }catch(e){
+        console.log(e,'파일 저장 실패')
+      }
       uploadFiles.push(newName);
     }
 
