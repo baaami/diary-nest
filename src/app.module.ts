@@ -19,6 +19,8 @@ import { Favorites } from "./common/entities/favorite.entity";
 import { ReviewModule } from "./api/review/review.module";
 import { FavoriteModule } from "./api/favorite/favorite.module";
 import { RoomModule } from "./api/room/room.module";
+import { PhotosModule } from "./api/photos/photos.module";
+
 @Module({
   imports: [
     ContentModule,
@@ -34,6 +36,7 @@ import { RoomModule } from "./api/room/room.module";
       serveRoot: "/upload",
     }),
     EventsModule,
+    PhotosModule,
   ],
   controllers: [],
   providers: [],
