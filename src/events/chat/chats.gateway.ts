@@ -173,7 +173,6 @@ export class ChatGateway
       socket.join(roomId);
     }
     socket.emit("roomId_after_join_room", roomId);
-
     return;
   }
 
