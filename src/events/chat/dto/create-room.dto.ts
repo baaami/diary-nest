@@ -1,4 +1,5 @@
-import { IsNumber, IsDate } from "class-validator";
+import { IsNumber, IsDate, IsBoolean } from "class-validator";
+import { IsNull } from "typeorm";
 
 export class CreateRoomDto {
   @IsNumber()
@@ -9,6 +10,12 @@ export class CreateRoomDto {
 
   @IsNumber()
   readonly buyer_id: number;
+
+  @IsBoolean()
+  seller_out: boolean = false;
+
+  @IsBoolean()
+  buyer_out: boolean = false;
 
   @IsDate()
   seller_confirm_time: Date;

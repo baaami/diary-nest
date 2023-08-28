@@ -187,13 +187,23 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() room: Rooms
   ) {
-    const roomId: string = await this.chatService.getRoomId(room);
-    await this.chatService.deleteRoom(Number(roomId));
+    const roomId = String(room.id);
 
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == true) {
       socket.leave(roomId);
       socket.to(roomId).emit("success leave room");
+    }
+
+    const userId = this.clients.get(socket.id);
+    try {
+      await this.chatService.leaveRoom(Number(userId), Number(roomId));
+      const IsLeaveAll = await this.chatService.IsLeaveAll(Number(roomId));
+      if (IsLeaveAll) {
+        await this.chatService.deleteRoom(room);
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 

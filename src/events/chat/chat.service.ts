@@ -71,6 +71,25 @@ export class ChatService {
   }
 
   /**
+   * @brief     id를 통해 db내 room 데이터 획득
+   * @param id  얻고자하는 room 식별자
+   * @returns   id를 가지고 있는 room
+   */
+  async getRoomById(id: number): Promise<Rooms> {
+    let target_room: Rooms;
+
+    try {
+      target_room = await this.RoomRepository.findOneBy({
+        id,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+
+    return target_room;
+  }
+
+  /**
    * @brief             전달된 User가 참가하여 있는 Room List 전달
    *
    * @param     userId  User 식별자
@@ -184,19 +203,54 @@ export class ChatService {
     }
   }
 
+  async IsLeaveAll(roomId: number): Promise<boolean> {
+    const room = await this.getRoomById(roomId);
+
+    if (room.buyer_out && room.seller_out) return true;
+    else return false;
+  }
+
+  async leaveRoom(userId: number, roomId: number) {
+    try {
+      const room = await this.getRoomById(roomId);
+
+      if (room.buyer_id == userId) {
+        await this.RoomRepository.update(
+          {
+            id: roomId,
+          },
+          { ...room, buyer_out: true }
+        );
+      } else {
+        await this.RoomRepository.update(
+          {
+            id: roomId,
+          },
+          { ...room, seller_out: true }
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   /**
    * @brief          전달된 Room의 식별자 전달
    *
    * @param room     찾고자하는 혹은 추가할 Room 인터페이스
    * @returns        찾고자하는 혹은 추가된 Room Id
    */
-  async deleteRoom(roomId: number) {
+  async deleteRoom(room: Rooms) {
     try {
-      await this.RoomRepository.delete({
-        id: roomId,
+      await this.ChatRepository.delete({
+        room,
       });
 
-      console.log(`Success to Delete Room [${roomId}]`);
+      await this.RoomRepository.delete({
+        id: room.id,
+      });
+
+      console.log(`Success to Delete Room [${room.id}]`);
     } catch (err) {
       console.error(err);
     }

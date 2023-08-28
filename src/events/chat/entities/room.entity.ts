@@ -21,6 +21,12 @@ export class Rooms {
   @Column("int", { name: "buyer_id" })
   buyer_id: number;
 
+  @Column("boolean", { name: "seller_out" })
+  seller_out: boolean;
+
+  @Column("boolean", { name: "buyer_out" })
+  buyer_out: boolean;
+
   @Column("timestamp", { name: "seller_confirm_time" })
   seller_confirm_time: Date;
 
