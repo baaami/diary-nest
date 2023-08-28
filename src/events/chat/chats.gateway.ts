@@ -16,6 +16,8 @@ import { BUYER, CHAT_PORT, SELLER } from "src/common/define";
 import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
 import { CreateChatDto } from "./dto/create-chat.dto";
+import { Users } from "src/api/user/entities/user.entity";
+import { CreateReviewDto } from "src/api/review/dto/create-review.dto";
 
 // namespace를 'chat' 으로 설정
 @WebSocketGateway(CHAT_PORT, {
@@ -98,7 +100,15 @@ export class ChatGateway
     // User가 속해있는 room들을 DB에서 획득
     socket.join(joined_room_id_list);
 
-    socket.emit("login", `login success ${socket.id}: ${userId}`);
+    // TODO: 아래 정보 포함해서 보내주기
+    // bchatConfirm 채팅방 안읽은 것있는지
+
+    const ExistUnConfirmChat =
+      // 내가 들어가있는 room_id의 채팅 목록을 가져온다. 가져올 때 createdAt을 기준으로 최신순으로 가져온다.
+      // 조건: send_id가 내가 아닐 경우, 가장 최신 대화목록의 confirm time을 확인한다.
+
+      // bNotiConfirm 알림 안읽은 거 있는지
+      socket.emit("login", `login success ${socket.id}: ${userId}`);
   }
 
   /**
@@ -161,8 +171,9 @@ export class ChatGateway
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == false) {
       socket.join(roomId);
-      socket.emit("roomId_after_join_room",roomId)
     }
+    socket.emit("roomId_after_join_room", roomId);
+
     return;
   }
 
@@ -208,13 +219,35 @@ export class ChatGateway
       createdAt: new Date(),
     };
 
-    // socket.emit("message", message);
     this.server.to(room_id).emit("message", message);
+    this.server.to(room_id).emit("chat_notification", message);
 
     // socket.broadcast.to(room_id).emit("message", message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
     await this.chatService.addMessage(msgPayload);
     return;
+  }
+
+  // 알림 기능 구현
+  async sendNotification(seller: Users, buyer: Users, review: CreateReviewDto) {
+    let socketId: string = "";
+    for (const [key, value] of this.clients.entries()) {
+      if (value === String(seller.id)) {
+        socketId = key;
+        break;
+      }
+    }
+
+    if (socketId && socketId.length != 0) {
+      console.error("seller dosen't connect socket", seller);
+      return;
+    }
+
+    this.server.to(socketId).emit("notification", {
+      seller,
+      buyer,
+      review,
+    });
   }
 }
