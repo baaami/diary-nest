@@ -6,12 +6,14 @@ import { Rooms } from "./entities/room.entity";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { SELLER, pagenation_chat_size } from "src/common/define";
+import { RoomService } from "src/api/room/rooms.service";
 
 @Injectable()
 export class ChatService {
   constructor(
     @InjectRepository(Rooms) private RoomRepository: Repository<Rooms>,
-    @InjectRepository(Chats) private ChatRepository: Repository<Chats>
+    @InjectRepository(Chats) private ChatRepository: Repository<Chats>,
+    private readonly roomService: RoomService
   ) {} // @InjectRepository
 
   /**
@@ -20,24 +22,17 @@ export class ChatService {
    * @param room     찾고자하는 혹은 추가할 Room 인터페이스
    * @returns        찾고자하는 혹은 추가된 Room Id
    */
-  async getRoomId(room: Rooms | CreateRoomDto): Promise<string> {
+  async getRoomId(room: CreateRoomDto): Promise<string> {
     let target_room: Rooms;
 
     try {
-      target_room = await this.RoomRepository.findOneBy({
-        content_id: room.content_id,
-        buyer_id: room.buyer_id,
-      });
+      target_room = await this.roomService.findExistRoom(room);
     } catch (err) {
       console.error(err);
     }
 
     if (target_room == null) {
-      room.buyer_confirm_time = new Date();
-      room.seller_confirm_time = new Date();
-      target_room = await this.RoomRepository.save(room as CreateRoomDto);
-      console.log("Create New Room: ", target_room);
-      console.log("New Room Id: ", target_room.id);
+      target_room = await this.roomService.createRoom(room);
     }
 
     return String(target_room.id);
@@ -53,18 +48,13 @@ export class ChatService {
     let target_room: Rooms;
 
     try {
-      target_room = await this.RoomRepository.findOneBy({
-        content_id: room.content_id,
-        buyer_id: room.buyer_id,
-      });
+      target_room = await this.roomService.findExistRoom(room);
     } catch (err) {
       console.error(err);
     }
 
     if (target_room == null) {
-      room.buyer_confirm_time = new Date();
-      room.seller_confirm_time = new Date();
-      target_room = await this.RoomRepository.save(room as CreateRoomDto);
+      target_room = await this.roomService.createRoom(room);
     }
 
     return target_room;
