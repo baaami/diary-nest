@@ -6,10 +6,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { Rooms } from "./chat/entities/room.entity";
 import { Chats } from "./chat/entities/chat.entity";
 import { ChatController } from "./chat/chat.controller";
+import { RoomService } from "src/api/room/rooms.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Rooms, Chats])],
   controllers: [ChatController],
-  providers: [ChatGateway, PushGateway, ChatService],
+  providers: [ChatGateway, PushGateway, ChatService, RoomService],
 })
 export class EventsModule {}

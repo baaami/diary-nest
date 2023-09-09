@@ -18,8 +18,8 @@ export class CreateRoomDto {
   buyer_out: boolean = false;
 
   @IsDate()
-  seller_confirm_time: Date;
+  seller_confirm_time: Date = new Date();
 
   @IsDate()
-  buyer_confirm_time: Date;
+  buyer_confirm_time: Date = new Date();
 }

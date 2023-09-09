@@ -40,6 +40,13 @@ export class ChatGateway
   // -> 이게 맞는 것일 수도
   private clients = new Map<string, string>();
 
+  printConnectedClients() {
+    for (const [key, value] of this.clients.entries()) {
+      this.logger.log(`socket id: ${key}`);
+      this.logger.log(`user id: ${value}`);
+    }
+  }
+
   // 초기화 이후에 실행
   afterInit() {
     this.logger.log(`Initialize Web Socket Server [${CHAT_PORT}]`);
@@ -54,6 +61,8 @@ export class ChatGateway
     this.logger.log(`New connecting, socket id: ${socketId}`);
 
     this.clients.set(socketId, "");
+
+    this.printConnectedClients();
   }
 
   /**
@@ -65,6 +74,8 @@ export class ChatGateway
     this.logger.log(`Disconnecting, socket id: ${socketId}`);
 
     this.clients.delete(socket.id);
+
+    this.printConnectedClients();
   }
 
   /**
@@ -109,6 +120,8 @@ export class ChatGateway
 
       // bNotiConfirm 알림 안읽은 거 있는지
       socket.emit("login", `login success ${socket.id}: ${userId}`);
+
+    this.printConnectedClients();
   }
 
   /**
@@ -193,9 +206,11 @@ export class ChatGateway
     if (bSocketInRoom == true) {
       socket.leave(roomId);
       socket.to(roomId).emit("success leave room");
+      console.log("success leave room");
     }
 
     const userId = this.clients.get(socket.id);
+    console.log("방을 나간 유저 ID: ", userId);
     try {
       await this.chatService.leaveRoom(Number(userId), Number(roomId));
       const IsLeaveAll = await this.chatService.IsLeaveAll(Number(roomId));
