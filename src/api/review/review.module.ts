@@ -8,9 +8,10 @@ import { Users } from "../user/entities/user.entity";
 import { AuthService } from "../auth/auth.service";
 import { JwtService } from "@nestjs/jwt";
 import { AuthSharedService } from "../auth/auth.shared.service";
+import { EventsModule } from "src/events/events.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reviews, Users])],
+  imports: [EventsModule, TypeOrmModule.forFeature([Reviews, Users])],
   controllers: [ReviewController],
   providers: [ReviewService, AuthSharedService, JwtService],
 })

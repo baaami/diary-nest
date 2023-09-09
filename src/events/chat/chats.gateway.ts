@@ -254,7 +254,7 @@ export class ChatGateway
   }
 
   // 알림 기능 구현
-  async sendNotification(seller: Users, buyer: Users, review: CreateReviewDto) {
+  async sendReviewNotification(seller: Users, buyer: Users, review: string) {
     let socketId: string = "";
     for (const [key, value] of this.clients.entries()) {
       if (value === String(seller.id)) {

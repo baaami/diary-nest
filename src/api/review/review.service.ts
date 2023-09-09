@@ -5,13 +5,15 @@ import { Repository } from "typeorm";
 import { Users } from "../user/entities/user.entity";
 import { CreateReviewDto } from "./dto/create-review.dto";
 import { AuthSharedService } from "../auth/auth.shared.service";
+import { ChatGateway } from "src/events/chat/chats.gateway";
 
 @Injectable()
 export class ReviewService {
   constructor(
     @InjectRepository(Reviews) private ReviewRepository: Repository<Reviews>,
     @InjectRepository(Users) private UserRepository: Repository<Users>,
-    private readonly authSharedService: AuthSharedService
+    private readonly authSharedService: AuthSharedService,
+    private readonly chatGateway: ChatGateway
   ) {}
 
   async insertFakerData(fakerdata: Reviews): Promise<Reviews> {
@@ -48,7 +50,7 @@ export class ReviewService {
       (review.seller = seller),
       (review.buyer = buyer);
 
-    // this.chatGateway.sendNotification(seller, buyer, createReviewDto);
+    this.chatGateway.sendReviewNotification(seller, buyer, review.review);
 
     const res = await this.ReviewRepository.save(review);
     return res;

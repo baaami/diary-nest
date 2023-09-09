@@ -7,6 +7,8 @@ import { CreateRoomDto } from "./dto/create-room.dto";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { SELLER, pagenation_chat_size } from "src/common/define";
 import { RoomService } from "src/api/room/rooms.service";
+import { Users } from "src/api/user/entities/user.entity";
+import { CreateReviewDto } from "src/api/review/dto/create-review.dto";
 
 @Injectable()
 export class ChatService {
