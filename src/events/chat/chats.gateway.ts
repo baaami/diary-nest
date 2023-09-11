@@ -206,6 +206,7 @@ export class ChatGateway
     if (bSocketInRoom == true) {
       socket.leave(roomId);
       socket.to(roomId).emit("success leave room");
+      socket.emit("leave_room", roomId);
       console.log("success leave room");
     }
 
@@ -216,7 +217,6 @@ export class ChatGateway
       const IsLeaveAll = await this.chatService.IsLeaveAll(Number(roomId));
       if (IsLeaveAll) {
         await this.chatService.deleteRoom(room);
-        socket.emit("leave_room", "채팅방 나가기 완료");
       }
     } catch (err) {
       console.error(err);
