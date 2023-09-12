@@ -5,7 +5,12 @@ import { Chats } from "./entities/chat.entity";
 import { Rooms } from "./entities/room.entity";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { CreateChatDto } from "./dto/create-chat.dto";
-import { SELLER, pagenation_chat_size } from "src/common/define";
+import {
+  BUYER,
+  SELLER,
+  UNKNOWN_USER,
+  pagenation_chat_size,
+} from "src/common/define";
 import { RoomService } from "src/api/room/rooms.service";
 import { Users } from "src/api/user/entities/user.entity";
 import { CreateReviewDto } from "src/api/review/dto/create-review.dto";
@@ -155,6 +160,10 @@ export class ChatService {
     return res;
   }
 
+  getChatPartner(userId: string): string {
+    return "";
+  }
+
   /**
    * @brief         전달된 메시지를 DB에 저장
    * @param room    Room 정보
@@ -193,6 +202,25 @@ export class ChatService {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  /**
+   *
+   * @param userId:
+   */
+  getUserPosition(room: Rooms, userId: number): number {
+    if (userId == room.buyer_id) return BUYER;
+    else if (userId == room.seller_id) return SELLER;
+    return UNKNOWN_USER;
+  }
+
+  async confirmChat(userId: number, room: Rooms) {
+    const confirmId = Number(userId);
+    const clientType = this.getUserPosition(room, Number(confirmId));
+    if (clientType == UNKNOWN_USER) {
+      console.error("Failed to join room unknown user", confirmId);
+    }
+    await this.updateConfirmTime(room.id, clientType);
   }
 
   async IsLeaveAll(roomId: number): Promise<boolean> {

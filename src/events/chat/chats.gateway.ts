@@ -12,12 +12,11 @@ import {
   WebSocketGateway,
 } from "@nestjs/websockets";
 import { Namespace, Server, Socket } from "socket.io";
-import { BUYER, CHAT_PORT, SELLER } from "src/common/define";
+import { BUYER, CHAT_PORT, SELLER, UNKNOWN_USER } from "src/common/define";
 import { ChatService } from "./chat.service";
 import { Rooms } from "./entities/room.entity";
 import { CreateChatDto } from "./dto/create-chat.dto";
 import { Users } from "src/api/user/entities/user.entity";
-import { CreateReviewDto } from "src/api/review/dto/create-review.dto";
 
 // namespace를 'chat' 으로 설정
 @WebSocketGateway(CHAT_PORT, {
@@ -40,11 +39,20 @@ export class ChatGateway
   // -> 이게 맞는 것일 수도
   private clients = new Map<string, string>();
 
+  // 채팅방 접속 중인 클라이언트들
+  // key: user id
+  // value: room id
+  private chat_clients = new Map<string, string>();
+
   printConnectedClients() {
     for (const [key, value] of this.clients.entries()) {
       this.logger.log(`socket id: ${key}`);
       this.logger.log(`user id: ${value}`);
     }
+  }
+
+  updateConfirmtiome(userId: string): string {
+    return "";
   }
 
   // 초기화 이후에 실행
@@ -114,12 +122,12 @@ export class ChatGateway
     // TODO: 아래 정보 포함해서 보내주기
     // bchatConfirm 채팅방 안읽은 것있는지
 
-    const ExistUnConfirmChat =
-      // 내가 들어가있는 room_id의 채팅 목록을 가져온다. 가져올 때 createdAt을 기준으로 최신순으로 가져온다.
-      // 조건: send_id가 내가 아닐 경우, 가장 최신 대화목록의 confirm time을 확인한다.
+    // const ExistUnConfirmChat =
+    // 내가 들어가있는 room_id의 채팅 목록을 가져온다. 가져올 때 createdAt을 기준으로 최신순으로 가져온다.
+    // 조건: send_id가 내가 아닐 경우, 가장 최신 대화목록의 confirm time을 확인한다.
 
-      // bNotiConfirm 알림 안읽은 거 있는지
-      socket.emit("login", `login success ${socket.id}: ${userId}`);
+    // bNotiConfirm 알림 안읽은 거 있는지
+    socket.emit("login", `login success ${socket.id}: ${userId}`);
 
     this.printConnectedClients();
   }
@@ -155,7 +163,7 @@ export class ChatGateway
   }
 
   /**
-   * @brief 채팅하기 버튼 클릭 시 발생하는 이벤트
+   * @brief 채팅방 입장 시 발생하는 이벤트
    *
    * @param socket socket 인스턴스
    * @param interMsgRoom
@@ -168,17 +176,15 @@ export class ChatGateway
     @MessageBody() room: Rooms
   ) {
     const roomId: string = await this.chatService.getRoomId(room);
-
-    const clientId = Number(this.clients.get(socket.id));
-    if (clientId == room.buyer_id) {
-      this.chatService.updateConfirmTime(room.id, BUYER);
-    } else if (clientId == room.seller_id) {
-      this.chatService.updateConfirmTime(room.id, SELLER);
-    } else if (clientId == 0) {
-      console.log("Not Login User Access");
-    } else {
-      console.log("Unknown User");
+    const userId: string = this.clients.get(socket.id);
+    if (!userId) {
+      this.logger.error("Failed to get user id", userId, socket.id);
     }
+
+    this.chat_clients.set(userId, roomId);
+
+    // Update ConfirmTime
+    await this.chatService.confirmChat(Number(userId), room);
 
     // join이 되어있던 room인지 확인
     const bSocketInRoom = socket.rooms.has(roomId);
@@ -190,12 +196,30 @@ export class ChatGateway
   }
 
   /**
-   * @brief 채팅방 삭제 시 발생하는 이벤트
+   * @brief 채팅방 나가기 시 발생하는 이벤트
    *
    * @param socket socket 인스턴스
    * @param room
    */
   @SubscribeMessage("leave_room")
+  async handleOutRoomEvent(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() room: Rooms
+  ) {
+    const userId = this.clients.get(socket.id);
+    this.chat_clients.delete(userId);
+
+    this.logger.log("Leave room: ", userId);
+    socket.emit("leave_room", "Out room Success");
+  }
+
+  /**
+   * @brief 채팅방 삭제 시 발생하는 이벤트
+   *
+   * @param socket socket 인스턴스
+   * @param room
+   */
+  @SubscribeMessage("delete_room")
   async handleLeaveRoomEvent(
     @ConnectedSocket() socket: Socket,
     @MessageBody() room: Rooms
@@ -205,9 +229,9 @@ export class ChatGateway
     const bSocketInRoom = socket.rooms.has(roomId);
     if (bSocketInRoom == true) {
       socket.leave(roomId);
-      socket.to(roomId).emit("success leave room");
-      socket.emit("leave_room", roomId);
-      console.log("success leave room");
+      socket.to(roomId).emit("Delete room Success");
+      socket.emit("delete_room", roomId);
+      this.logger.log("Delete room Success");
     }
 
     const userId = this.clients.get(socket.id);
@@ -236,21 +260,41 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() msgPayload: CreateChatDto
   ) {
-    const room_id = await this.chatService.getRoomId(msgPayload.room);
-    msgPayload.room.id = Number(room_id);
+    const room = msgPayload.room;
+    const userId = this.clients.get(socket.id);
+    const roomId = await this.chatService.getRoomId(msgPayload.room);
+    msgPayload.room.id = Number(roomId);
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
       createdAt: new Date(),
     };
 
-    this.server.to(room_id).emit("message", message);
-    this.server.to(room_id).emit("chat_notification", message);
+    this.server.to(roomId).emit("message", message);
+    this.server.to(roomId).emit("chat_notification", message);
 
-    // socket.broadcast.to(room_id).emit("message", message);
+    // socket.broadcast.to(roomId).emit("message", message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방
     // -> join_room을 통하여 생성
-    await this.chatService.addMessage(msgPayload);
+    try {
+      await this.chatService.addMessage(msgPayload);
+    } catch (err) {
+      this.logger.error(`Failed to save messsage ${msgPayload.message}`);
+    }
+
+    // if another one join room
+    const partnerId = this.chatService.getChatPartner(userId);
+    if (this.chat_clients.has(partnerId)) {
+      try {
+        // Update ConfirmTime
+        this.logger.log(
+          `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
+        );
+        await this.chatService.confirmChat(Number(userId), room);
+      } catch (err) {
+        this.logger.error("Failed to update confirm chatting time");
+      }
+    }
     return;
   }
 
