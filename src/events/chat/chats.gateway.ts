@@ -60,6 +60,13 @@ export class ChatGateway
     this.logger.log(`Initialize Web Socket Server [${CHAT_PORT}]`);
   }
 
+  validationUserId(userId: any) {
+    if (userId) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * @brief User가 로그인 시 발생
    * @param socket
@@ -81,6 +88,7 @@ export class ChatGateway
     const socketId = socket.id;
     this.logger.log(`Disconnecting, socket id: ${socketId}`);
 
+    // 로그아웃 하지 않고 종료 시 삭제
     this.clients.delete(socket.id);
 
     this.printConnectedClients();
@@ -99,6 +107,9 @@ export class ChatGateway
     @MessageBody() userId: string
   ) {
     // TODO: Validation check userID
+    if (this.validationUserId(userId) == false) {
+      this.logger.error(`userId is Invalid, userId: ${userId}`);
+    }
     this.clients.set(socket.id, userId);
 
     console.log("login client id: ", userId);
@@ -166,32 +177,33 @@ export class ChatGateway
    * @brief 채팅방 입장 시 발생하는 이벤트
    *
    * @param socket socket 인스턴스
-   * @param interMsgRoom
+   * @param room
    * @returns
    */
   @SubscribeMessage("join_room")
   async handleJoinRoomEvent(
     @ConnectedSocket() socket: Socket,
     // data: 상품 글 id
-    @MessageBody() room: Rooms
+    @MessageBody() roomId: number
   ) {
-    const roomId: string = await this.chatService.getRoomId(room);
+    const room: Rooms = await this.chatService.getRoomById(roomId);
     const userId: string = this.clients.get(socket.id);
     if (!userId) {
       this.logger.error("Failed to get user id", userId, socket.id);
     }
 
-    this.chat_clients.set(userId, roomId);
+    this.chat_clients.set(userId, String(roomId));
+    this.logger.log(`${userId}번 님이 ${roomId}번 채팅방에 참가하셨습니다`);
 
     // Update ConfirmTime
     await this.chatService.confirmChat(Number(userId), room);
 
     // join이 되어있던 room인지 확인
-    const bSocketInRoom = socket.rooms.has(roomId);
+    const bSocketInRoom = socket.rooms.has(String(roomId));
     if (bSocketInRoom == false) {
-      socket.join(roomId);
+      socket.join(String(roomId));
     }
-    socket.emit("roomId_after_join_room", roomId);
+    socket.emit("roomId_after_join_room", String(roomId));
     return;
   }
 
@@ -204,12 +216,12 @@ export class ChatGateway
   @SubscribeMessage("leave_room")
   async handleOutRoomEvent(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() room: Rooms
+    @MessageBody() roomId: number
   ) {
     const userId = this.clients.get(socket.id);
     this.chat_clients.delete(userId);
 
-    this.logger.log("Leave room: ", userId);
+    this.logger.log(`Leave room: ${userId}`);
     socket.emit("leave_room", "Out room Success");
   }
 
@@ -217,20 +229,21 @@ export class ChatGateway
    * @brief 채팅방 삭제 시 발생하는 이벤트
    *
    * @param socket socket 인스턴스
-   * @param room
+   * @param roomId
    */
   @SubscribeMessage("delete_room")
   async handleLeaveRoomEvent(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() room: Rooms
+    @MessageBody() roomId: number
   ) {
-    const roomId = String(room.id);
+    const room = await this.chatService.getRoomById(roomId);
+    const sRoomId = String(roomId);
 
-    const bSocketInRoom = socket.rooms.has(roomId);
+    const bSocketInRoom = socket.rooms.has(sRoomId);
     if (bSocketInRoom == true) {
-      socket.leave(roomId);
-      socket.to(roomId).emit("Delete room Success");
-      socket.emit("delete_room", roomId);
+      socket.leave(sRoomId);
+      socket.to(sRoomId).emit("Delete room Success");
+      socket.emit("delete_room", sRoomId);
       this.logger.log("Delete room Success");
     }
 
@@ -260,18 +273,18 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() msgPayload: CreateChatDto
   ) {
-    const room = msgPayload.room;
+    const roomId = msgPayload.room_id;
+    const room = await this.chatService.getRoomById(roomId);
     const userId = this.clients.get(socket.id);
-    const roomId = await this.chatService.getRoomId(msgPayload.room);
-    msgPayload.room.id = Number(roomId);
     // 해당 방에 broad cast
     const message = {
       ...msgPayload,
+      room: room,
       createdAt: new Date(),
     };
 
-    this.server.to(roomId).emit("message", message);
-    this.server.to(roomId).emit("chat_notification", message);
+    this.server.to(String(roomId)).emit("message", message);
+    this.server.to(String(roomId)).emit("chat_notification", message);
 
     // socket.broadcast.to(roomId).emit("message", message);
     // 전제 조건 : content_id는 기존에 존재하는 채팅방

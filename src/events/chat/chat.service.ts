@@ -208,17 +208,20 @@ export class ChatService {
    *
    * @param userId:
    */
-  getUserPosition(room: Rooms, userId: number): number {
-    if (userId == room.buyer_id) return BUYER;
-    else if (userId == room.seller_id) return SELLER;
+  getUserType(room: Rooms, userId: number): number {
+    if (userId == room.buyer_id) {
+      return BUYER;
+    } else if (userId == room.seller_id) {
+      return SELLER;
+    }
     return UNKNOWN_USER;
   }
 
   async confirmChat(userId: number, room: Rooms) {
-    const confirmId = Number(userId);
-    const clientType = this.getUserPosition(room, Number(confirmId));
+    const clientType = this.getUserType(room, userId);
     if (clientType == UNKNOWN_USER) {
-      console.error("Failed to join room unknown user", confirmId);
+      console.error("Failed to join room unknown user", userId);
+      return;
     }
     await this.updateConfirmTime(room.id, clientType);
   }
