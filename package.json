@@ -20,6 +20,7 @@
     "faker:favorite": "jest --forceExit ./src/api/fakerdata/insert.favorite.service.spec.ts",
     "faker": "yarn faker:user && yarn faker:content && yarn faker:review && yarn faker:favorite",
     "test": "jest --forceExit",
+    "test:notification": "jest src/api/notification/notification.service.spec.ts --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

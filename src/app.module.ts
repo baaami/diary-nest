@@ -20,6 +20,7 @@ import { ReviewModule } from "./api/review/review.module";
 import { FavoriteModule } from "./api/favorite/favorite.module";
 import { RoomModule } from "./api/room/room.module";
 import { PhotosModule } from "./api/photos/photos.module";
+import { NotificationModule } from "./api/notification/notification.module";
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PhotosModule } from "./api/photos/photos.module";
     }),
     EventsModule,
     PhotosModule,
+    NotificationModule,
   ],
   controllers: [],
   providers: [],
