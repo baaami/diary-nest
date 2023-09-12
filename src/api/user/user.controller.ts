@@ -21,6 +21,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserService } from "./user.service";
 import { editFileName } from "src/lib/multer/multerOption";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
+import { UpdateLocationDto } from "./dto/update-location.dto";
 
 @Controller("user")
 export class UserController {
@@ -50,6 +51,13 @@ export class UserController {
   @Post("/info")
   update(@Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(updateUserDto);
+  }
+
+  // 유저 정보 위도,경도,위치 업데이트
+  @UseGuards(AuthGuard)
+  @Post("/changeLocation")
+  updateLocation(@Body() updateLocationDto: UpdateLocationDto) {
+    return this.userService.updateLocation(updateLocationDto);
   }
 
   // 프로필 정보 업데이트
