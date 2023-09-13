@@ -343,13 +343,14 @@ export class ChatGateway
     }
 
     // if another one join room, update confirmtime
+    await this.chatService.confirmChat(Number(userId), room);
     const partnerId = this.chatService.getChatPartner(userId);
     if (this.chat_clients.has({ userId, roomId })) {
       try {
         this.logger.log(
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
         );
-        await this.chatService.confirmChat(Number(userId), room);
+        await this.chatService.confirmChat(Number(partnerId), room);
       } catch (err) {
         this.logger.error("Failed to update confirm chatting time");
       }
