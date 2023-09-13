@@ -45,10 +45,10 @@ export class Users {
   @Column("int", { name: "gender", nullable: true })
   gender: number;
 
-  @Column("int", { name: "latitude", nullable: true })
+  @Column("float", { name: "latitude", nullable: true })
   latitude: number;
 
-  @Column("int", { name: "longitude", nullable: true })
+  @Column("float", { name: "longitude", nullable: true })
   longitude: number;
 
   @Column("varchar", { name: "location", length: 100, nullable: true })
