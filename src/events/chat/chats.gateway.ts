@@ -25,6 +25,7 @@ import { CreateChatDto } from "./dto/create-chat.dto";
 import { Users } from "src/api/user/entities/user.entity";
 import { RoomService } from "src/api/room/rooms.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
+import { PairUserIdRoomId } from "src/common/entities/common.entity";
 
 // namespace를 'chat' 으로 설정
 @WebSocketGateway(CHAT_PORT, {
@@ -53,7 +54,9 @@ export class ChatGateway
   // 채팅방 접속 중인 클라이언트들
   // key: user id
   // value: room id
-  private chat_clients = new Map<string, string>();
+  // private chat_clients = new Map<string, string>();
+
+  private chat_clients = new Set<PairUserIdRoomId>();
 
   getUserId(socketId: string): string {
     return this.clients.get(socketId);
@@ -61,12 +64,12 @@ export class ChatGateway
 
   joinChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방에 참가하셨습니다`);
-    this.chat_clients.set(userId, roomId);
+    this.chat_clients.add({ userId, roomId });
   }
 
   leaveChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 떠났습니다`);
-    this.chat_clients.delete(userId);
+    this.chat_clients.delete({ userId, roomId });
   }
 
   IsNotJoinChatList(roomId: number): boolean {
@@ -155,19 +158,11 @@ export class ChatGateway
       joined_room_list.map((joined_room) => {
         return this.chatService.getRoomId(joined_room);
       })
-    )
+    );
 
     // User가 속해있는 room들을 DB에서 획득
     socket.join(joined_room_id_list);
 
-    // TODO: 아래 정보 포함해서 보내주기
-    // bchatConfirm 채팅방 안읽은 것있는지
-
-    // const ExistUnConfirmChat =
-    // 내가 들어가있는 room_id의 채팅 목록을 가져온다. 가져올 때 createdAt을 기준으로 최신순으로 가져온다.
-    // 조건: send_id가 내가 아닐 경우, 가장 최신 대화목록의 confirm time을 확인한다.
-
-    // bNotiConfirm 알림 안읽은 거 있는지
     socket.emit("login", `login success ${socket.id}: ${userId}`);
 
     this.printConnectedClients();
@@ -288,17 +283,14 @@ export class ChatGateway
     if (bSocketInRoom == true) {
       // Response
       socket
-      .to(sRoomId)
-      .emit(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
-      
-      socket.emit(
-        "delete_room",
-        sRoomId
-        );
-        this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
+        .to(sRoomId)
+        .emit(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
 
-        socket.leave(sRoomId);
-      }
+      socket.emit("delete_room", sRoomId);
+      this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
+
+      socket.leave(sRoomId);
+    }
 
     // Delete Room in DB
     try {
@@ -352,7 +344,7 @@ export class ChatGateway
 
     // if another one join room, update confirmtime
     const partnerId = this.chatService.getChatPartner(userId);
-    if (this.chat_clients.has(partnerId)) {
+    if (this.chat_clients.has({ userId, roomId })) {
       try {
         this.logger.log(
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`

@@ -62,3 +62,8 @@ export interface FavoriteList {
   totalPage: number;
   favorites: Favorites[];
 }
+
+export interface UserWithRoom {
+  userId: string;
+  roomId: string;
+}
