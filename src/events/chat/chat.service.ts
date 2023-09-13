@@ -84,16 +84,16 @@ export class ChatService {
 
     const result_room_list = room_list.filter((target_room: Rooms) => {
       const userType = this.getUserType(target_room, userId);
-      if(userType == SELLER) {
-        if(target_room.seller_out == false) return true
-      } else if(userType == BUYER) {
-        if(target_room.buyer_out == false) return true
-      } else{
-        console.error("Unknown User Type")
+      if (userType == SELLER) {
+        if (target_room.seller_out == false) return true;
+      } else if (userType == BUYER) {
+        if (target_room.buyer_out == false) return true;
+      } else {
+        console.error("Unknown User Type");
       }
 
       return false;
-    })
+    });
 
     return result_room_list;
   }
@@ -151,8 +151,14 @@ export class ChatService {
     return res;
   }
 
-  getChatPartner(userId: string): string {
-    return "";
+  getChatPartner(userId: string, room: Rooms): number {
+    const userType = this.getUserType(room, Number(userId));
+    if (userType == SELLER) {
+      return room.buyer_id;
+    } else if (userType == BUYER) {
+      return room.seller_id;
+    }
+    return UNKNOWN_USER;
   }
 
   /**

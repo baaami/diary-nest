@@ -74,7 +74,6 @@ export class UserService {
       .leftJoinAndSelect("users.profileImage", "profileImage")
       .where({ id: user.id })
       .getOne();
-    console.log('user res정보',res)
     return res;
   }
 
@@ -98,28 +97,27 @@ export class UserService {
     }
   }
 
-@HttpCode(204)
-async updateLocation(updateLocationDto: UpdateLocationDto) {
-  try {
-    // 추출한 데이터
-    const { latitude, longitude, location } = updateLocationDto;
+  @HttpCode(204)
+  async updateLocation(updateLocationDto: UpdateLocationDto) {
+    try {
+      // 추출한 데이터
+      const { latitude, longitude, location } = updateLocationDto;
 
-    // 사용자 정보 가져오기
-    const user = await this.authSharedService.getUser();
+      // 사용자 정보 가져오기
+      const user = await this.authSharedService.getUser();
 
-    // 사용자 정보 업데이트
-    user.latitude = latitude;
-    user.longitude = longitude;
-    user.location = location;
+      // 사용자 정보 업데이트
+      user.latitude = latitude;
+      user.longitude = longitude;
+      user.location = location;
 
-    // 업데이트된 사용자 정보를 데이터베이스에 저장
-    const updatedUser = await this.UserRepository.save(user)
-    return updatedUser
-
-  } catch (err) {
-    console.error(err);
+      // 업데이트된 사용자 정보를 데이터베이스에 저장
+      const updatedUser = await this.UserRepository.save(user);
+      return updatedUser;
+    } catch (err) {
+      console.error(err);
+    }
   }
-}
 
   @HttpCode(204)
   async updateProfile(

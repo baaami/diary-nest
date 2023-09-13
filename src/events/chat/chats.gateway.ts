@@ -317,23 +317,19 @@ export class ChatGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() msgPayload: CreateChatDto
   ) {
-    // Define Local Variable
-    const room = msgPayload.room;
-    const roomId = await this.chatService.getRoomId(room);
-
-    this.logger.log("room: ", room);
-    this.logger.log("roomId: ", roomId);
-
     const userId = this.getUserId(socket.id);
+    const room_id = await this.chatService.getRoomId(msgPayload.room);
+    msgPayload.room.id = Number(room_id);
+    const room = await this.chatService.getRoomById(Number(room_id));
+
+    // 해당 방에 broad cast
     const message = {
       ...msgPayload,
-      room: room,
       createdAt: new Date(),
     };
 
-    // Broad Cast to room
-    this.server.to(String(roomId)).emit("message", message);
-    this.server.to(String(roomId)).emit("chat_notification", message);
+    this.server.to(room_id).emit("message", message);
+    this.server.to(room_id).emit("chat_notification", message);
 
     // Save Message to Database
     try {
@@ -344,8 +340,13 @@ export class ChatGateway
 
     // if another one join room, update confirmtime
     await this.chatService.confirmChat(Number(userId), room);
-    const partnerId = this.chatService.getChatPartner(userId);
-    if (this.chat_clients.has({ userId, roomId })) {
+    const partnerId = this.chatService.getChatPartner(userId, room);
+    if (partnerId == UNKNOWN_USER) {
+      this.logger.error(`Failed to getChatPartner Unknown User`);
+    }
+
+    this.logger.log(`${userId} -> ${partnerId} : ${msgPayload.message}`);
+    if (this.chat_clients.has({ userId, roomId: room_id })) {
       try {
         this.logger.log(
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
