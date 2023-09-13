@@ -326,8 +326,12 @@ export class ChatGateway
     @MessageBody() msgPayload: CreateChatDto
   ) {
     // Define Local Variable
-    const roomId = msgPayload.room_id;
-    const room = await this.chatService.getRoomById(roomId);
+    const room = msgPayload.room;
+    const roomId = await this.chatService.getRoomId(room);
+
+    this.logger.log("room: ", room);
+    this.logger.log("roomId: ", roomId);
+
     const userId = this.getUserId(socket.id);
     const message = {
       ...msgPayload,
