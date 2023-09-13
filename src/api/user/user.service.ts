@@ -112,11 +112,9 @@ async updateLocation(updateLocationDto: UpdateLocationDto) {
     user.longitude = longitude;
     user.location = location;
 
-    console.log('updateLocation 받은 정보', updateLocationDto);
-    console.log('업데이트된 user 정보', user);
     // 업데이트된 사용자 정보를 데이터베이스에 저장
     const updatedUser = await this.UserRepository.save(user)
-    console.log('user정보',updatedUser)
+    return updatedUser
 
   } catch (err) {
     console.error(err);
