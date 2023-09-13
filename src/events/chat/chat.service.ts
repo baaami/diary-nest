@@ -71,7 +71,7 @@ export class ChatService {
    * @returns           찾고자하는 Room List
    */
   async getJoinedRoomList(userId: number): Promise<Rooms[]> {
-    let target_room_list: Rooms[] = await this.RoomRepository.find({
+    let room_list: Rooms[] = await this.RoomRepository.find({
       where: [
         {
           buyer_id: userId,
@@ -82,7 +82,20 @@ export class ChatService {
       ],
     });
 
-    return target_room_list;
+    const result_room_list = room_list.filter((target_room: Rooms) => {
+      const userType = this.getUserType(target_room, userId);
+      if(userType == SELLER) {
+        if(target_room.seller_out == false) return true
+      } else if(userType == BUYER) {
+        if(target_room.buyer_out == false) return true
+      } else{
+        console.error("Unknown User Type")
+      }
+
+      return false;
+    })
+
+    return result_room_list;
   }
 
   /**
