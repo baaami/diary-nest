@@ -155,7 +155,7 @@ export class ChatGateway
       joined_room_list.map((joined_room) => {
         return this.chatService.getRoomId(joined_room);
       })
-    );
+    )
 
     // User가 속해있는 room들을 DB에서 획득
     socket.join(joined_room_id_list);
@@ -286,19 +286,19 @@ export class ChatGateway
     // Socket Leave Room
     const bSocketInRoom = socket.rooms.has(sRoomId);
     if (bSocketInRoom == true) {
-      socket.leave(sRoomId);
-
       // Response
       socket
-        .to(sRoomId)
-        .emit(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
-
+      .to(sRoomId)
+      .emit(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
+      
       socket.emit(
         "delete_room",
-        `${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`
-      );
-      this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
-    }
+        sRoomId
+        );
+        this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 나갔습니다`);
+
+        socket.leave(sRoomId);
+      }
 
     // Delete Room in DB
     try {
