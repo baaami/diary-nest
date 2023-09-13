@@ -7,3 +7,5 @@ export const PUSH_PORT = 8082;
 export const UNKNOWN_USER = 999;
 export const SELLER = 0;
 export const BUYER = 1;
+
+export const UNKNOWN_ROOM_ID = -1;

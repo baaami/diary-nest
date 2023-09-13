@@ -46,28 +46,6 @@ export class ChatService {
   }
 
   /**
-   * @brief          전달된 Room의 식별자 전달
-   *
-   * @param room     찾고자하는 혹은 추가할 Room 인터페이스
-   * @returns        찾고자하는 혹은 추가된 Room Id
-   */
-  async getRoom(room: CreateRoomDto): Promise<Rooms> {
-    let target_room: Rooms;
-
-    try {
-      target_room = await this.roomService.findExistRoom(room);
-    } catch (err) {
-      console.error(err);
-    }
-
-    if (target_room == null) {
-      target_room = await this.roomService.createRoom(room);
-    }
-
-    return target_room;
-  }
-
-  /**
    * @brief     id를 통해 db내 room 데이터 획득
    * @param id  얻고자하는 room 식별자
    * @returns   id를 가지고 있는 room

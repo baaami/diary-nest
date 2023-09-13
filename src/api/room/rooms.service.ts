@@ -21,6 +21,12 @@ export class RoomService {
     return await this.RoomRepository.save(room);
   }
 
+  async findExistRoomById(roomId: number): Promise<Rooms> {
+    return await this.RoomRepository.findOneBy({
+      id: roomId,
+    });
+  }
+
   async findExistRoom(room: CreateRoomDto): Promise<Rooms> {
     return await this.RoomRepository.findOneBy({
       content_id: room.content_id,
