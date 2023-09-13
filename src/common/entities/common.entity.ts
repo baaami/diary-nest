@@ -63,7 +63,7 @@ export interface FavoriteList {
   favorites: Favorites[];
 }
 
-export interface UserWithRoom {
+export interface PairUserIdRoomId {
   userId: string;
   roomId: string;
 }
