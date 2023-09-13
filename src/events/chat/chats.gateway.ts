@@ -52,11 +52,7 @@ export class ChatGateway
   private clients = new Map<string, string>();
 
   // 채팅방 접속 중인 클라이언트들
-  // key: user id
-  // value: room id
-  // private chat_clients = new Map<string, string>();
-
-  private chat_clients = new Set<PairUserIdRoomId>();
+  private chat_clients = new Set<string>();
 
   getUserId(socketId: string): string {
     return this.clients.get(socketId);
@@ -64,12 +60,12 @@ export class ChatGateway
 
   joinChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방에 참가하셨습니다`);
-    this.chat_clients.add({ userId, roomId });
+    this.chat_clients.add(JSON.stringify({ userId, roomId }));
   }
 
   leaveChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방을 떠났습니다`);
-    this.chat_clients.delete({ userId, roomId });
+    this.chat_clients.delete(JSON.stringify({ userId, roomId }));
   }
 
   IsNotJoinChatList(roomId: number): boolean {
@@ -318,9 +314,9 @@ export class ChatGateway
     @MessageBody() msgPayload: CreateChatDto
   ) {
     const userId = this.getUserId(socket.id);
-    const room_id = await this.chatService.getRoomId(msgPayload.room);
-    msgPayload.room.id = Number(room_id);
-    const room = await this.chatService.getRoomById(Number(room_id));
+    const roomId = await this.chatService.getRoomId(msgPayload.room);
+    msgPayload.room.id = Number(roomId);
+    const room = await this.chatService.getRoomById(Number(roomId));
 
     // 해당 방에 broad cast
     const message = {
@@ -328,8 +324,8 @@ export class ChatGateway
       createdAt: new Date(),
     };
 
-    this.server.to(room_id).emit("message", message);
-    this.server.to(room_id).emit("chat_notification", message);
+    this.server.to(roomId).emit("message", message);
+    this.server.to(roomId).emit("chat_notification", message);
 
     // Save Message to Database
     try {
@@ -346,7 +342,7 @@ export class ChatGateway
     }
 
     this.logger.log(`${userId} -> ${partnerId} : ${msgPayload.message}`);
-    if (this.chat_clients.has({ userId, roomId: room_id })) {
+    if (this.chat_clients.has(JSON.stringify({ userId: partnerId, roomId }))) {
       try {
         this.logger.log(
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
