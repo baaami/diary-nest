@@ -20,6 +20,10 @@ export class Notificaitions {
   @Column("int", { name: "msg" })
   msg: number;
 
+  // 알림 확인 여부
+  @Column("boolean", { name: "confirmed" })
+  confirmed: boolean;
+
   // 알림 발생자(?)
   @ManyToMany(() => Users, (notifier) => notifier.id)
   @JoinColumn({ name: "notifier_id" })
