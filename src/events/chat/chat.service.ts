@@ -188,6 +188,7 @@ export class ChatService {
             seller_confirm_time: new Date(),
           }
         );
+        console.log('seller confirmTime업데이트')
       } else {
         this.RoomRepository.update(
           { id: roomId },
@@ -195,6 +196,7 @@ export class ChatService {
             buyer_confirm_time: new Date(),
           }
         );
+        console.log('buyer confirmTime업데이트')
       }
     } catch (err) {
       console.error(err);
