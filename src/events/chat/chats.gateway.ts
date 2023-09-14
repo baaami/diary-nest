@@ -53,7 +53,7 @@ export class ChatGateway
 
   // 채팅방 접속 중인 클라이언트들
   private chat_clients = new Set<string>();
-
+  
   getUserId(socketId: string): string {
     return this.clients.get(socketId);
   }
@@ -61,6 +61,7 @@ export class ChatGateway
   joinChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방에 참가하셨습니다`);
     this.chat_clients.add(JSON.stringify({ userId, roomId }));
+    console.log('채팅방 접속중인 client들',this.chat_clients)
   }
 
   leaveChattingRoom(userId: string, roomId: string) {
@@ -231,6 +232,7 @@ export class ChatGateway
       socket.join(String(roomId));
     }
     socket.emit("roomId_after_join_room", String(roomId));
+    
     return;
   }
 
@@ -348,6 +350,7 @@ export class ChatGateway
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
         );
         await this.chatService.confirmChat(Number(partnerId), room);
+        this.server.to(roomId).emit("confirm_message",{confirmTime:new Date(), partnerId:partnerId});
       } catch (err) {
         this.logger.error("Failed to update confirm chatting time");
       }
