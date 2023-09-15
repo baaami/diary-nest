@@ -2,6 +2,7 @@ import { Contents } from "src/api/content/entities/content.entity";
 import { Users } from "src/api/user/entities/user.entity";
 import { Favorites } from "./favorite.entity";
 import { Chats } from "src/events/chat/entities/chat.entity";
+import { Notificaitions } from "src/api/notification/entity/notification.entity";
 
 export interface KakaoServerResponse {
   data: KakaoServerData;
@@ -56,6 +57,12 @@ export interface ChatList {
   totalPage: number;
   currentPage: number;
   chat_list: Chats[];
+}
+
+export interface NotificationList {
+  totalPage: number;
+  currentPage: number;
+  notification_list: Notificaitions[];
 }
 
 export interface FavoriteList {

@@ -15,6 +15,7 @@ import { Namespace, Server, Socket } from "socket.io";
 import {
   BUYER,
   CHAT_PORT,
+  NOTI_TYPE_REVIEW,
   SELLER,
   UNKNOWN_ROOM_ID,
   UNKNOWN_USER,
@@ -26,6 +27,10 @@ import { Users } from "src/api/user/entities/user.entity";
 import { RoomService } from "src/api/room/rooms.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { PairUserIdRoomId } from "src/common/entities/common.entity";
+import { Reviews } from "src/api/review/entities/review.entity";
+import { NotificationService } from "src/api/notification/notification.service";
+import { Notificaitions } from "src/api/notification/entity/notification.entity";
+import { CreateNotification } from "src/api/notification/dto/create-notification.dto";
 
 // namespace를 'chat' 으로 설정
 @WebSocketGateway(CHAT_PORT, {
@@ -38,7 +43,8 @@ export class ChatGateway
 {
   constructor(
     private readonly chatService: ChatService,
-    private readonly roomService: RoomService
+    private readonly roomService: RoomService,
+    private readonly notificationService: NotificationService
   ) {} // @InjectRepository
   private logger = new Logger("ChatGateway");
 
@@ -53,7 +59,7 @@ export class ChatGateway
 
   // 채팅방 접속 중인 클라이언트들
   private chat_clients = new Set<string>();
-  
+
   getUserId(socketId: string): string {
     return this.clients.get(socketId);
   }
@@ -61,7 +67,7 @@ export class ChatGateway
   joinChattingRoom(userId: string, roomId: string) {
     this.logger.log(`${userId}번 님이 ${roomId}번 채팅방에 참가하셨습니다`);
     this.chat_clients.add(JSON.stringify({ userId, roomId }));
-    console.log('채팅방 접속중인 client들',this.chat_clients)
+    console.log("채팅방 접속중인 client들", this.chat_clients);
   }
 
   leaveChattingRoom(userId: string, roomId: string) {
@@ -234,7 +240,7 @@ export class ChatGateway
       socket.join(String(roomId));
     }
     socket.emit("roomId_after_join_room", String(roomId));
-    
+
     return;
   }
 
@@ -352,7 +358,10 @@ export class ChatGateway
           `메시지: ${msgPayload.message}를 ${partnerId}가 읽었습니다.`
         );
         await this.chatService.confirmChat(Number(partnerId), room);
-        this.server.to(roomId).emit("confirm_message",{confirmTime:new Date(), partnerId:partnerId});
+        this.server.to(roomId).emit("confirm_message", {
+          confirmTime: new Date(),
+          partnerId: partnerId,
+        });
       } catch (err) {
         this.logger.error("Failed to update confirm chatting time");
       }
@@ -375,9 +384,18 @@ export class ChatGateway
       return;
     }
 
+    try {
+      const notification = new CreateNotification();
+
+      notification.type = NOTI_TYPE_REVIEW;
+      notification.msg = review;
+      notification.receiver = seller;
+      notification.notifier = buyer;
+
+      await this.notificationService.createNotification(notification);
+    } catch (err) {}
+
     this.server.to(socketId).emit("notification", {
-      seller,
-      buyer,
       review,
     });
   }

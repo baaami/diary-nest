@@ -17,8 +17,12 @@ export class Notificaitions {
   type: number;
 
   // 알림 내용
-  @Column("int", { name: "msg" })
-  msg: number;
+  @Column("varchar", { name: "msg" })
+  msg: string;
+
+  // 알림 확인 여부
+  @Column("boolean", { name: "confirmed" })
+  confirmed: boolean;
 
   // 알림 발생자(?)
   @ManyToMany(() => Users, (notifier) => notifier.id)
