@@ -108,7 +108,6 @@ export class ChatService {
     const target_room: Rooms = await this.RoomRepository.findOneBy({
       id: roomId,
     });
-    console.log("요청받은 room", target_room);
     return target_room;
   }
 

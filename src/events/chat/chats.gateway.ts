@@ -225,6 +225,8 @@ export class ChatGateway
 
     // Join Room (Map)
     this.joinChattingRoom(userId, String(roomId));
+    console.log('confirm_join_room에 userId 전송',userId)
+    socket.to(roomId).emit("confirm_join_room",userId)
 
     // Join Room (Socket)
     const bSocketInRoom = socket.rooms.has(String(roomId));
