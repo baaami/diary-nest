@@ -5,6 +5,8 @@ export const pagenation_notification_size = 20;
 export const CHAT_PORT = 8081;
 export const PUSH_PORT = 8082;
 
+export const NOT_LOGIN_USER = 1000;
+
 export const UNKNOWN_USER = 999;
 export const SELLER = 0;
 export const BUYER = 1;

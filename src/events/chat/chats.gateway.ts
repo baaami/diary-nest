@@ -16,6 +16,7 @@ import {
   BUYER,
   CHAT_PORT,
   NOTI_TYPE_REVIEW,
+  NOT_LOGIN_USER,
   SELLER,
   UNKNOWN_ROOM_ID,
   UNKNOWN_USER,
@@ -62,6 +63,14 @@ export class ChatGateway
 
   getUserId(socketId: string): string {
     return this.clients.get(socketId);
+  }
+
+  getSocketIdByUserId(userId: number): number {
+    for (const [sid, uid] of this.clients.entries()) {
+      if (uid == String(userId)) return Number(sid);
+    }
+
+    return NOT_LOGIN_USER;
   }
 
   joinChattingRoom(userId: string, roomId: string) {
@@ -231,8 +240,8 @@ export class ChatGateway
 
     // Join Room (Map)
     this.joinChattingRoom(userId, String(roomId));
-    console.log('confirm_join_room에 userId 전송',userId)
-    socket.to(roomId).emit("confirm_join_room",userId)
+    console.log("confirm_join_room에 userId 전송", userId);
+    socket.to(roomId).emit("confirm_join_room", userId);
 
     // Join Room (Socket)
     const bSocketInRoom = socket.rooms.has(String(roomId));
@@ -327,6 +336,11 @@ export class ChatGateway
     const roomId = await this.chatService.getRoomId(msgPayload.room);
     msgPayload.room.id = Number(roomId);
     const room = await this.chatService.getRoomById(Number(roomId));
+    const partnerId = this.chatService.getChatPartner(userId, room);
+    if (partnerId == UNKNOWN_USER) {
+      this.logger.error(`Failed to getChatPartner Unknown User`);
+    }
+    const partnerSockertId = this.getSocketIdByUserId(partnerId);
 
     // 해당 방에 broad cast
     const message = {
@@ -335,7 +349,14 @@ export class ChatGateway
     };
 
     this.server.to(roomId).emit("message", message);
-    this.server.to(roomId).emit("chat_notification", message);
+
+    if (partnerSockertId != NOT_LOGIN_USER) {
+      this.server
+        .to(String(partnerSockertId))
+        .emit("chat_notification", message);
+    } else {
+      this.logger.log(`${partnerId}번 님이 로그인 상태가 아닙니다.`);
+    }
 
     // Save Message to Database
     try {
@@ -346,10 +367,6 @@ export class ChatGateway
 
     // if another one join room, update confirmtime
     await this.chatService.confirmChat(Number(userId), room);
-    const partnerId = this.chatService.getChatPartner(userId, room);
-    if (partnerId == UNKNOWN_USER) {
-      this.logger.error(`Failed to getChatPartner Unknown User`);
-    }
 
     this.logger.log(`${userId} -> ${partnerId} : ${msgPayload.message}`);
     if (this.chat_clients.has(JSON.stringify({ userId: partnerId, roomId }))) {
