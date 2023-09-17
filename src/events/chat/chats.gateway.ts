@@ -91,8 +91,9 @@ export class ChatGateway
 
   printConnectedClients() {
     for (const [key, value] of this.clients.entries()) {
-      this.logger.log(`socket id: ${key}`);
-      this.logger.log(`user id: ${value}`);
+      this.logger.log(
+        `접속된 클라이언트: socket id: ${key}, user id: ${value}`
+      );
     }
   }
 
@@ -388,6 +389,21 @@ export class ChatGateway
 
   // 알림 기능 구현
   async sendReviewNotification(seller: Users, buyer: Users, review: string) {
+    // 알림 내역 저장
+    try {
+      const notification = new CreateNotification();
+
+      notification.type = NOTI_TYPE_REVIEW;
+      notification.msg = review;
+      notification.receiver = seller;
+      notification.notifier = buyer;
+
+      await this.notificationService.createNotification(notification);
+    } catch (err) {
+      console.error(err);
+    }
+
+    // 알림 받은 이가 로그인 시 소켓을 통하여 실시간으로 전달
     let socketId: string = "";
     for (const [key, value] of this.clients.entries()) {
       if (value === String(seller.id)) {
@@ -400,17 +416,6 @@ export class ChatGateway
       console.error("seller dosen't connect socket", seller);
       return;
     }
-
-    try {
-      const notification = new CreateNotification();
-
-      notification.type = NOTI_TYPE_REVIEW;
-      notification.msg = review;
-      notification.receiver = seller;
-      notification.notifier = buyer;
-
-      await this.notificationService.createNotification(notification);
-    } catch (err) {}
 
     this.server.to(socketId).emit("notification", {
       review,
