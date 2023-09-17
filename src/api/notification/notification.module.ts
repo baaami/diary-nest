@@ -6,10 +6,11 @@ import { UserService } from "../user/user.service";
 import { Users } from "../user/entities/user.entity";
 import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { AuthSharedService } from "../auth/auth.shared.service";
+import { NotificationController } from "./notification.controller";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Notificaitions, Users, ProfileImages])],
-  controllers: [],
+  controllers: [NotificationController],
   providers: [NotificationService, UserService, AuthSharedService],
   exports: [NotificationService],
 })
