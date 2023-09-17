@@ -12,6 +12,13 @@ import { Favorites } from "src/common/entities/favorite.entity";
 import { review_cnt } from "./insert.common.types";
 import { AuthSharedService } from "../auth/auth.shared.service";
 import { ProfileImages } from "src/common/entities/profileimage.entity";
+import { ChatGateway } from "src/events/chat/chats.gateway";
+import { ChatService } from "src/events/chat/chat.service";
+import { RoomService } from "../room/rooms.service";
+import { NotificationService } from "../notification/notification.service";
+import { Rooms } from "src/events/chat/entities/room.entity";
+import { Chats } from "src/events/chat/entities/chat.entity";
+import { Notificaitions } from "../notification/entity/notification.entity";
 
 describe("Insert Review", () => {
   let service: ReviewService;
@@ -26,10 +33,21 @@ describe("Insert Review", () => {
           Contents,
           Favorites,
           ProfileImages,
+          Rooms,
+          Chats,
+          Notificaitions,
         ]),
         TypeOrmModule.forRoot(ormconfig),
       ],
-      providers: [ReviewService, UserService, AuthSharedService],
+      providers: [
+        ReviewService,
+        UserService,
+        AuthSharedService,
+        ChatGateway,
+        ChatService,
+        RoomService,
+        NotificationService,
+      ],
     }).compile();
     service = module.get<ReviewService>(ReviewService);
     user_service = module.get<UserService>(UserService);

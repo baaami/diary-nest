@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 
@@ -25,12 +26,12 @@ export class Notificaitions {
   confirmed: boolean;
 
   // 알림 발생자(?)
-  @ManyToMany(() => Users, (notifier) => notifier.id)
+  @ManyToOne(() => Users, (notifier) => notifier.id)
   @JoinColumn({ name: "notifier_id" })
   notifier: Users;
 
   // 수신자
-  @ManyToMany(() => Users, (receiver) => receiver.id)
+  @ManyToOne(() => Users, (receiver) => receiver.id)
   @JoinColumn({ name: "receiver_id" })
   receiver: Users;
 }

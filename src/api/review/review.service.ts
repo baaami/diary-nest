@@ -18,6 +18,13 @@ export class ReviewService {
 
   async insertFakerData(fakerdata: Reviews): Promise<Reviews> {
     const res = await this.ReviewRepository.save(fakerdata);
+
+    this.chatGateway.sendReviewNotification(
+      fakerdata.seller,
+      fakerdata.buyer,
+      fakerdata.review
+    );
+
     return res;
   }
 

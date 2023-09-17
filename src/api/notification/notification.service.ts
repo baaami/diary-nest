@@ -24,12 +24,10 @@ export class NotificationService {
       const notification_list = await this.notificationRepository
         .createQueryBuilder("notifications")
         .where({ receiver })
+        .leftJoinAndSelect("notifications.receiver", "receiver")
+        .leftJoinAndSelect("notifications.notifier", "notifier")
         .orderBy("notifications.id", "DESC")
-        .skip(
-          page * pagenation_notification_size != 0
-            ? page * pagenation_notification_size
-            : 0
-        )
+        .skip(page != 0 ? page * pagenation_notification_size : 0)
         .take(pagenation_notification_size)
         .getManyAndCount();
 

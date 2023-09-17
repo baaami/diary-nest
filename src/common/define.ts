@@ -1,6 +1,6 @@
-export const pagenation_content_size = 10;
-export const pagenation_chat_size = 10;
-export const pagenation_notification_size = 20;
+export const pagenation_content_size: number = 10;
+export const pagenation_chat_size: number = 10;
+export const pagenation_notification_size: number = 20;
 
 export const CHAT_PORT = 8081;
 export const PUSH_PORT = 8082;

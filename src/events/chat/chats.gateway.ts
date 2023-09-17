@@ -65,10 +65,10 @@ export class ChatGateway
     return this.clients.get(socketId);
   }
 
-  getSocketIdByUserId(userId: number): string|number {
+  getSocketIdByUserId(userId: number): string | number {
     for (const [sid, uid] of this.clients.entries()) {
-      console.log('sid',sid)
-      console.log('uid',uid)
+      console.log("sid", sid);
+      console.log("uid", uid);
       if (uid == String(userId)) return sid;
     }
 
@@ -354,11 +354,11 @@ export class ChatGateway
     this.server.to(roomId).emit("message", message);
 
     if (partnerSockertId != NOT_LOGIN_USER) {
-      console.log('partnerSockertId',partnerSockertId)
+      console.log("partnerSockertId", partnerSockertId);
       this.server
         .to(String(partnerSockertId))
         .emit("chat_notification", message);
-        console.log('파트너에게 채팅알림 전송')
+      console.log("파트너에게 채팅알림 전송");
     } else {
       this.logger.log(`${partnerId}번 님이 로그인 상태가 아닙니다.`);
     }
@@ -416,7 +416,7 @@ export class ChatGateway
       }
     }
 
-    if (socketId && socketId.length != 0) {
+    if (!socketId && socketId.length == 0) {
       console.error("seller dosen't connect socket", seller);
       return;
     }
