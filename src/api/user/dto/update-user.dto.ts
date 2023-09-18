@@ -30,6 +30,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsString()
   readonly university: string;
 
+  @IsOptional()
+  @IsNumber()
+  readonly grade: number = 0;
+
   @Transform(({ value }) => parseInt(value))
   @IsNumber()
   readonly gender: number;
