@@ -63,7 +63,6 @@ export class ReviewService {
       const res = await this.ReviewRepository.save(review);
 
       // User의 Grade 업데이트
-
       const userReviews = await this.ReviewRepository.createQueryBuilder(
         "reviews"
       )
@@ -82,7 +81,7 @@ export class ReviewService {
       // 사용자의 등급(grade)을 업데이트합니다.
       await this.UserRepository.createQueryBuilder()
         .update(Users)
-        .set({ grade: averageGrade })
+        .set({ grade: Number(averageGrade.toFixed(1)) })
         .where("id = :sellerId", { sellerId })
         .execute();
 
