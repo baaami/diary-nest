@@ -54,7 +54,7 @@ export class Users {
   @Column("varchar", { name: "location", length: 100, nullable: true })
   location: string;
 
-  @Column("int", { name: "grade", nullable: true })
+  @Column("float", { name: "grade", nullable: true })
   grade: number;
 
   @CreateDateColumn()

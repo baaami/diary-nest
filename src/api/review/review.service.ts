@@ -59,7 +59,36 @@ export class ReviewService {
 
     this.chatGateway.sendReviewNotification(seller, buyer, review.review);
 
-    const res = await this.ReviewRepository.save(review);
-    return res;
+    try {
+      const res = await this.ReviewRepository.save(review);
+
+      // User의 Grade 업데이트
+
+      const userReviews = await this.ReviewRepository.createQueryBuilder(
+        "reviews"
+      )
+        .leftJoinAndSelect("reviews.seller", "seller")
+        .where("seller.id = :sellerId", { sellerId })
+        .select(["reviews.id", "reviews.grade"])
+        .getMany();
+
+      // 사용자의 리뷰 목록에서 등급(grade)을 추출합니다.
+      const grades = userReviews.map((review) => review.grade);
+
+      // 등급(grade)의 평균을 계산합니다.
+      const averageGrade =
+        grades.reduce((sum, grade) => sum + grade, 0) / (grades.length || 1);
+
+      // 사용자의 등급(grade)을 업데이트합니다.
+      await this.UserRepository.createQueryBuilder()
+        .update(Users)
+        .set({ grade: averageGrade })
+        .where("id = :sellerId", { sellerId })
+        .execute();
+
+      return res;
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

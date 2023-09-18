@@ -12,7 +12,7 @@ export class Reviews {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("int", { name: "grade" })
+  @Column("float", { name: "grade" })
   grade: number;
 
   @Column("varchar", { name: "review", length: 2000 })
