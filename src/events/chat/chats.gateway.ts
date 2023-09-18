@@ -393,9 +393,10 @@ export class ChatGateway
 
   // 알림 기능 구현
   async sendReviewNotification(seller: Users, buyer: Users, review: string) {
+    let notification: CreateNotification;
     // 알림 내역 저장
     try {
-      const notification = new CreateNotification();
+      notification = new CreateNotification();
 
       notification.type = NOTI_TYPE_REVIEW;
       notification.msg = review;
@@ -422,7 +423,7 @@ export class ChatGateway
     }
 
     this.server.to(socketId).emit("notification", {
-      review,
+      notification,
     });
   }
 }

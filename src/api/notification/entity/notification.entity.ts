@@ -1,6 +1,7 @@
 import { Users } from "src/api/user/entities/user.entity";
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToMany,
@@ -24,6 +25,9 @@ export class Notificaitions {
   // 알림 확인 여부
   @Column("boolean", { name: "confirmed" })
   confirmed: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
 
   // 알림 발생자(?)
   @ManyToOne(() => Users, (notifier) => notifier.id)
