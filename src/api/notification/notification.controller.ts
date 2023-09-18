@@ -20,6 +20,7 @@ export class NotificationController {
     @Param("id", ParseIntPipe) userId: number
   ) {
     try {
+      if (isNaN(page)) page = 0;
       const [notification_list, totalPage] =
         await this.notificationService.getNotificationListByUID(page, userId);
 
@@ -28,7 +29,7 @@ export class NotificationController {
         currentPage: page,
         totalPage,
       };
-
+      console.log('notification result',result)
       return result;
     } catch (error) {
       console.error(error);
