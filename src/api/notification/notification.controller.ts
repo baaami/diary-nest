@@ -29,7 +29,7 @@ export class NotificationController {
         currentPage: page,
         totalPage,
       };
-      console.log('notification result',result)
+
       return result;
     } catch (error) {
       console.error(error);

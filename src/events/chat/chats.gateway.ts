@@ -391,6 +391,20 @@ export class ChatGateway
     return;
   }
 
+  /**
+   * @brief 채팅방 나가기 시 발생하는 이벤트
+   *
+   * @param socket socket 인스턴스
+   * @param room
+   */
+  @SubscribeMessage("print_connected_user")
+  async handlePrintConnectedUser(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() roomId: number
+  ) {
+    this.printConnectedClients();
+  }
+
   // 알림 기능 구현
   async sendReviewNotification(seller: Users, buyer: Users, review: string) {
     let notification: CreateNotification;
@@ -411,14 +425,16 @@ export class ChatGateway
     // 알림 받은 이가 로그인 시 소켓을 통하여 실시간으로 전달
     let socketId: string = "";
     for (const [key, value] of this.clients.entries()) {
-      if (value === String(seller.id)) {
+      if (value == String(seller.id)) {
         socketId = key;
         break;
       }
     }
 
     if (!socketId && socketId.length == 0) {
-      console.error("seller dosen't connect socket", seller);
+      console.error(
+        `seller(${seller.nickname}) dosen't connect socket [${socketId}]`
+      );
       return;
     }
 
