@@ -68,10 +68,12 @@ describe("Insert User", () => {
 
         // 데이터 생성
         const content = new Contents();
+        const completed = faker.datatype.boolean();
         content.title = faker.commerce.productName();
         content.body = faker.lorem.sentences(3, { words: 50 });
         content.category = categories[randomIntFromInterval(0, 8)];
-        content.completed = faker.datatype.boolean();
+        content.seller_completed = completed;
+        content.buyer_completed = completed;
         content.price = faker.datatype.number({ min: 1000, max: 100000 });
         content.latitude = parseFloat(faker.address.latitude(36, 38));
         content.longitude = parseFloat(faker.address.longitude(127, 128));
@@ -83,7 +85,7 @@ describe("Insert User", () => {
         const seller = await user_service.findRandomOne();
         content.seller = seller;
 
-        if (content.completed) {
+        if (completed) {
           const user = await user_service.findExcludeRandomOne(seller.id);
           content.buyer = user;
         }
@@ -98,7 +100,8 @@ describe("Insert User", () => {
         expect(savedContent.title).toEqual(content.title);
         expect(savedContent.body).toEqual(content.body);
         expect(savedContent.category).toEqual(content.category);
-        expect(savedContent.completed).toEqual(content.completed);
+        expect(savedContent.seller_completed).toEqual(content.seller_completed);
+        expect(savedContent.buyer_completed).toEqual(content.buyer_completed);
         expect(savedContent.price).toEqual(content.price);
         expect(savedContent.like_cnt).toEqual(content.like_cnt);
         expect(savedContent.chat_cnt).toEqual(content.chat_cnt);

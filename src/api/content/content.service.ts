@@ -87,7 +87,9 @@ export class ContentService {
    */
   async findList(page: number): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("contents.completed = :completed", { completed: false })
+      .where("contents.seller_completed = :seller_completed", {
+        seller_completed: false,
+      })
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.images", "images")
       .skip(
@@ -138,7 +140,9 @@ export class ContentService {
     page: number
   ): Promise<[Contents[], number]> {
     let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("contents.completed = :completed", { completed: false })
+      .where("contents.seller_completed = :seller_completed", {
+        seller_completed: false,
+      })
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
@@ -166,7 +170,7 @@ export class ContentService {
       .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where(
-        "contents.seller_id = :userId AND contents.completed = :Completed",
+        "contents.seller_id = :userId AND contents.seller_completed = :Completed",
         { userId, Completed: false }
       )
       .skip(
@@ -193,7 +197,7 @@ export class ContentService {
       .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
       .where(
-        "contents.seller_id = :userId AND contents.completed = :Completed",
+        "contents.seller_id = :userId AND contents.seller_completed = :Completed",
         { userId, Completed: true }
       )
       .skip(
@@ -210,12 +214,15 @@ export class ContentService {
   }
 
   async getBoughtProductList(page: number): Promise<[Contents[], number]> {
-    const user = this.authSharedService.getUser();
+    const buyer = this.authSharedService.getUser();
     let res = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect("contents.seller", "seller")
       .leftJoinAndSelect("contents.buyer", "buyer")
       .leftJoinAndSelect("contents.images", "images")
-      .where("contents.buyer_id = :buyerId", { buyerId: user.id })
+      .where(
+        "contents.buyer_id = :userId AND contents.buyer_completed = :Completed",
+        { userId: buyer.id, Completed: true }
+      )
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
       )
@@ -230,15 +237,33 @@ export class ContentService {
   }
   // [END] 상품 리스트 획득 API
 
-  async complete(contentId: number): Promise<UpdateResult> {
-    const content = await this.ContentRepository.update(
-      { id: contentId },
-      {
-        completed: true,
-        completed_date: new Date(),
-      }
-    );
-    return content;
+  async complete(contentId: number) {
+    let IsSeller = false;
+
+    const user = this.authSharedService.getUser();
+    const find_content = await this.findOne(contentId);
+
+    if (find_content.seller.id == user.id) {
+      IsSeller = true;
+    }
+
+    if (IsSeller) {
+      await this.ContentRepository.update(
+        { id: contentId },
+        {
+          seller_completed: true,
+          completed_date: new Date(),
+        }
+      );
+    } else {
+      await this.ContentRepository.update(
+        { id: contentId },
+        {
+          buyer_completed: true,
+          completed_date: new Date(),
+        }
+      );
+    }
   }
 
   async writeOne(

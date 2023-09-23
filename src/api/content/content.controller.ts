@@ -150,6 +150,7 @@ export class ContentController {
     return this.contentService.Create(createContentDto, files);
   }
 
+  @HttpCode(204)
   @Post("/complete/:id")
   complete(@Param("id", ParseIntPipe) contentId: number) {
     return this.contentService.complete(contentId);

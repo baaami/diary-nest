@@ -33,8 +33,19 @@ export class Contents {
   @Column("varchar", { name: "category", length: 100 })
   category: string;
 
-  @Column("boolean", { name: "completed", nullable: true })
-  completed: boolean;
+  @Column("boolean", {
+    name: "seller_completed",
+    nullable: true,
+    default: false,
+  })
+  seller_completed: boolean;
+
+  @Column("boolean", {
+    name: "buyer_completed",
+    nullable: true,
+    default: false,
+  })
+  buyer_completed: boolean;
 
   @Column("int", { name: "latitude", nullable: true })
   latitude: number;

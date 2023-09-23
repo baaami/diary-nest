@@ -36,7 +36,11 @@ export class CreateContentDto {
 
   @IsOptional()
   @IsBoolean()
-  completed: boolean = false;
+  seller_completed: boolean = false;
+
+  @IsOptional()
+  @IsBoolean()
+  buyer_completed: boolean = false;
 
   @IsOptional()
   @IsObject()
