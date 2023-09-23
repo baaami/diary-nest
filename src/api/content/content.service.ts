@@ -262,6 +262,7 @@ export class ContentService {
       await this.ContentRepository.update(
         { id: contentId },
         {
+          buyer: user,
           buyer_completed: true,
           completed_date: new Date(),
         }
