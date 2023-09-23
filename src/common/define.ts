@@ -14,3 +14,5 @@ export const BUYER = 1;
 export const UNKNOWN_ROOM_ID = -1;
 
 export const NOTI_TYPE_REVIEW = 1;
+
+export const DEFAULT_UNIVERSITY = "한서대학교";

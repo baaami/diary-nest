@@ -7,7 +7,7 @@ import { InsertResult, UpdateResult, Repository, EntityManager } from "typeorm";
 import { CreateContentDto } from "./dto/create-content.dto";
 import { UpdateContentDto } from "./dto/update-content.dto";
 import { Users } from "../user/entities/user.entity";
-import { pagenation_content_size } from "src/common/define";
+import { DEFAULT_UNIVERSITY, pagenation_content_size } from "src/common/define";
 import { unlink, writeFileSync, readdirSync } from "fs";
 import { join } from "path";
 import { AuthSharedService } from "../auth/auth.shared.service";
@@ -100,10 +100,16 @@ export class ContentService {
    * @returns 상품 리스트, 상품 리스트 개수
    */
   async findList(page: number): Promise<[Contents[], number]> {
+    const user = this.authSharedService.getUser();
+    if (!user.university) {
+      user.university = DEFAULT_UNIVERSITY;
+    }
+
     try {
       let res = await this.ContentRepository.createQueryBuilder("contents")
         .where("contents.seller_completed = :seller_completed", {
           seller_completed: false,
+          university: user.university,
         })
         .leftJoinAndSelect("contents.seller", "seller")
         .leftJoinAndSelect("contents.images", "images")
@@ -165,10 +171,17 @@ export class ContentService {
     category: string,
     page: number
   ): Promise<[Contents[], number]> {
+    const user = this.authSharedService.getUser();
+    if (!user.university) {
+      console.log("user.university undefine!");
+      user.university = DEFAULT_UNIVERSITY;
+    }
+
     try {
       let res = await this.ContentRepository.createQueryBuilder("contents")
         .where("contents.seller_completed = :seller_completed", {
           seller_completed: false,
+          university: user.university,
         })
         .leftJoinAndSelect("contents.seller", "seller")
         .leftJoinAndSelect("contents.buyer", "buyer")
