@@ -213,7 +213,10 @@ export class ContentService {
     return res;
   }
 
-  async getBoughtProductList(page: number): Promise<[Contents[], number]> {
+  async getBoughtProductList(
+    userId: number,
+    page: number
+  ): Promise<[Contents[], number]> {
     const buyer = this.authSharedService.getUser();
     let res = await this.ContentRepository.createQueryBuilder("contents")
       .leftJoinAndSelect("contents.seller", "seller")
@@ -221,7 +224,7 @@ export class ContentService {
       .leftJoinAndSelect("contents.images", "images")
       .where(
         "contents.buyer_id = :userId AND contents.buyer_completed = :Completed",
-        { userId: buyer.id, Completed: true }
+        { userId, Completed: true }
       )
       .skip(
         page * pagenation_content_size != 0 ? page * pagenation_content_size : 0

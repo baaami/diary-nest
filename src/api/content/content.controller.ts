@@ -97,12 +97,14 @@ export class ContentController {
   }
 
   // 로그인한 유저가 구매한 게시물 리스트
-
-  @Post("/list/bought/:id")
-  async boughtList(@Query("page") page: number = 0) {
+  @Get("/list/bought/:id")
+  async boughtList(
+    @Param("id", ParseIntPipe) userId: number,
+    @Query("page") page: number = 0
+  ) {
     if (isNaN(page)) page = 0;
     const [contents, totalPage] =
-      await this.contentService.getBoughtProductList(page);
+      await this.contentService.getBoughtProductList(userId, page);
     const result: ContentList = {
       contents,
       totalPage,
