@@ -101,15 +101,20 @@ export class ContentService {
    */
   async findList(page: number): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
-    if (!user.university) {
-      user.university = DEFAULT_UNIVERSITY;
+    let university = "";
+    if (!user) {
+      university = DEFAULT_UNIVERSITY;
+    } else {
+      university = user.university;
     }
 
     try {
       let res = await this.ContentRepository.createQueryBuilder("contents")
         .where("contents.seller_completed = :seller_completed", {
           seller_completed: false,
-          university: user.university,
+        })
+        .andWhere("contents.university = :university", {
+          university,
         })
         .leftJoinAndSelect("contents.seller", "seller")
         .leftJoinAndSelect("contents.images", "images")
@@ -172,16 +177,20 @@ export class ContentService {
     page: number
   ): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
-    if (!user.university) {
-      console.log("user.university undefine!");
-      user.university = DEFAULT_UNIVERSITY;
+    let university = "";
+    if (!user) {
+      university = DEFAULT_UNIVERSITY;
+    } else {
+      university = user.university;
     }
 
     try {
       let res = await this.ContentRepository.createQueryBuilder("contents")
         .where("contents.seller_completed = :seller_completed", {
           seller_completed: false,
-          university: user.university,
+        })
+        .andWhere("contents.university = :university", {
+          university,
         })
         .leftJoinAndSelect("contents.seller", "seller")
         .leftJoinAndSelect("contents.buyer", "buyer")
