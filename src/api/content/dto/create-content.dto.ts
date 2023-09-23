@@ -35,6 +35,10 @@ export class CreateContentDto {
   price: number;
 
   @IsOptional()
+  @IsString()
+  university: string;
+
+  @IsOptional()
   @IsBoolean()
   seller_completed: boolean = false;
 

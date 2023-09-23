@@ -27,29 +27,39 @@ export class ContentService {
     @InjectEntityManager() private ContentManager: EntityManager
   ) {}
 
-  async findOne(contentId: number) {
-    const content = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.buyer", "buyer")
-      .leftJoinAndSelect("seller.profileImage", "sellerImages")
-      .leftJoinAndSelect("contents.images", "contentImages")
-      .where({ id: contentId })
-      .getOne();
+  async findOne(contentId: number): Promise<Contents> {
+    try {
+      const content = await this.ContentRepository.createQueryBuilder(
+        "contents"
+      )
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.buyer", "buyer")
+        .leftJoinAndSelect("seller.profileImage", "sellerImages")
+        .leftJoinAndSelect("contents.images", "contentImages")
+        .where({ id: contentId })
+        .getOne();
 
-    const isLikeContent = await this.FavoriteRepository.createQueryBuilder(
-      "favorites"
-    )
-      .where("favorites.content_id = :contentId", { contentId })
-      .getCount();
+      const isLikeContent = await this.FavoriteRepository.createQueryBuilder(
+        "favorites"
+      )
+        .where("favorites.content_id = :contentId", { contentId })
+        .getCount();
 
-    content.like = isLikeContent == 1 ? true : false;
-    return content;
+      content.like = isLikeContent == 1 ? true : false;
+      return content;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async findRandomOne(): Promise<Contents> {
-    const contents = await this.ContentRepository.find({});
-    const randomIndex = Math.floor(Math.random() * contents.length);
-    return contents[randomIndex];
+    try {
+      const contents = await this.ContentRepository.find({});
+      const randomIndex = Math.floor(Math.random() * contents.length);
+      return contents[randomIndex];
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async updateFavoriteField(
@@ -58,25 +68,29 @@ export class ContentService {
     const [content_list, page_num] = content_list_And_cnt;
     const userId = this.authSharedService.getUser().id;
 
-    // 로그인한 유저의 관심 목록 획득
-    const favorite_content_list =
-      await this.FavoriteRepository.createQueryBuilder("favorites")
-        .select("favorites.content_id")
-        .where("favorites.user_id = :userId", { userId })
-        .getRawMany();
+    try {
+      // 로그인한 유저의 관심 목록 획득
+      const favorite_content_list =
+        await this.FavoriteRepository.createQueryBuilder("favorites")
+          .select("favorites.content_id")
+          .where("favorites.user_id = :userId", { userId })
+          .getRawMany();
 
-    const favoriteContentIdList = favorite_content_list.map(
-      (favorite) => favorite.content_id
-    );
+      const favoriteContentIdList = favorite_content_list.map(
+        (favorite) => favorite.content_id
+      );
 
-    // 로그인한 유저의 관심 목록 like 설정
-    content_list.forEach((content) => {
-      if (favoriteContentIdList.includes(content.id)) {
-        content.like = true;
-      }
-    });
+      // 로그인한 유저의 관심 목록 like 설정
+      content_list.forEach((content) => {
+        if (favoriteContentIdList.includes(content.id)) {
+          content.like = true;
+        }
+      });
 
-    return [content_list, page_num];
+      return [content_list, page_num];
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // [START] 상품 리스트 획득 API
@@ -86,47 +100,59 @@ export class ContentService {
    * @returns 상품 리스트, 상품 리스트 개수
    */
   async findList(page: number): Promise<[Contents[], number]> {
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("contents.seller_completed = :seller_completed", {
-        seller_completed: false,
-      })
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.images", "images")
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        .where("contents.seller_completed = :seller_completed", {
+          seller_completed: false,
+        })
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.images", "images")
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
 
   async getListByKeyword(
     keyword: string,
     page: number
   ): Promise<[Contents[], number]> {
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("MATCH (contents.title) AGAINST (:keyword IN BOOLEAN MODE)", {
-        keyword: `*${keyword}*`,
-      })
-      .orWhere("MATCH (contents.body ) AGAINST (:keyword IN BOOLEAN MODE)", {
-        keyword: `*${keyword}*`,
-      })
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        .where("MATCH (contents.title) AGAINST (:keyword IN BOOLEAN MODE)", {
+          keyword: `*${keyword}*`,
+        })
+        .orWhere("MATCH (contents.body ) AGAINST (:keyword IN BOOLEAN MODE)", {
+          keyword: `*${keyword}*`,
+        })
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
 
   /**
@@ -139,104 +165,127 @@ export class ContentService {
     category: string,
     page: number
   ): Promise<[Contents[], number]> {
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      .where("contents.seller_completed = :seller_completed", {
-        seller_completed: false,
-      })
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.buyer", "buyer")
-      .leftJoinAndSelect("contents.images", "images")
-      .where("contents.category = :category", { category: category })
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        .where("contents.seller_completed = :seller_completed", {
+          seller_completed: false,
+        })
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.buyer", "buyer")
+        .leftJoinAndSelect("contents.images", "images")
+        .where("contents.category = :category", { category: category })
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
 
   async getSellingProductsByUser(
     userId: number,
     page: number
   ): Promise<[Contents[], number]> {
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.buyer", "buyer")
-      .leftJoinAndSelect("contents.images", "images")
-      .where(
-        "contents.seller_id = :userId AND contents.seller_completed = :Completed",
-        { userId, Completed: false }
-      )
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.buyer", "buyer")
+        .leftJoinAndSelect("contents.images", "images")
+        .where(
+          "contents.seller_id = :userId AND contents.seller_completed = :Completed",
+          { userId, Completed: false }
+        )
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      console.log(this.authSharedService.getUser());
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        console.log(this.authSharedService.getUser());
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
 
   async getSoldProductsByUser(
     userId: number,
     page: number
   ): Promise<[Contents[], number]> {
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.buyer", "buyer")
-      .leftJoinAndSelect("contents.images", "images")
-      .where(
-        "contents.seller_id = :userId AND contents.seller_completed = :Completed",
-        { userId, Completed: true }
-      )
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        // .select(['contents.id', 'contents.title', 'contents.chat_cnt', 'contents.like_cnt', 'contents.createdAt'])
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.buyer", "buyer")
+        .leftJoinAndSelect("contents.images", "images")
+        .where(
+          "contents.seller_id = :userId AND contents.seller_completed = :Completed",
+          { userId, Completed: true }
+        )
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
 
   async getBoughtProductList(
     userId: number,
     page: number
   ): Promise<[Contents[], number]> {
-    const buyer = this.authSharedService.getUser();
-    let res = await this.ContentRepository.createQueryBuilder("contents")
-      .leftJoinAndSelect("contents.seller", "seller")
-      .leftJoinAndSelect("contents.buyer", "buyer")
-      .leftJoinAndSelect("contents.images", "images")
-      .where(
-        "contents.buyer_id = :userId AND contents.buyer_completed = :Completed",
-        { userId, Completed: true }
-      )
-      .skip(
-        page * pagenation_content_size != 0 ? page * pagenation_content_size : 0
-      )
-      .take(pagenation_content_size)
-      .getManyAndCount();
+    try {
+      let res = await this.ContentRepository.createQueryBuilder("contents")
+        .leftJoinAndSelect("contents.seller", "seller")
+        .leftJoinAndSelect("contents.buyer", "buyer")
+        .leftJoinAndSelect("contents.images", "images")
+        .where(
+          "contents.buyer_id = :userId AND contents.buyer_completed = :Completed",
+          { userId, Completed: true }
+        )
+        .skip(
+          page * pagenation_content_size != 0
+            ? page * pagenation_content_size
+            : 0
+        )
+        .take(pagenation_content_size)
+        .getManyAndCount();
 
-    if (this.authSharedService.getLogined()) {
-      res = await this.updateFavoriteField(res);
+      if (this.authSharedService.getLogined()) {
+        res = await this.updateFavoriteField(res);
+      }
+
+      return res;
+    } catch (err) {
+      console.log(err);
     }
-
-    return res;
   }
   // [END] 상품 리스트 획득 API
 
@@ -275,8 +324,12 @@ export class ContentService {
   ): Promise<CreateContentDto & Contents> {
     createContentDto.seller = this.authSharedService.getUser();
 
-    const content = await this.ContentRepository.save(createContentDto);
-    return content;
+    try {
+      const content = await this.ContentRepository.save(createContentDto);
+      return content;
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   // [START] CRUD
@@ -288,21 +341,26 @@ export class ContentService {
     console.log("Create files: ", files);
 
     createContentDto.seller = this.authSharedService.getUser();
+    createContentDto.university = createContentDto.seller.university;
 
-    const content: Contents = await this.ContentRepository.save(
-      createContentDto
-    );
+    try {
+      const content: Contents = await this.ContentRepository.save(
+        createContentDto
+      );
 
-    if (images) {
-      images.forEach((image: Partial<CreateProductImageDto>) => {
-        image.content = content;
-        this.ProductImageRepository.save(image);
-      });
-    } else {
-      console.log("image not found");
+      if (images) {
+        images.forEach((image: Partial<CreateProductImageDto>) => {
+          image.content = content;
+          this.ProductImageRepository.save(image);
+        });
+      } else {
+        console.log("image not found");
+      }
+
+      return content;
+    } catch (err) {
+      console.log(err);
     }
-
-    return content;
   }
 
   @HttpCode(204)
@@ -402,26 +460,34 @@ export class ContentService {
 
   // [For AUTO CREATE FAKER DATA]
   async findListAll() {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
-      .leftJoinAndSelect("contents.seller", "users")
-      .leftJoinAndSelect("contents.images", "images")
-      .getMany();
+    try {
+      const content_list = await this.ContentRepository.createQueryBuilder(
+        "contents"
+      )
+        .leftJoinAndSelect("contents.seller", "users")
+        .leftJoinAndSelect("contents.images", "images")
+        .getMany();
 
-    return content_list;
+      return content_list;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async findListImageIsNull() {
-    const content_list = await this.ContentRepository.createQueryBuilder(
-      "contents"
-    )
-      .leftJoinAndSelect("contents.seller", "users")
-      .leftJoinAndSelect("contents.images", "images")
-      .where("images.id IS NULL")
-      .getMany();
+    try {
+      const content_list = await this.ContentRepository.createQueryBuilder(
+        "contents"
+      )
+        .leftJoinAndSelect("contents.seller", "users")
+        .leftJoinAndSelect("contents.images", "images")
+        .where("images.id IS NULL")
+        .getMany();
 
-    return content_list;
+      return content_list;
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   async insertFakerData(fakerdata: Contents): Promise<Contents> {

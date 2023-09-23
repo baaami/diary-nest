@@ -16,6 +16,7 @@ import { Users } from "src/api/user/entities/user.entity";
 import { ProductImages } from "src/common/entities/productimage.entity";
 import { Reviews } from "src/api/review/entities/review.entity";
 import { Favorites } from "src/common/entities/favorite.entity";
+import { Max, Min } from "class-validator";
 
 @Entity({ schema: "school", name: "contents" })
 export class Contents {
@@ -56,6 +57,8 @@ export class Contents {
   @Column("varchar", { name: "location", length: 100, nullable: true })
   location: string;
 
+  @Min(0, { message: "Value must be at least 0" })
+  @Max(100000000, { message: "Value cannot exceed 100,000,000" })
   @Column("int", { name: "price" })
   price: number;
 
@@ -74,6 +77,14 @@ export class Contents {
   @ManyToOne(() => Users, (buyer) => buyer.id)
   @JoinColumn({ name: "buyer_id" })
   buyer: Users;
+
+  @Column("varchar", {
+    name: "university",
+    length: 50,
+    nullable: true,
+    default: "한서대학교",
+  })
+  university: string;
 
   @CreateDateColumn()
   createdAt: Date;
