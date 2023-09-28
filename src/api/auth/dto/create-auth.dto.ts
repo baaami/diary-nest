@@ -1,6 +1,7 @@
 import { Transform, Type } from "class-transformer";
 import { IsString, IsNumber, IsBoolean, IsOptional } from "class-validator";
 import { ProfileImages } from "src/common/entities/profileimage.entity";
+import * as crypto from "crypto";
 
 export class CreateAuthKakaoDto {
   @IsString()
@@ -21,6 +22,9 @@ export class CreateAuthLocalDto {
   readonly email: string;
 
   @IsString()
+  @Transform(({ value }) =>
+    crypto.createHash("sha256").update(value).digest("hex")
+  ) // 비밀번호를 SHA-256으로 해싱
   readonly password: string;
 
   @IsString()

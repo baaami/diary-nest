@@ -5,6 +5,7 @@ import { Users } from "src/api/user/entities/user.entity";
 import { ProfileImages } from "src/common/entities/profileimage.entity";
 import { Repository } from "typeorm";
 import * as qs from "qs";
+import * as crypto from "crypto";
 import axios, { AxiosResponse } from "axios";
 import {
   KakaoServerData,
@@ -90,6 +91,13 @@ export class AuthService {
     }
   }
 
+  /**
+   * @brief                   카카오 로그인 API
+   *
+   * @param permissionCode    카카오 인가 코드
+   * @param res               응답 시 사용할 객체
+   * @returns
+   */
   async kakaoLogin(permissionCode: string, @Res() res: Response) {
     // 1. 인가 코드 유효성 검사 (카카오에 전달 후 access_token 확인)
     const [ok, token] = await GetAccessToken(permissionCode);
@@ -240,7 +248,13 @@ export class AuthService {
     }
 
     // case: 존재하는 아이디
-    if (createSignInDto.password !== user.password) {
+
+    if (
+      crypto
+        .createHash("sha256")
+        .update(createSignInDto.password)
+        .digest("hex") !== user.password
+    ) {
       throw new HttpException("Invalid Password", HttpStatus.UNAUTHORIZED);
     }
 
@@ -255,6 +269,6 @@ export class AuthService {
 
   async logout(@Res() res: Response) {
     res.clearCookie("access_token");
-    res.send(200);
+    res.sendStatus(200);
   }
 }

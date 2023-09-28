@@ -33,7 +33,7 @@ export class JwtMiddleWare implements NestMiddleware<Request, Response> {
         console.log(error);
       }
     } else {
-      res.send(401);
+      res.sendStatus(401);
     }
   }
 }
