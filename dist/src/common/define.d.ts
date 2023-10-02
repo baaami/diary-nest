@@ -1,0 +1,12 @@
+export declare const pagenation_content_size: number;
+export declare const pagenation_chat_size: number;
+export declare const pagenation_notification_size: number;
+export declare const CHAT_PORT = 8081;
+export declare const PUSH_PORT = 8082;
+export declare const NOT_LOGIN_USER = 1000;
+export declare const UNKNOWN_USER = 999;
+export declare const SELLER = 0;
+export declare const BUYER = 1;
+export declare const UNKNOWN_ROOM_ID = -1;
+export declare const NOTI_TYPE_REVIEW = 1;
+export declare const DEFAULT_UNIVERSITY = "\uD55C\uC11C\uB300\uD559\uAD50";
