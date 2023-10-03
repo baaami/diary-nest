@@ -36,7 +36,7 @@ import { CreateNotification } from "src/api/notification/dto/create-notification
 // namespace를 'chat' 으로 설정
 @WebSocketGateway(CHAT_PORT, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "*",
   },
 })
 export class ChatGateway
