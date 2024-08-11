@@ -1,0 +1,29 @@
+version: '3'
+services:
+  app:
+    image: nestjs-app
+    build:
+      context: ../api-service
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: examplepass
+      DATABASE_NAME: exampledb
+      JWT_SECRET_KEY: 'YmFhbWk='
+
+      KAKAO_ID: 1e71e50aa0333c4fc579cf84718fdd4b
+      KAKAO_CALLBACK_URL: http://localhost:3000/oauth/callback/kakao
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepass # root 사용자 비밀번호 설정
+      MYSQL_DATABASE: exampledb # 자동으로 생성될 데이터베이스 이름
+    ports:
+      - '3306:3306'
