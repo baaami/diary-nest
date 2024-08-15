@@ -13,11 +13,21 @@ services:
       DATABASE_PASSWORD: examplepass
       DATABASE_NAME: exampledb
       JWT_SECRET_KEY: 'YmFhbWk='
-
       KAKAO_ID: 1e71e50aa0333c4fc579cf84718fdd4b
       KAKAO_CALLBACK_URL: http://localhost:3000/oauth/callback/kakao
     depends_on:
       - db
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  listener-service:
+    build:
+      context: ./../listener-service
+      dockerfile: ./../listener-service/listener-service.dockerfile
+    deploy:
+      mode: replicated
+      replicas: 1
 
   db:
     image: mysql:8
@@ -27,3 +37,16 @@ services:
       MYSQL_DATABASE: exampledb # 자동으로 생성될 데이터베이스 이름
     ports:
       - '3306:3306'
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  rabbitmq:
+    image: 'rabbitmq:3.9-alpine'
+    ports:
+      - '5672:5672'
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - ./db-data/rabbitmq/:/var/lib/rabbitmq/
