@@ -23,8 +23,8 @@ async function bootstrap() {
 
   // withCredentials: true 옵션을 사용하는 경우, Access-Control-Allow-Origin 헤더는 와일드카드(*)가 아니라 요청을 보내는 도메인이어야 함
   const corsOptions: CorsOptions = {
-    origin: ["http://localhost:3000"],
-    credentials: true,
+    origin: ["http://localhost:2719"],
+    // credentials: true,
   };
 
   app.enableCors(corsOptions);

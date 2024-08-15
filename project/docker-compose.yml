@@ -1,7 +1,7 @@
 version: '3'
 services:
-  app:
-    image: nestjs-app
+  api-service:
+    image: api-service
     build:
       context: ../api-service
     ports:
@@ -17,6 +17,17 @@ services:
       KAKAO_CALLBACK_URL: http://localhost:3000/oauth/callback/kakao
     depends_on:
       - db
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  broker-service:
+    build:
+      context: ./../broker-service
+      dockerfile: ./../broker-service/broker-service.dockerfile
+    restart: always
+    ports:
+      - '2719:2719'
     deploy:
       mode: replicated
       replicas: 1

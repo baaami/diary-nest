@@ -21,7 +21,7 @@ interface Notification {
 
 @WebSocketGateway(PUSH_PORT, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "http://localhost:2719",
   },
 })
 export class PushGateway

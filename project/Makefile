@@ -2,6 +2,7 @@
 
 # 디렉토리 설정
 API_SERVICE_DOCKER_FILE = ../api-service
+BROKER_BINARY=brokerApp
 LISTENER_BINARY=listenerApp
 DOCKER_COMPOSE_FILE = docker-compose.yml
 
@@ -9,11 +10,16 @@ DOCKER_COMPOSE_FILE = docker-compose.yml
 .PHONY: up_build
 
 # Docker 이미지 빌드 및 docker-compose 실행
-up_build: build_listener build_api
+up_build: build_broker build_listener build_api
 	@echo "Stopping docker images (if running...)"
 	docker-compose down
 	@echo "Starting Docker Compose..."
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build
+
+only_build: build_broker build_listener build_api
+	@echo "Only Build Docker Image..."
+	docker-compose -f $(DOCKER_COMPOSE_FILE) build
+
 
 ## down: stop docker compose
 down:
@@ -23,7 +29,12 @@ down:
 
 build_api:
 	@echo "Building docker image for nestjs-app..."
-	@docker build -t nestjs-app $(API_SERVICE_DOCKER_FILE)
+	@docker build -t api-service $(API_SERVICE_DOCKER_FILE)
+	@echo "Done!"
+
+build_broker:
+	@echo "Building broker binary..."
+	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -o ${BROKER_BINARY} ./cmd/api
 	@echo "Done!"
 
 build_listener:
