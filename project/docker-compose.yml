@@ -15,6 +15,8 @@ services:
       JWT_SECRET_KEY: 'YmFhbWk='
       KAKAO_ID: 1e71e50aa0333c4fc579cf84718fdd4b
       KAKAO_CALLBACK_URL: http://localhost:3000/oauth/callback/kakao
+    volumes:
+      - ./db-data/images/:/app/upload
     depends_on:
       - db
     deploy:
@@ -48,6 +50,8 @@ services:
       MYSQL_DATABASE: exampledb # 자동으로 생성될 데이터베이스 이름
     ports:
       - '3306:3306'
+    volumes:
+      - ./db-data/mysql:/var/lib/mysql
     deploy:
       mode: replicated
       replicas: 1

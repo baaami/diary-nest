@@ -1,5 +1,3 @@
-# Makefile
-
 # 디렉토리 설정
 API_SERVICE_DOCKER_FILE = ../api-service
 BROKER_BINARY=brokerApp
@@ -8,6 +6,12 @@ DOCKER_COMPOSE_FILE = docker-compose.yml
 
 # 기본 명령어
 .PHONY: up_build
+
+## up: starts all containers in the background without forcing build
+up:
+	@echo "Starting Docker images..."
+	docker-compose up -d
+	@echo "Docker images started!"
 
 # Docker 이미지 빌드 및 docker-compose 실행
 up_build: build_broker build_listener build_api

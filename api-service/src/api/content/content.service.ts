@@ -101,12 +101,6 @@ export class ContentService {
    */
   async findList(page: number): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
-    let university = "";
-    if (!user) {
-      university = DEFAULT_UNIVERSITY;
-    } else {
-      university = user.university;
-    }
 
     try {
       let res = await this.ContentRepository.createQueryBuilder("contents")
@@ -114,7 +108,7 @@ export class ContentService {
           seller_completed: false,
         })
         .andWhere("contents.university = :university", {
-          university,
+          university: user.university,
         })
         .leftJoinAndSelect("contents.seller", "seller")
         .leftJoinAndSelect("contents.images", "images")
@@ -360,9 +354,9 @@ export class ContentService {
     files: { images?: Express.Multer.File[] }
   ) {
     const { images } = files;
-    console.log("Create files: ", files);
 
     createContentDto.seller = this.authSharedService.getUser();
+    console.log("createContentDto.seller: ", createContentDto.seller);
     createContentDto.university = createContentDto.seller.university;
 
     try {
