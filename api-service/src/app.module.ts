@@ -21,6 +21,7 @@ import { FavoriteModule } from "./api/favorite/favorite.module";
 import { RoomModule } from "./api/room/room.module";
 import { PhotosModule } from "./api/photos/photos.module";
 import { NotificationModule } from "./api/notification/notification.module";
+import { LoggingMiddleware } from "./middleware/logging.middeware";
 
 @Module({
   imports: [
@@ -45,6 +46,9 @@ import { NotificationModule } from "./api/notification/notification.module";
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes({ path: "*", method: RequestMethod.ALL });
     // consumer
     // .apply(JwtMiddleWare)
     // .forRoutes({

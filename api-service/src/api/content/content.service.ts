@@ -104,31 +104,57 @@ export class ContentService {
   async findList(page: number): Promise<[Contents[], number]> {
     const user = this.authSharedService.getUser();
 
-    try {
-      let res = await this.ContentRepository.createQueryBuilder("contents")
-        .where("contents.seller_completed = :seller_completed", {
-          seller_completed: false,
-        })
-        .andWhere("contents.university = :university", {
-          university: user.university,
-        })
-        .leftJoinAndSelect("contents.seller", "seller")
-        .leftJoinAndSelect("contents.images", "images")
-        .skip(
-          page * pagenation_content_size != 0
-            ? page * pagenation_content_size
-            : 0
-        )
-        .take(pagenation_content_size)
-        .getManyAndCount();
+    if (user == undefined) {
+      try {
+        let res = await this.ContentRepository.createQueryBuilder("contents")
+          .where("contents.seller_completed = :seller_completed", {
+            seller_completed: false,
+          })
+          .leftJoinAndSelect("contents.seller", "seller")
+          .leftJoinAndSelect("contents.images", "images")
+          .skip(
+            page * pagenation_content_size != 0
+              ? page * pagenation_content_size
+              : 0
+          )
+          .take(pagenation_content_size)
+          .getManyAndCount();
 
-      if (this.authSharedService.getLogined()) {
-        res = await this.updateFavoriteField(res);
+        if (this.authSharedService.getLogined()) {
+          res = await this.updateFavoriteField(res);
+        }
+
+        return res;
+      } catch (err) {
+        console.log(err);
       }
+    } else {
+      try {
+        let res = await this.ContentRepository.createQueryBuilder("contents")
+          .where("contents.seller_completed = :seller_completed", {
+            seller_completed: false,
+          })
+          .andWhere("contents.university = :university", {
+            university: user.university,
+          })
+          .leftJoinAndSelect("contents.seller", "seller")
+          .leftJoinAndSelect("contents.images", "images")
+          .skip(
+            page * pagenation_content_size != 0
+              ? page * pagenation_content_size
+              : 0
+          )
+          .take(pagenation_content_size)
+          .getManyAndCount();
 
-      return res;
-    } catch (err) {
-      console.log(err);
+        if (this.authSharedService.getLogined()) {
+          res = await this.updateFavoriteField(res);
+        }
+
+        return res;
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 

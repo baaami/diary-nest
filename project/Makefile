@@ -13,6 +13,12 @@ up:
 	docker-compose up -d
 	@echo "Docker images started!"
 
+## up: starts all containers in the background without forcing build
+up_mysql:
+	@echo "Starting mysql Docker images..."
+	@docker-compose up -d --no-deps --build mysqlDB
+	@echo "Docker mysql images started!"
+
 # Docker 이미지 빌드 및 docker-compose 실행
 up_build: build_broker build_listener build_api
 	@echo "Stopping docker images (if running...)"
@@ -21,11 +27,7 @@ up_build: build_broker build_listener build_api
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build
 
 # api-service만 종료 후 빌드하여 컨테이너 실행
-up_build_api: build_api
-	@echo "Stopping api-service container..."
-	docker-compose stop api-service
-	@echo "Removing api-service container..."
-	docker-compose rm -f api-service
+up_build_api: down_api build_api
 	@echo "Starting Docker Compose..."
 	docker-compose up -d --no-deps --build api-service
 
@@ -48,6 +50,13 @@ down:
 	@echo "Stopping docker compose..."
 	docker-compose down
 	@echo "Done!"
+
+## down: stop docker compose
+down_api:
+	@echo "Stopping api-service container..."
+	docker-compose stop api-service
+	@echo "Removing api-service container..."
+	docker-compose rm -f api-service
 
 build_api:
 	@echo "Building docker image for nestjs-app..."
