@@ -20,14 +20,23 @@ up_build: build_broker build_listener build_api
 	@echo "Starting Docker Compose..."
 	@docker-compose -f $(DOCKER_COMPOSE_FILE) up -d --build
 
-# Docker 이미지 빌드 및 docker-compose 실행
-up_api_only: build_api
+# api-service만 종료 후 빌드하여 컨테이너 실행
+up_build_api: build_api
 	@echo "Stopping api-service container..."
 	docker-compose stop api-service
 	@echo "Removing api-service container..."
 	docker-compose rm -f api-service
 	@echo "Starting Docker Compose..."
 	docker-compose up -d --no-deps --build api-service
+
+# api-service만 종료 후 빌드하여 컨테이너 실행
+up_build_broker: build_broker
+	@echo "Stopping api-service container..."
+	docker-compose stop broker-service
+	@echo "Removing api-service container..."
+	docker-compose rm -f broker-service
+	@echo "Starting Docker Compose..."
+	docker-compose up -d --no-deps --build broker-service
 
 only_build: build_broker build_listener build_api
 	@echo "Only Build Docker Image..."

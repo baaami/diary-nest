@@ -8,8 +8,6 @@ import (
 	"github.com/go-chi/cors"
 )
 
-var targetURL = "http://api-service:4000"
-
 func (app *Config) routes() http.Handler {
 	mux := chi.NewRouter()
 

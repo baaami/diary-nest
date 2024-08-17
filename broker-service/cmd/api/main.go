@@ -6,14 +6,16 @@ import (
 	"net/http"
 )
 
-const webPort = 2719
+const webPort = 80
 
 type Config struct {
 	requestCount uint64
+	apiUrl       string
 }
 
 func main() {
 	app := Config{}
+	app.Init()
 
 	log.Printf("Starting broker service on port %d", webPort)
 

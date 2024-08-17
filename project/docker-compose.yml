@@ -7,7 +7,7 @@ services:
     ports:
       - '4000:4000'
     environment:
-      DATABASE_HOST: db
+      DATABASE_HOST: mysqlDB
       DATABASE_PORT: 3306
       DATABASE_USER: root
       DATABASE_PASSWORD: examplepass
@@ -18,7 +18,7 @@ services:
     volumes:
       - ./db-data/images/:/app/upload
     depends_on:
-      - db
+      - mysqlDB
     deploy:
       mode: replicated
       replicas: 1
@@ -29,7 +29,7 @@ services:
       dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
     ports:
-      - '2719:2719'
+      - '2719:80'
     deploy:
       mode: replicated
       replicas: 1
@@ -42,7 +42,7 @@ services:
       mode: replicated
       replicas: 1
 
-  db:
+  mysqlDB:
     image: mysql:8
     restart: always
     environment:

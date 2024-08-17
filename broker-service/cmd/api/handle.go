@@ -34,17 +34,6 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	// 2. 요청 경로
 	log.Printf("Request Path: %s", r.URL.Path)
 
-	// 3. 요청 헤더
-	log.Println("=============================================================")
-	log.Println("Incoming Request Headers")
-	for name, values := range r.Header {
-		for _, value := range values {
-			log.Printf("%s: %s", name, value)
-		}
-	}
-
-	log.Println("=============================================================")
-
 	bodyBytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "Error reading request body", http.StatusInternalServerError)
@@ -55,7 +44,7 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 	r.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 
 	// 원본 요청 URL을 해석하고, targetURL로 전달할 새로운 요청을 생성합니다.
-	url, _ := url.Parse(targetURL)
+	url, _ := url.Parse(app.apiUrl)
 
 	proxyReq, err := http.NewRequest(r.Method, url.String()+r.RequestURI, r.Body)
 	if err != nil {
@@ -73,6 +62,10 @@ func (app *Config) Broker(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer proxyRes.Body.Close()
+
+	if proxyRes.StatusCode > 400 {
+		log.Printf("Error Occure, %d/%s", proxyRes.StatusCode, proxyRes.Status)
+	}
 
 	// 응답 헤더를 복사합니다.
 	for key, value := range proxyRes.Header {
