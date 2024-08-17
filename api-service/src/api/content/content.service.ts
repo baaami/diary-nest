@@ -1,4 +1,4 @@
-import { HttpCode, Injectable, UseGuards } from "@nestjs/common";
+import { HttpCode, Injectable, UseGuards, Logger } from "@nestjs/common";
 import { InjectEntityManager, InjectRepository } from "@nestjs/typeorm";
 import { CreateProductImageDto } from "src/common/dto/create-product-image.dto";
 import { ProductImages } from "src/common/entities/productimage.entity";
@@ -17,6 +17,8 @@ import { ProfileImages } from "src/common/entities/profileimage.entity";
 
 @Injectable()
 export class ContentService {
+  private readonly logger = new Logger(ContentService.name);
+
   constructor(
     @InjectRepository(Contents) private ContentRepository: Repository<Contents>,
     @InjectRepository(ProductImages)
