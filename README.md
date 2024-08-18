@@ -6,7 +6,7 @@
 - REST API with [TypeORM](http://typeorm.io) 지원
 - Socket I.O를 통한 채팅, 알림 기능 지원
 
-##지원 API
+## 지원 API
 
 REST API
 
