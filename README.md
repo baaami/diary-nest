@@ -1,8 +1,6 @@
 
 # 거래 전용 애플리케이션 API
 
-[![License](https://img.shields.io/github/license/saluki/nestjs-template.svg)](https://github.com/saluki/nestjs-template/blob/master/LICENSE)
-
 사용 Protocol
 
 - REST API with [TypeORM](http://typeorm.io) 지원
@@ -201,7 +199,3 @@ src/
 ## 3. Project goals
 
 작성 예정
-
-## 4. Contributing
-
-Feel free to suggest an improvement, report a bug, or ask something: [https://github.com/saluki/nestjs-template/issues](https://github.com/saluki/nestjs-template/issues)
