@@ -1,12 +1,12 @@
 
-# 거래 전용 애플리케이션 API
+# 중고 거래를 위한 API
 
 사용 Protocol
 
 - REST API with [TypeORM](http://typeorm.io) 지원
 - Socket I.O를 통한 채팅, 알림 기능 지원
 
-지원 API
+##지원 API
 
 REST API
 
@@ -196,6 +196,3 @@ src/
     ├── initialize.sql
     └── reviews.sql
 ```
-## 3. Project goals
-
-작성 예정
