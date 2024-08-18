@@ -93,6 +93,7 @@ yarn faker
 
 ## 2. Project structure
 
+### 2.1. Source structure
 This template was made with a well-defined directory structure.
 
 ```sh
@@ -196,3 +197,7 @@ src/
     ├── initialize.sql
     └── reviews.sql
 ```
+### 2.2 Monolithic Architecture
+
+<img src="https://github.com/user-attachments/assets/bc525c8e-5c6f-41d7-a8c8-2680c3c4aaa3"  width="1000" height="600"/>
+
